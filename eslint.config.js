@@ -11,10 +11,15 @@ import prettierConfig from "eslint-config-prettier";
 
 const compat = new FlatCompat();
 
-export default [
+const config = [
+  {
+    ignores: [
+      "**/.next/**",
+      "node_modules/**",
+    ],
+  },
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
-    ignores: [".next/", "node_modules/"],
   },
 
   ...compat.extends("next"),
@@ -70,3 +75,5 @@ export default [
   },
   prettierConfig,
 ];
+
+export default config;
