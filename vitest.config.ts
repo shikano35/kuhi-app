@@ -34,7 +34,7 @@ export default defineConfig({
 
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'lcov', 'html'],
+      reporter: ['text', 'json', 'html'],
       include: ['src/**/*.{test,spec}.{ts,tsx}'],
       exclude: ['node_modules/', 'dist/', '.storybook/**']
     },
