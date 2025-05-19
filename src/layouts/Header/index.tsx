@@ -2,23 +2,11 @@ import { Button } from '@/components/ui/button';
 import { MenuIcon } from 'lucide-react';
 import Link from 'next/link';
 
-const headerLinks = [
-  {
-    label: 'ホーム',
-    href: '/',
-  },
-  {
-    label: '句碑マップ',
-    href: '/map',
-  },
-  {
-    label: '句碑リスト',
-    href: '/list',
-  },
-  {
-    label: '句碑とは',
-    href: '/about',
-  },
+export const menuLinks = [
+  { href: '/', label: 'ホーム' },
+  { href: '/map', label: '句碑マップ' },
+  { href: '/list', label: '句碑リスト' },
+  { href: '/about', label: '句碑とは' },
 ];
 
 export function HomeHeader() {
@@ -31,7 +19,7 @@ export function HomeHeader() {
           </Link>
 
           <nav className="hidden md:flex space-x-8 ml-12 lg:ml-24">
-            {headerLinks.map((link, index) => (
+            {menuLinks.map((link, index) => (
               <Link
                 className="text-white hover:text-gray-300 transition-colors font-medium"
                 href={link.href}
@@ -70,7 +58,7 @@ export function Header() {
           </Link>
 
           <nav className="hidden md:flex space-x-8 ml-12 lg:ml-24">
-            {headerLinks.map((link, index) => (
+            {menuLinks.map((link, index) => (
               <Link
                 className="text-primary hover:text-muted-foreground transition-colors font-medium"
                 href={link.href}
