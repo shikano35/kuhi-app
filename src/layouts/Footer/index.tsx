@@ -74,19 +74,18 @@ export function Footer() {
   return (
     <footer className="bg-foreground text-background">
       <div className="container mx-auto py-16 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-20 mt-12">
-          <div className="col-span-1 md:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-16 mb-20 mt-12 ">
+          <div className="col-span-1 lg:col-span-2">
             <Link className="flex flex-col items-start" href="/">
               <span className="text-4xl font-bold">くひめぐり</span>
-              <span className="mt-2 ml-2.5">Haiku monument tour</span>
+              <span className="mt-2">- Haiku monument tour -</span>
             </Link>
-            <p className="mt-4 text-gray-400 text-sm">
-              日本各地の句碑を紹介するサイトです
+            <p className="mt-4 text-gray-400 text-sm mb-8">
+              日本各地の句碑を紹介するサイト
             </p>
           </div>
 
           <LinkList links={menuLinks} title="メニュー" />
-          <LinkList links={otherLinks} title="その他" />
 
           <div className="col-span-1">
             <h3 className="text-lg font-semibold mb-8">外部リンク</h3>
@@ -96,6 +95,8 @@ export function Footer() {
               ))}
             </ul>
           </div>
+
+          <LinkList links={otherLinks} title="その他" />
         </div>
 
         <div className="text-sm border-t border-muted-foreground mt-12 pt-8 text-center text-muted-foreground">
