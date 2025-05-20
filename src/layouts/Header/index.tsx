@@ -12,24 +12,18 @@ export const menuLinks = [
 export function HomeHeader() {
   return (
     <header className="absolute top-0 left-0 right-0 z-50">
-      <div className="container mx-auto flex items-center justify-between p-4 py-8">
-        <div className="flex items-center">
-          <Link className="flex items-center" href="/">
-            <span className="text-white text-2xl font-bold">くひめぐり</span>
-          </Link>
-
-          <nav className="hidden md:flex space-x-8 ml-12 lg:ml-24">
-            {menuLinks.map((link, index) => (
-              <Link
-                className="text-white hover:text-gray-300 transition-colors font-medium"
-                href={link.href}
-                key={index}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
+      <div className="container mx-auto flex items-center p-4 py-8 justify-end md:justify-between">
+        <nav className="hidden md:flex space-x-8 ml-12 lg:ml-24">
+          {menuLinks.map((link, index) => (
+            <Link
+              className="text-white hover:text-gray-300 transition-colors font-medium"
+              href={link.href}
+              key={index}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
         <div className="flex items-center space-x-4">
           <Button
@@ -71,11 +65,12 @@ export function Header() {
         </div>
 
         <div className="flex items-center space-x-4">
-          {/* <Button asChild className="text-md rounded-full">
-            <Link href="/login">
-              ログイン
-            </Link>
-          </Button> */}
+          <Link
+            className="text-md text-muted-foreground hover:text-primary rounded-full"
+            href="/login"
+          >
+            ログイン
+          </Link>
           <button className="md:hidden">
             <MenuIcon className="w-6 h-6" />
           </button>
