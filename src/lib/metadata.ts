@@ -1,30 +1,30 @@
 import type { Metadata } from 'next';
 
 export const baseMetadata: Metadata = {
-  title: 'kuhi-app',
-  description: '句碑の情報を使用したWebアプリケーションです。',
-  keywords: 'kuhi-app,kuhi,haiku-monument,句碑,句碑アプリ',
-  generator: '',
-  applicationName: '',
+  title: 'くひめぐり - Haiku monument tour -',
+  description: '日本各地の句碑を紹介するサイト',
+  keywords: 'くひめぐり,haiku,monument,句碑,句碑アプリ,俳句,句碑巡り',
+  generator: 'くひめぐり',
+  applicationName: 'くひめぐり',
   openGraph: {
-    title: '',
-    description: '',
+    title: 'くひめぐり - Haiku monument tour -',
+    description: '日本各地の句碑を紹介するサイト',
     type: 'website',
-    url: '',
-    siteName: '',
+    url: 'https://sample.kuhiapi.com',
+    siteName: 'くひめぐり',
     locale: 'ja_JP',
     images: [
       {
-        url: '',
+        url: 'https://sample.kuhiapi.com',
         width: 1200,
         height: 630,
-        alt: '',
+        alt: 'くひめぐり',
       },
     ],
   },
   twitter: {
     card: 'summary',
-    title: '',
-    description: '',
+    title: 'くひめぐり - Haiku monument tour -',
+    description: '日本各地の句碑を紹介するサイト',
   },
 };
