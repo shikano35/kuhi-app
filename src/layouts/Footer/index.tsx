@@ -86,6 +86,7 @@ export function Footer() {
           </div>
 
           <LinkList links={menuLinks} title="メニュー" />
+          <LinkList links={otherLinks} title="その他" />
 
           <div className="col-span-1">
             <h3 className="text-lg font-semibold mb-8">外部リンク</h3>
@@ -95,8 +96,6 @@ export function Footer() {
               ))}
             </ul>
           </div>
-
-          <LinkList links={otherLinks} title="その他" />
         </div>
 
         <div className="text-sm border-t border-muted-foreground mt-12 pt-8 text-center text-muted-foreground">
