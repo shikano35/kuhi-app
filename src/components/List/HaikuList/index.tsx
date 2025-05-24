@@ -5,6 +5,7 @@ import { HaikuCard } from '@/components/shared/HaikuCard';
 import { ListFilter } from '@/components/List/ListFilter';
 import { useHaikuList } from '@/lib/api-hooks';
 import { useInView } from 'react-intersection-observer';
+import { useFilterStore } from '@/store/useFilterStore';
 
 type HaikuListProps = {
   searchParams: {
@@ -19,6 +20,15 @@ type HaikuListProps = {
 
 export function HaikuList({ searchParams }: HaikuListProps) {
   const { ref, inView } = useInView();
+  const { listSearchText, listSelectedRegion, listPoetId } = useFilterStore();
+
+  const searchQuery = searchParams.q || listSearchText;
+  const regionFilter =
+    searchParams.region ||
+    (listSelectedRegion !== 'すべて' ? listSelectedRegion : undefined);
+  const poetIdFilter = searchParams.poet_id
+    ? Number(searchParams.poet_id)
+    : listPoetId;
 
   const {
     data,
@@ -29,9 +39,9 @@ export function HaikuList({ searchParams }: HaikuListProps) {
     isError,
     error,
   } = useHaikuList({
-    region: searchParams.region,
-    poet_id: searchParams.poet_id ? Number(searchParams.poet_id) : undefined,
-    search: searchParams.q,
+    region: regionFilter,
+    poet_id: poetIdFilter,
+    search: searchQuery,
   });
 
   const monuments = data?.pages.flatMap((page) => page.monuments) || [];

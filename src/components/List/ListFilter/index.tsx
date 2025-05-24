@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter as useNextRouter } from 'next/navigation';
+import { useEffect, useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { usePoetsList, useLocationsList } from '@/lib/api-hooks';
 import { FilterIcon } from 'lucide-react';
+import { useFilterStore } from '@/store/useFilterStore';
 
 type ListFilterProps = {
   searchParams: {
@@ -19,59 +20,74 @@ type ListFilterProps = {
 const REGIONS = [
   '北海道',
   '東北',
-  '関東',
-  '中部',
+  '関東甲信',
+  '東海',
+  '北陸',
   '近畿',
   '中国',
   '四国',
-  '九州・沖縄',
+  '九州',
+  '沖縄',
   'すべて',
 ];
 
-type RouterType = {
-  push: (url: string) => void;
-};
-
-const useRouter = (): RouterType => {
-  try {
-    return useNextRouter();
-  } catch (e) {
-    return {
-      push: (url: string) => console.log('Router push:', url, e),
-    };
-  }
-};
-
 export function ListFilter({ searchParams }: ListFilterProps) {
   const router = useRouter();
-  const [searchText, setSearchText] = useState<string>(searchParams.q || '');
-  const [selectedRegion, setSelectedRegion] = useState<string>(
-    searchParams.region || 'すべて'
-  );
-  const [selectedPrefecture, setSelectedPrefecture] = useState<string>(
-    searchParams.prefecture || 'すべて'
-  );
-  const [selectedPoet, setSelectedPoet] = useState<string>('すべて');
-  const [filterVisible, setFilterVisible] = useState<boolean>(false);
-
   const { data: poets = [] } = usePoetsList();
   const { data: locations = [] } = useLocationsList();
+  const isInitialRender = useRef(true);
+
+  const {
+    listSearchText,
+    listSelectedRegion,
+    listSelectedPrefecture,
+    listSelectedPoet,
+    listPoetId,
+    setListSearchText,
+    setListSelectedRegion,
+    setListSelectedPrefecture,
+    setListSelectedPoet,
+    resetListFilters,
+  } = useFilterStore();
+
+  const [filterVisible, setFilterVisible] = useState(false);
 
   useEffect(() => {
-    setSearchText(searchParams.q || '');
-    setSelectedRegion(searchParams.region || 'すべて');
-    setSelectedPrefecture(searchParams.prefecture || 'すべて');
+    if (!isInitialRender.current) return;
+
+    if (!poets || poets.length === 0) return;
+
+    isInitialRender.current = false;
+
+    if (Object.keys(searchParams).length === 0) return;
+
+    if (searchParams.q) {
+      setListSearchText(searchParams.q);
+    }
+
+    if (searchParams.region) {
+      setListSelectedRegion(searchParams.region);
+    }
+
+    if (searchParams.prefecture) {
+      setListSelectedPrefecture(searchParams.prefecture);
+    }
 
     if (searchParams.poet_id) {
       const poetId = Number(searchParams.poet_id);
       const poet = poets.find((p) => p.id === poetId);
       if (poet) {
-        setSelectedPoet(poet.name);
+        setListSelectedPoet(poet.name, poetId);
       }
-    } else {
-      setSelectedPoet('すべて');
     }
-  }, [searchParams, poets]);
+  }, [
+    searchParams,
+    poets,
+    setListSearchText,
+    setListSelectedRegion,
+    setListSelectedPrefecture,
+    setListSelectedPoet,
+  ]);
 
   const prefectures = [
     'すべて',
@@ -100,20 +116,17 @@ export function ListFilter({ searchParams }: ListFilterProps) {
 
     const params = new URLSearchParams();
 
-    if (searchText) {
-      params.set('q', searchText);
+    if (listSearchText) {
+      params.set('q', listSearchText);
     }
-    if (selectedRegion !== 'すべて') {
-      params.set('region', selectedRegion);
+    if (listSelectedRegion !== 'すべて') {
+      params.set('region', listSelectedRegion);
     }
-    if (selectedPrefecture !== 'すべて') {
-      params.set('prefecture', selectedPrefecture);
+    if (listSelectedPrefecture !== 'すべて') {
+      params.set('prefecture', listSelectedPrefecture);
     }
-    if (selectedPoet !== 'すべて') {
-      const poet = poets.find((p) => p.name === selectedPoet);
-      if (poet) {
-        params.set('poet_id', String(poet.id));
-      }
+    if (listPoetId) {
+      params.set('poet_id', String(listPoetId));
     }
 
     const queryString = params.toString();
@@ -121,11 +134,13 @@ export function ListFilter({ searchParams }: ListFilterProps) {
   };
 
   const handleReset = () => {
-    setSearchText('');
-    setSelectedRegion('すべて');
-    setSelectedPrefecture('すべて');
-    setSelectedPoet('すべて');
+    resetListFilters();
     router.push('/list');
+  };
+
+  const handlePoetChange = (poetName: string) => {
+    const poet = poets.find((p) => p.name === poetName);
+    setListSelectedPoet(poetName, poet?.id);
   };
 
   return (
@@ -133,23 +148,18 @@ export function ListFilter({ searchParams }: ListFilterProps) {
       <form
         className="flex flex-col md:flex-row gap-4 mb-4"
         onSubmit={handleSubmit}
+        role="form"
       >
         <div className="flex-grow">
           <input
             className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:border-primary"
-            onChange={(e) => setSearchText(e.target.value)}
+            onChange={(e) => setListSearchText(e.target.value)}
             placeholder="俳句、俳人、場所などで検索..."
             type="text"
-            value={searchText}
+            value={listSearchText}
           />
         </div>
         <div className="flex gap-2">
-          <button
-            className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary transition-colors"
-            type="submit"
-          >
-            検索
-          </button>
           <button
             className="px-4 py-2 bg-gray-100 text-primary rounded-md hover:bg-gray-300 transition-colors flex items-center"
             onClick={() => setFilterVisible(!filterVisible)}
@@ -175,12 +185,10 @@ export function ListFilter({ searchParams }: ListFilterProps) {
                 className="w-full px-3 py-2 bg-background border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                 id="region"
                 onChange={(e) => {
-                  setSelectedRegion(e.target.value);
-                  if (e.target.value !== selectedRegion) {
-                    setSelectedPrefecture('すべて');
-                  }
+                  const region = e.target.value;
+                  setListSelectedRegion(region);
                 }}
-                value={selectedRegion}
+                value={listSelectedRegion}
               >
                 {REGIONS.map((region) => (
                   <option key={region} value={region}>
@@ -200,8 +208,8 @@ export function ListFilter({ searchParams }: ListFilterProps) {
               <select
                 className="w-full px-3 py-2 bg-background border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                 id="prefecture"
-                onChange={(e) => setSelectedPrefecture(e.target.value)}
-                value={selectedPrefecture}
+                onChange={(e) => setListSelectedPrefecture(e.target.value)}
+                value={listSelectedPrefecture}
               >
                 {prefectures.map((prefecture) => (
                   <option key={prefecture} value={prefecture}>
@@ -221,8 +229,8 @@ export function ListFilter({ searchParams }: ListFilterProps) {
               <select
                 className="w-full px-3 py-2 bg-background border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                 id="poet"
-                onChange={(e) => setSelectedPoet(e.target.value)}
-                value={selectedPoet}
+                onChange={(e) => handlePoetChange(e.target.value)}
+                value={listSelectedPoet}
               >
                 {poetNames.map((poet) => (
                   <option key={poet} value={poet}>
@@ -240,13 +248,6 @@ export function ListFilter({ searchParams }: ListFilterProps) {
               type="button"
             >
               リセット
-            </button>
-            <button
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary transition-colors"
-              onClick={() => handleSubmit()}
-              type="button"
-            >
-              適用
             </button>
           </div>
         </div>

@@ -31,10 +31,48 @@ export function HomeHeader() {
             className="text-md bg-white/0 text-white hover:bg-white/20 hover:text-white rounded-full transition-colors text-shadow-lg shadow-lg"
             variant="outline"
           >
-            <Link href="/login">ログイン</Link>
+            <Link href="/auth/login">ログイン</Link>
           </Button>
           <button className="md:hidden">
             <MenuIcon className="w-6 h-6 text-white" />
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+export function MapHeader() {
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 shadow-sm bg-background">
+      <div className="container mx-auto flex items-center justify-between p-4">
+        <div className="flex items-center">
+          <Link className="flex items-center" href="/">
+            <span className="text-2xl font-bold">くひめぐり</span>
+          </Link>
+
+          <nav className="hidden md:flex space-x-8 ml-12 lg:ml-24">
+            {menuLinks.map((link, index) => (
+              <Link
+                className="text-primary hover:text-muted-foreground transition-colors font-medium"
+                href={link.href}
+                key={index}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <Button
+            asChild
+            className="text-md text-primary-foreground rounded-full"
+          >
+            <Link href="/auth/login">ログイン</Link>
+          </Button>
+          <button className="md:hidden">
+            <MenuIcon className="w-6 h-6" />
           </button>
         </div>
       </div>
@@ -69,7 +107,7 @@ export function Header() {
             asChild
             className="text-md text-primary-foreground rounded-full"
           >
-            <Link href="/login">ログイン</Link>
+            <Link href="/auth/login">ログイン</Link>
           </Button>
           <button className="md:hidden">
             <MenuIcon className="w-6 h-6" />
