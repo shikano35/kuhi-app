@@ -5,6 +5,9 @@ import { queryClient } from '@/lib/tanstack-query';
 import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
 import * as apiHooks from '@/lib/api-hooks';
 import type { ComponentProps } from 'react';
+import { vi } from 'vitest';
+
+import * as filterStore from '@/store/useFilterStore';
 
 type HaikuListProps = ComponentProps<typeof HaikuList>;
 
@@ -71,7 +74,59 @@ const mockLocationsData = [
   },
 ];
 
+const createMockFilterStore = (customValues = {}) => {
+  return {
+    listSearchText: '',
+    listSelectedRegion: 'すべて',
+    listSelectedPrefecture: 'すべて',
+    listSelectedPoet: 'すべて',
+    listPoetId: undefined,
+    setListSearchText: vi.fn(),
+    setListSelectedRegion: vi.fn(),
+    setListSelectedPrefecture: vi.fn(),
+    setListSelectedPoet: vi.fn(),
+    resetListFilters: vi.fn(),
+    mapSelectedRegion: 'すべて',
+    mapSelectedPrefecture: 'すべて',
+    mapSelectedPoet: 'すべて',
+    mapSearchText: '',
+    mapFilteredMonuments: [],
+    setMapSelectedRegion: vi.fn(),
+    setMapSelectedPrefecture: vi.fn(),
+    setMapSelectedPoet: vi.fn(),
+    setMapSearchText: vi.fn(),
+    setMapFilteredMonuments: vi.fn(),
+    resetMapFilters: vi.fn(),
+    ...customValues,
+  };
+};
+
 function MockedHaikuList(props: HaikuListProps) {
+  if (typeof window !== 'undefined') {
+    const storeValues: Record<string, string | number | undefined> = {};
+
+    if (props.searchParams.q) {
+      storeValues['listSearchText'] = props.searchParams.q;
+    }
+    if (props.searchParams.region) {
+      storeValues['listSelectedRegion'] = props.searchParams.region;
+    }
+    if (props.searchParams.poet_id) {
+      storeValues['listPoetId'] = Number(props.searchParams.poet_id);
+      const poet = mockPoetsData.find(
+        (p) => p.id === Number(props.searchParams.poet_id)
+      );
+      if (poet) {
+        storeValues['listSelectedPoet'] = poet.name;
+      }
+    }
+
+    Object.defineProperty(filterStore, 'useFilterStore', {
+      value: () => createMockFilterStore(storeValues),
+      configurable: true,
+    });
+  }
+
   return <HaikuList {...props} />;
 }
 

@@ -6,6 +6,28 @@ import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
 
+// FilterStoreのモック
+const mockSetListSearchText = vi.fn();
+const mockSetListSelectedRegion = vi.fn();
+const mockSetListSelectedPrefecture = vi.fn();
+const mockSetListSelectedPoet = vi.fn();
+const mockResetListFilters = vi.fn();
+
+vi.mock('@/store/useFilterStore', () => ({
+  useFilterStore: () => ({
+    listSearchText: '芭蕉',
+    listSelectedRegion: '東海',
+    listSelectedPrefecture: '三重県',
+    listSelectedPoet: '松尾芭蕉',
+    listPoetId: 1,
+    setListSearchText: mockSetListSearchText,
+    setListSelectedRegion: mockSetListSelectedRegion,
+    setListSelectedPrefecture: mockSetListSelectedPrefecture,
+    setListSelectedPoet: mockSetListSelectedPoet,
+    resetListFilters: mockResetListFilters,
+  }),
+}));
+
 const server = setupServer(
   // 俳人一覧のエンドポイントをモック
   http.get('https://api.kuhiapi.com/poets', () => {
@@ -67,11 +89,11 @@ describe('ListFilter', () => {
   beforeEach(() => {
     server.listen();
     queryClient = createTestQueryClient();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
     server.resetHandlers();
-    vi.clearAllMocks();
   });
 
   afterAll(() => server.close());
@@ -86,9 +108,6 @@ describe('ListFilter', () => {
     const searchInput =
       screen.getByPlaceholderText('俳句、俳人、場所などで検索...');
     expect(searchInput).toBeInTheDocument();
-
-    const searchButton = screen.getByRole('button', { name: '検索' });
-    expect(searchButton).toBeInTheDocument();
 
     const filterButton = screen.getByRole('button', { name: /絞り込み/ });
     expect(filterButton).toBeInTheDocument();
@@ -120,30 +139,19 @@ describe('ListFilter', () => {
 
     const searchInput =
       screen.getByPlaceholderText('俳句、俳人、場所などで検索...');
-    fireEvent.change(searchInput, { target: { value: '芭蕉' } });
-
-    const searchButton = screen.getByRole('button', { name: '検索' });
-    fireEvent.click(searchButton);
-
-    expect(mockPush).toHaveBeenCalledWith('/list?q=%E8%8A%AD%E8%95%89');
-  });
-
-  test('初期値がある場合はフォームに値がセットされること', () => {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <ListFilter searchParams={{ q: '芭蕉', region: '東海' }} />
-      </QueryClientProvider>
-    );
-
-    const searchInput =
-      screen.getByPlaceholderText('俳句、俳人、場所などで検索...');
     expect(searchInput).toHaveValue('芭蕉');
+
+    const form = screen.getByRole('form');
+    fireEvent.submit(form);
+    expect(mockPush).toHaveBeenCalledWith(
+      '/list?q=%E8%8A%AD%E8%95%89&region=%E6%9D%B1%E6%B5%B7&prefecture=%E4%B8%89%E9%87%8D%E7%9C%8C&poet_id=1'
+    );
   });
 
   test('リセットボタンをクリックするとフォームがクリアされること', async () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <ListFilter searchParams={{ q: '芭蕉', region: '東海' }} />
+        <ListFilter searchParams={{}} />
       </QueryClientProvider>
     );
 
@@ -154,6 +162,7 @@ describe('ListFilter', () => {
     const resetButton = screen.getByRole('button', { name: 'リセット' });
     fireEvent.click(resetButton);
 
+    expect(mockResetListFilters).toHaveBeenCalled();
     expect(mockPush).toHaveBeenCalledWith('/list');
   });
 });
