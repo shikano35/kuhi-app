@@ -2,6 +2,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import '../styles/globals.css';
 import { Layout } from '@/layouts';
 import { baseMetadata } from '@/lib/metadata';
+import { TanstackProvider } from '@/components/Providers/TanstackProvider';
+import { MswScript } from '@/components/Providers/MswScript';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -22,10 +24,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
+      <MswScript />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Layout>{children}</Layout>
+        <TanstackProvider>
+          <Layout>{children}</Layout>
+        </TanstackProvider>
       </body>
     </html>
   );
