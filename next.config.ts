@@ -1,7 +1,21 @@
 import type { NextConfig } from "next";
 
+/** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.kuhiapi.com',
+        pathname: '**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
