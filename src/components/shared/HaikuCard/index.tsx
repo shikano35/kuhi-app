@@ -19,14 +19,20 @@ export function HaikuCard({ monument }: HaikuCardProps) {
         className="bg-background rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col"
         data-testid="haiku-card"
       >
-        <div className="relative h-48">
-          <Image
-            alt={inscription}
-            className="object-cover"
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            src={photo_url || '/images/placeholder-monument.jpg'}
-          />
+        <div className="relative h-48 bg-muted">
+          {photo_url ? (
+            <Image
+              alt={inscription}
+              className="object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              src={photo_url}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+              写真はありません
+            </div>
+          )}
         </div>
         <div className="p-4 flex-grow">
           <h3 className="text-lg font-medium mb-2 line-clamp-2">
