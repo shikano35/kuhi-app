@@ -30,7 +30,7 @@ export const users = pgTable('user', {
   email: text('email').unique(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
   image: text('image'),
-  role: text('role').notNull(),
+  role: text('role').notNull().default('user'),
 });
 
 export const accounts = pgTable(
@@ -105,3 +105,21 @@ export const authenticators = pgTable(
     },
   ]
 );
+
+export const contributions = pgTable('contributions', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text('name'),
+  email: text('email'),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  prefecture: text('prefecture').notNull(),
+  location: text('location').notNull(),
+  latitude: text('latitude'),
+  longitude: text('longitude'),
+  photo_url: text('photo_url'),
+  status: text('status').notNull().default('pending'),
+  created_at: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
+});
