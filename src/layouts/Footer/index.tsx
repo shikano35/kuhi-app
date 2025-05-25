@@ -17,11 +17,11 @@ const otherLinks = [
 
 const externalLinks = [
   {
-    href: `${process.env.NEXT_PUBLIC_KUHI_API_URL || ''}/docs`,
+    href: `${process.env.KUHI_API_URL || ''}/docs`,
     label: 'API',
   },
   {
-    href: process.env.NEXT_PUBLIC_KUHI_API_DOCS_URL || '',
+    href: process.env.KUHI_API_DOCS_URL || '',
     label: 'APIドキュメント',
   },
   {
