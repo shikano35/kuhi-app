@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "cache": "rm -rf .next/cache",
     "start": "next start",
     "lint": "eslint .",
     "format:check": "prettier --check .",

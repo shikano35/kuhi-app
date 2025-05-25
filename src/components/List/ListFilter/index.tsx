@@ -172,7 +172,7 @@ export function ListFilter({ searchParams }: ListFilterProps) {
       </form>
 
       {filterVisible && (
-        <div className="bg-muted p-4 rounded-md mb-4">
+        <div className="bg-muted/50 p-4 rounded-md mb-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label

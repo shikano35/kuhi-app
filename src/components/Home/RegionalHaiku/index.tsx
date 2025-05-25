@@ -90,8 +90,7 @@ const SAMPLE_HAIKU_MONUMENTS: HaikuMonument[] = [
 
 export function RegionalHaikuSection() {
   const [activeRegion, setActiveRegion] = useState<string>('関東');
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading] = useState<boolean>(false);
 
   const filteredMonuments = SAMPLE_HAIKU_MONUMENTS.filter(
     (monument) => monument.locations[0]?.region === activeRegion
