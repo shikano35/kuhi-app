@@ -19,9 +19,9 @@ import { formatEstablishedDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 type MonumentPageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export async function generateMetadata({
@@ -45,7 +45,8 @@ export async function generateMetadata({
 }
 
 export default async function MonumentPage({ params }: MonumentPageProps) {
-  const monument = await getHaikuMonumentById(Number(params.id));
+  const { id } = await params;
+  const monument = await getHaikuMonumentById(Number(id));
 
   if (!monument) {
     notFound();

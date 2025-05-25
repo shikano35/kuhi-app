@@ -8,16 +8,15 @@ import { HaikuCard } from '@/components/shared/HaikuCard';
 import { Button } from '@/components/ui/button';
 
 type PoetPageProps = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata({
   params,
 }: PoetPageProps): Promise<Metadata> {
+  const { id } = await params;
   const poets = await getAllPoets();
-  const poet = poets.find((p) => p.id === Number(params.id));
+  const poet = poets.find((p) => p.id === Number(id));
 
   if (!poet) {
     return {
@@ -32,14 +31,15 @@ export async function generateMetadata({
 }
 
 export default async function PoetPage({ params }: PoetPageProps) {
+  const { id } = await params;
   const poets = await getAllPoets();
-  const poet = poets.find((p) => p.id === Number(params.id));
+  const poet = poets.find((p) => p.id === Number(id));
 
   if (!poet) {
     notFound();
   }
 
-  const relatedMonuments = await getHaikuMonumentsByPoet(Number(params.id));
+  const relatedMonuments = await getHaikuMonumentsByPoet(Number(id));
 
   return (
     <div className="min-h-screen bg-muted/50">
