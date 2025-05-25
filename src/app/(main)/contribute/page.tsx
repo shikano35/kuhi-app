@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ContributePage() {
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-16 px-4">
       <h1 className="text-3xl font-bold mb-4 text-center">
         句碑の情報をお持ちの方へ
       </h1>
