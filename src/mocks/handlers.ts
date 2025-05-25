@@ -5,8 +5,7 @@ import {
   mockLocations,
 } from './data/haiku-monuments';
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_KUHI_API_URL || 'https://api.kuhiapi.com';
+const API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhiapi.com';
 
 export const handlers = [
   // 句碑一覧の取得
