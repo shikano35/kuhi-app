@@ -65,7 +65,7 @@ const config = [
       "react/prop-types": "off",    
       "react/no-danger": "off",
       "react/self-closing-comp": "error",
-      "react/hook-use-state": "error",
+      "react/hook-use-state": "off",
       "react/jsx-pascal-case": "error",
       "react/jsx-curly-brace-presence": "error",
       "react/jsx-fragments": "error",
