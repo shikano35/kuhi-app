@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <MswScript />
+      {process.env.NODE_ENV === 'development' && <MswScript />}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

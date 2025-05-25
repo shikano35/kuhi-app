@@ -5,3 +5,14 @@ public/
 *.config.ts
 *.config.mjs
 *.config.js
+storybook-static/
+text-results/
+test-results/
+.vercel/
+.open-next/
+coverage/
+e2e/
+drizzle/
+playwright-report/
+.vscode/
+.cursor/
