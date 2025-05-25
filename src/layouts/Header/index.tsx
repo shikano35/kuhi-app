@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
 import { MenuIcon } from 'lucide-react';
 import Link from 'next/link';
+import { AuthButton } from '@/components/AuthButton';
 
 export const menuLinks = [
   { href: '/', label: 'ホーム' },
@@ -26,13 +26,7 @@ export function HomeHeader() {
         </nav>
 
         <div className="flex items-center space-x-4">
-          <Button
-            asChild
-            className="text-md bg-white/0 text-white hover:bg-white/20 hover:text-white rounded-full transition-colors text-shadow-lg shadow-lg"
-            variant="outline"
-          >
-            <Link href="/auth/login">ログイン</Link>
-          </Button>
+          <AuthButton isFlag={true} />
           <button className="md:hidden">
             <MenuIcon className="w-6 h-6 text-white" />
           </button>
@@ -65,12 +59,7 @@ export function MapHeader() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <Button
-            asChild
-            className="text-md text-primary-foreground rounded-full"
-          >
-            <Link href="/auth/login">ログイン</Link>
-          </Button>
+          <AuthButton />
           <button className="md:hidden">
             <MenuIcon className="w-6 h-6" />
           </button>
@@ -103,12 +92,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <Button
-            asChild
-            className="text-md text-primary-foreground rounded-full"
-          >
-            <Link href="/auth/login">ログイン</Link>
-          </Button>
+          <AuthButton />
           <button className="md:hidden">
             <MenuIcon className="w-6 h-6" />
           </button>
