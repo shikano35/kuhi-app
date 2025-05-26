@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Clock,
   BrickWall,
+  UserIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { getHaikuMonumentById } from '@/lib/api';
@@ -200,7 +201,7 @@ export default async function MonumentPage({ params }: MonumentPageProps) {
                 </h2>
 
                 <div className="flex items-start">
-                  {poet.image_url && (
+                  {poet.image_url ? (
                     <div className="relative h-32 w-32 rounded-full overflow-hidden mr-4 flex-shrink-0">
                       <Image
                         alt={poet.name}
@@ -209,6 +210,10 @@ export default async function MonumentPage({ params }: MonumentPageProps) {
                         sizes="96px"
                         src={poet.image_url}
                       />
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-32 w-32 rounded-full overflow-hidden mr-4 flex-shrink-0 bg-muted">
+                      <UserIcon className="size-10 text-muted-foreground" />
                     </div>
                   )}
 

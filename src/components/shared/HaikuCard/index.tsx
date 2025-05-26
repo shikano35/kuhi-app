@@ -35,7 +35,7 @@ export function HaikuCard({ monument }: HaikuCardProps) {
           )}
         </div>
         <div className="p-4 flex-grow">
-          <h3 className="text-lg font-medium mb-2 line-clamp-2">
+          <h3 className="text-lg font-medium mb-2 line-clamp-1">
             {truncateInscription(inscription)}
           </h3>
 

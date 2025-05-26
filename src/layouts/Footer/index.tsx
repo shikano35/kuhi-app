@@ -12,7 +12,6 @@ const otherLinks = [
   { href: '/references', label: '関連文献・参考文献等' },
   { href: '/contribute', label: '句碑の情報をお持ちの方へ' },
   { href: '/news', label: 'お知らせ一覧' },
-  { href: '/about-site', label: 'このサイトについて' },
 ];
 
 const externalLinks = [
