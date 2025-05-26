@@ -2,6 +2,8 @@ import { ContributeForm } from '@/components/Contribute/ContributeForm';
 import { Info } from 'lucide-react';
 import { Metadata } from 'next';
 
+const googleform = process.env.GOOGLE_FORM_URL;
+
 export const metadata: Metadata = {
   title: '句碑の情報をお持ちの方へ | くひめぐり',
   description:
@@ -37,6 +39,16 @@ export default function ContributePage() {
               </p>
             </div>
           </div>
+        </div>
+        <div className="flex justify-center">
+          <a
+            className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition"
+            href={googleform}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Googleフォームで情報を提供する
+          </a>
         </div>
       </div>
       <ContributeForm />
