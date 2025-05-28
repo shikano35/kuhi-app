@@ -33,6 +33,12 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
 
+    css: {
+      modules: {
+        classNameStrategy: 'stable'
+      }
+    },
+
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
