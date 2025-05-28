@@ -8,16 +8,28 @@ vi.mock('@/lib/api', () => ({
   getAllHaikuMonuments: vi.fn().mockResolvedValue(mockHaikuMonuments),
 }));
 
-// Google Maps APIのモック
-vi.mock('@react-google-maps/api', () => ({
-  GoogleMap: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="google-map">{children}</div>
+// Leaflet コンポーネントのモック
+vi.mock('react-leaflet', () => ({
+  MapContainer: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="leaflet-map">{children}</div>
   ),
-  useLoadScript: () => ({
-    isLoaded: true,
-    loadError: null,
-  }),
+  TileLayer: () => <div data-testid="tile-layer" />,
   Marker: () => <div data-testid="map-marker" />,
+  Popup: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="map-popup">{children}</div>
+  ),
+}));
+
+// Leaflet ライブラリのモック
+vi.mock('leaflet', () => ({
+  default: {
+    Icon: {
+      Default: {
+        mergeOptions: vi.fn(),
+        prototype: {},
+      },
+    },
+  },
 }));
 
 // グローバル状態のモック
