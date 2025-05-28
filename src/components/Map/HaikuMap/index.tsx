@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import { MapFilter } from '../MapFilter';
 import { HaikuInfoPanel } from '../HaikuInfoPanel';
 import { HaikuMonument } from '@/types/haiku';
@@ -10,33 +10,19 @@ import { getAllHaikuMonuments } from '@/lib/api';
 import { ChevronRight, X } from 'lucide-react';
 import { useFilterStore } from '@/store/useFilterStore';
 
-const mapContainerStyle = {
-  width: '100%',
-  height: '100%',
-};
-
-const center = {
-  lat: 36.2048,
-  lng: 138.2529,
-};
-
-const mapOptions = {
-  disableDefaultUI: false,
-  zoomControl: true,
-  scrollwheel: true,
-  streetViewControl: false,
-  fullscreenControl: true,
-  mapTypeControl: true,
-};
+const Map = dynamic(() => import('./LeafletMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center">
+      <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full" />
+    </div>
+  ),
+});
 
 export function HaikuMap() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['haiku-monuments'],
     queryFn: () => getAllHaikuMonuments(),
-  });
-
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   });
 
   const {
@@ -48,15 +34,13 @@ export function HaikuMap() {
     mapSearchText,
   } = useFilterStore();
 
-  const monuments = data || [];
+  const monuments = useMemo(() => data || [], [data]);
 
   const [displayMonuments, setDisplayMonuments] = useState<HaikuMonument[]>([]);
   const [selectedMonument, setSelectedMonument] =
     useState<HaikuMonument | null>(null);
   const [isInfoPanelOpen, setIsInfoPanelOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(true);
-
-  const mapRef = useRef<google.maps.Map | null>(null);
   const isInitialized = useRef(false);
 
   useEffect(() => {
@@ -90,26 +74,18 @@ export function HaikuMap() {
     setMapFilteredMonuments,
   ]);
 
-  const onLoad = useCallback((map: google.maps.Map) => {
-    mapRef.current = map;
-  }, []);
-
   const handleMarkerClick = (monument: HaikuMonument) => {
     setSelectedMonument(monument);
     setIsInfoPanelOpen(true);
-
-    if (mapRef.current && monument.locations[0]) {
-      mapRef.current.panTo({
-        lat: monument.locations[0].latitude ?? 0,
-        lng: monument.locations[0].longitude ?? 0,
-      });
-    }
   };
 
-  const handleFilterChange = (filtered: HaikuMonument[]) => {
-    setMapFilteredMonuments(filtered);
-    setDisplayMonuments(filtered);
-  };
+  const handleFilterChange = useCallback(
+    (filtered: HaikuMonument[]) => {
+      setMapFilteredMonuments(filtered);
+      setDisplayMonuments(filtered);
+    },
+    [setMapFilteredMonuments]
+  );
 
   const handleCloseInfoPanel = () => {
     setIsInfoPanelOpen(false);
@@ -119,14 +95,6 @@ export function HaikuMap() {
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
-
-  if (loadError) {
-    return (
-      <div className="p-4 text-center text-destructive">
-        Google Mapsの読み込みに失敗しました
-      </div>
-    );
-  }
 
   return (
     <div className="relative w-full h-screen">
@@ -169,37 +137,7 @@ export function HaikuMap() {
       </button>
 
       <div className="fixed inset-0">
-        {isLoaded ? (
-          <GoogleMap
-            center={center}
-            mapContainerStyle={mapContainerStyle}
-            onLoad={onLoad}
-            options={mapOptions}
-            zoom={6}
-          >
-            {displayMonuments.map((monument) => {
-              const location = monument.locations[0];
-              if (!location || !location.latitude || !location.longitude)
-                return null;
-
-              return (
-                <Marker
-                  key={monument.id}
-                  onClick={() => handleMarkerClick(monument)}
-                  position={{
-                    lat: location.latitude,
-                    lng: location.longitude,
-                  }}
-                  title={monument.inscription}
-                />
-              );
-            })}
-          </GoogleMap>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full" />
-          </div>
-        )}
+        <Map monuments={displayMonuments} onMarkerClick={handleMarkerClick} />
       </div>
 
       {selectedMonument && isInfoPanelOpen && (

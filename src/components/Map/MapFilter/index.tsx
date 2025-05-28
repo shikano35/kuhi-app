@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { HaikuMonument } from '@/types/haiku';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,12 +13,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { CardHeader } from '@/components/ui/card';
 import { useFilterStore } from '@/store/useFilterStore';
 
-interface MapFilterProps {
+type MapFilterProps = {
   monuments: HaikuMonument[];
   onFilterChange: (filteredMonuments: HaikuMonument[]) => void;
-}
+};
 
 const REGIONS = [
+  'すべて',
   '北海道',
   '東北',
   '関東甲信',
@@ -29,7 +30,6 @@ const REGIONS = [
   '四国',
   '九州',
   '沖縄',
-  'すべて',
 ];
 
 export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
@@ -48,31 +48,37 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
 
   const isFirstRender = useRef(true);
 
-  const prefectures = [
-    'すべて',
-    ...Array.from(
-      new Set(
-        monuments
-          .filter((monument) => monument.locations[0]?.prefecture)
-          .map((monument) => monument.locations[0].prefecture)
-          .sort()
-      )
-    ),
-  ];
+  const prefectures = useMemo(
+    () => [
+      'すべて',
+      ...Array.from(
+        new Set(
+          monuments
+            .filter((monument) => monument.locations[0]?.prefecture)
+            .map((monument) => monument.locations[0].prefecture)
+            .sort()
+        )
+      ),
+    ],
+    [monuments]
+  );
 
-  const poets = [
-    'すべて',
-    ...Array.from(
-      new Set(
-        monuments
-          .filter((monument) => monument.poets[0]?.name)
-          .map((monument) => monument.poets[0].name)
-          .sort()
-      )
-    ),
-  ];
+  const poets = useMemo(
+    () => [
+      'すべて',
+      ...Array.from(
+        new Set(
+          monuments
+            .filter((monument) => monument.poets[0]?.name)
+            .map((monument) => monument.poets[0].name)
+            .sort()
+        )
+      ),
+    ],
+    [monuments]
+  );
 
-  const applyFilters = () => {
+  useEffect(() => {
     if (monuments.length === 0) return;
 
     let filtered = [...monuments];
@@ -108,12 +114,6 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
     }
 
     onFilterChange(filtered);
-  };
-
-  useEffect(() => {
-    if (monuments.length === 0) return;
-
-    applyFilters();
 
     if (isFirstRender.current) {
       isFirstRender.current = false;
