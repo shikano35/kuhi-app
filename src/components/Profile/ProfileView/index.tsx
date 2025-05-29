@@ -10,20 +10,18 @@ import { Session } from 'next-auth';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { HaikuMonument } from '@/types/haiku';
 
-interface ProfileViewProps {
+type ProfileViewProps = {
   user: Session['user'];
-}
+};
 
 export function ProfileView({ user }: ProfileViewProps) {
   const [activeTab, setActiveTab] = useState('favorites');
 
-  // モックデータ - 実際の実装では適切なAPIを使用してデータを取得する
-  const favorites: HaikuMonument[] = []; // お気に入り句碑
-  const visited: HaikuMonument[] = []; // 訪問済み句碑
+  const favorites: HaikuMonument[] = [];
+  const visited: HaikuMonument[] = [];
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* プロフィールヘッダー */}
       <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8 p-6 bg-card rounded-lg shadow-sm">
         <div className="relative h-24 w-24 rounded-full overflow-hidden border-4 border-background">
           {user?.image ? (
@@ -45,6 +43,9 @@ export function ProfileView({ user }: ProfileViewProps) {
         <div className="flex-1">
           <h2 className="text-2xl font-bold">{user?.name || 'ユーザー'}</h2>
           <p className="text-muted-foreground">{user?.email}</p>
+          {user?.bio && (
+            <p className="mt-2 text-sm text-muted-foreground">{user.bio}</p>
+          )}
         </div>
 
         <div className="mt-4 md:mt-0">
@@ -57,7 +58,6 @@ export function ProfileView({ user }: ProfileViewProps) {
         </div>
       </div>
 
-      {/* タブ切り替え */}
       <Tabs
         className="w-full"
         defaultValue={activeTab}
@@ -88,10 +88,10 @@ export function ProfileView({ user }: ProfileViewProps) {
                 お気に入り登録した句碑はありません
               </h3>
               <p className="text-muted-foreground mb-6">
-                気に入った句碑をお気に入り登録して、いつでも見返せるようにしましょう
+                気に入った句碑や俳句をお気に入り登録して、いつでも見返せるようにしましょう
               </p>
               <Button asChild>
-                <Link href="/list">句碑を探す</Link>
+                <Link href="/list">句碑や俳句を探す</Link>
               </Button>
             </div>
           )}
