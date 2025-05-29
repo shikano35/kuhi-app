@@ -115,9 +115,22 @@ export interface UserHaikuMonument {
   locationId?: number;
   createdAt: Date;
   updatedAt: Date;
-  poet?: Poet;
-  source?: Source;
-  location?: Location;
+  poetName?: string;
+  poetBiography?: string;
+  poetLinkUrl?: string;
+  poetImageUrl?: string;
+  sourceTitle?: string;
+  sourceAuthor?: string;
+  sourcePublisher?: string;
+  sourceYear?: number;
+  sourceUrl?: string;
+  locationRegion?: string;
+  locationPrefecture?: string;
+  locationMunicipality?: string;
+  locationAddress?: string;
+  locationPlaceName?: string;
+  locationLatitude?: string;
+  locationLongitude?: string;
 }
 
 export interface UserFavorite {
