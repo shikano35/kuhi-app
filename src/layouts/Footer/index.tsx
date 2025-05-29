@@ -46,7 +46,7 @@ function LinkList({
 }) {
   return (
     <div className="col-span-1">
-      <h3 className="text-lg font-semibold mb-8">{title}</h3>
+      <h3 className="text-lg md:text-xl font-semibold mb-8">{title}</h3>
       <ul className="space-y-4">
         {links.map(({ href, label }) => (
           <li key={href}>
@@ -84,12 +84,19 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-16 mb-20 mt-12 ">
           <div className="col-span-1 lg:col-span-2">
             <Link className="flex flex-col items-start" href="/">
-              <span className={cn('text-4xl font-bold', hinaMincho.className)}>
+              <span
+                className={cn(
+                  'text-4xl md:text-5xl font-bold',
+                  hinaMincho.className
+                )}
+              >
                 くひめぐり
               </span>
-              <span className="mt-2">- Haiku monument tour -</span>
+              <span className="mt-2 md:ml-4 text-base md:text-lg">
+                - Haiku monument tour -
+              </span>
             </Link>
-            <p className="mt-4 text-gray-400 text-sm mb-8">
+            <p className="mt-4 text-gray-400 text-sm md:text-base mb-8">
               日本各地の句碑を紹介するサイト
             </p>
           </div>
@@ -98,7 +105,9 @@ export function Footer() {
           <LinkList links={otherLinks} title="その他" />
 
           <div className="col-span-1">
-            <h3 className="text-lg font-semibold mb-8">外部リンク</h3>
+            <h3 className="text-lg md:text-xl font-semibold mb-8">
+              外部リンク
+            </h3>
             <ul className="space-y-4">
               {externalLinks.map(({ href, label }) => (
                 <ExternalLink href={href} key={href} label={label} />
