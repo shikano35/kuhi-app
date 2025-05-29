@@ -5,6 +5,8 @@ import {
   UpdateVisitRequest,
   GetUserFavoritesResponse,
   GetUserVisitsResponse,
+  UserVisit,
+  UserHaikuMonument,
 } from '@/types/haiku';
 
 export async function getUserFavorites(): Promise<GetUserFavoritesResponse> {
@@ -100,33 +102,47 @@ export async function removeVisit(visitId: string): Promise<void> {
   }
 }
 
-export async function checkIfFavorited(monumentId: string): Promise<boolean> {
+export async function removeVisitByMonumentId(
+  monumentId: number
+): Promise<void> {
+  const response = await fetch(`/api/user/visits?monumentId=${monumentId}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to remove visit');
+  }
+}
+
+export async function checkIfFavorited(monumentId: number): Promise<boolean> {
   try {
-    const { favorites } = await getUserFavorites();
-    const numericMonumentId = parseInt(monumentId, 10);
-    return favorites.some((fav) => fav.monumentId === numericMonumentId);
+    const response = await getUserFavorites();
+    return (
+      response.favorites?.some((fav) => fav.monumentId === monumentId) || false
+    );
   } catch (error) {
-    console.error('Error checking favorite status:', error);
+    console.error('Failed to check favorite status:', error);
     return false;
   }
 }
 
-export async function checkIfVisited(monumentId: string): Promise<boolean> {
+export async function checkIfVisited(monumentId: number): Promise<boolean> {
   try {
     const { visits } = await getUserVisits();
-    const numericMonumentId = parseInt(monumentId, 10);
-    return visits.some((visit) => visit.monumentId === numericMonumentId);
+    return visits.some((visit) => visit.monumentId === monumentId);
   } catch (error) {
     console.error('Error checking visit status:', error);
     return false;
   }
 }
 
-export async function getVisitByMonumentId(monumentId: string) {
+export async function getVisitByMonumentId(
+  monumentId: number
+): Promise<(UserVisit & { monument: UserHaikuMonument }) | null> {
   try {
     const { visits } = await getUserVisits();
-    const numericMonumentId = parseInt(monumentId, 10);
-    return visits.find((visit) => visit.monumentId === numericMonumentId);
+    return visits.find((visit) => visit.monumentId === monumentId) || null;
   } catch (error) {
     console.error('Error getting visit by monument ID:', error);
     return null;
