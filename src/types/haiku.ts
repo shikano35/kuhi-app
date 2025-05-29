@@ -8,6 +8,18 @@ export interface Poet {
   updated_at: string;
 }
 
+export interface News {
+  id: number;
+  title: string;
+  content: string;
+  published_at: string;
+  created_at: string;
+  updated_at: string;
+  image_url?: string | null;
+  is_important?: boolean;
+  category?: string;
+}
+
 export interface Source {
   id: number;
   title: string;
@@ -74,4 +86,104 @@ export interface RegionCount {
 export interface PrefectureCount {
   prefecture: string;
   count: number;
+}
+
+export interface UserHaikuMonument {
+  id: number;
+  inscription: string;
+  commentary?: string;
+  kigo?: string;
+  season?: string;
+  isReliable?: boolean;
+  hasReverseInscription?: boolean;
+  material?: string;
+  totalHeight?: string;
+  width?: string;
+  depth?: string;
+  establishedDate?: string;
+  establishedYear?: string;
+  founder?: string;
+  monumentType?: string;
+  designationStatus?: string;
+  photoUrl?: string;
+  photoDate?: string;
+  photographer?: string;
+  model3dUrl?: string;
+  remarks?: string;
+  poetId?: number;
+  sourceId?: number;
+  locationId?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  poet?: Poet;
+  source?: Source;
+  location?: Location;
+}
+
+export interface UserFavorite {
+  id: string;
+  userId: string;
+  monumentId: number;
+  createdAt: Date;
+}
+
+export interface UserVisit {
+  id: string;
+  userId: string;
+  monumentId: number;
+  visitedAt: Date;
+  notes?: string;
+  rating?: number;
+  visitPhotoUrl?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface AddFavoriteRequest {
+  monumentId: number;
+}
+
+export interface RemoveFavoriteRequest {
+  monumentId: number;
+}
+
+export interface AddVisitRequest {
+  monumentId: number;
+  visitedAt?: Date;
+  notes?: string;
+  rating?: number;
+  visitPhotoUrl?: string;
+}
+
+export interface UpdateVisitRequest {
+  visitId: string;
+  notes?: string;
+  rating?: number;
+  visitPhotoUrl?: string;
+}
+
+export interface GetUserFavoritesResponse {
+  favorites: (UserFavorite & { monument: UserHaikuMonument })[];
+}
+
+export interface GetUserVisitsResponse {
+  visits: (UserVisit & { monument: UserHaikuMonument })[];
+}
+
+export interface SearchUserHaikuMonumentsRequest {
+  prefecture?: string;
+  city?: string;
+  author?: string;
+  keyword?: string;
+  latitude?: number;
+  longitude?: number;
+  radius?: number;
+  limit?: number;
+  offset?: number;
+}
+
+export interface SearchUserHaikuMonumentsResponse {
+  monuments: UserHaikuMonument[];
+  total: number;
+  hasMore: boolean;
 }
