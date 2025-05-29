@@ -1,4 +1,4 @@
-import { ClientHistoryChart } from './index.stories';
+import { ClientHistoryChart } from './ClientHistoryChart';
 import { getAllHaikuMonuments } from '@/lib/api';
 import { processHistoryData } from './utils';
 
