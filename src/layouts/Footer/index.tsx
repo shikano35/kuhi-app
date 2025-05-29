@@ -1,5 +1,13 @@
 import { ExternalLinkIcon } from 'lucide-react';
 import Link from 'next/link';
+import { Hina_Mincho } from 'next/font/google';
+import { cn } from '@/lib/cn';
+
+const hinaMincho = Hina_Mincho({
+  variable: '--font-hina-mincho',
+  weight: '400',
+  subsets: ['latin'],
+});
 
 const menuLinks = [
   { href: '/', label: 'ホーム' },
@@ -76,7 +84,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-16 mb-20 mt-12 ">
           <div className="col-span-1 lg:col-span-2">
             <Link className="flex flex-col items-start" href="/">
-              <span className="text-4xl font-bold">くひめぐり</span>
+              <span className={cn('text-4xl font-bold', hinaMincho.className)}>
+                くひめぐり
+              </span>
               <span className="mt-2">- Haiku monument tour -</span>
             </Link>
             <p className="mt-4 text-gray-400 text-sm mb-8">

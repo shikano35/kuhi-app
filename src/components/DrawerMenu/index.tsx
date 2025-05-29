@@ -19,12 +19,6 @@ const profileList: profileItem[] = [
   },
   {
     id: 2,
-    title: 'アカウント設定',
-    url: '/profile/settings',
-    action: null,
-  },
-  {
-    id: 3,
     title: 'ログアウト',
     url: '',
     action: () => signOut({ callbackUrl: '/' }),
@@ -34,13 +28,11 @@ const profileList: profileItem[] = [
 interface DrawerMenuProps {
   imageUrl?: string | null;
   userName?: string | null;
-  userEmail?: string | null;
 }
 
 export function DrawerMenu({
   imageUrl,
   userName = 'ユーザー',
-  userEmail,
 }: DrawerMenuProps) {
   return (
     <>
@@ -63,9 +55,6 @@ export function DrawerMenu({
         <div className="flex flex-col items-start justify-start ml-2 overflow-hidden">
           <p className="text-base text-primary font-semibold overflow-hidden text-ellipsis whitespace-normal max-w-[16ch]">
             {userName}
-          </p>
-          <p className="text-xs text-muted-foreground overflow-hidden text-ellipsis whitespace-normal max-w-[20ch]">
-            {userEmail || ''}
           </p>
         </div>
       </div>

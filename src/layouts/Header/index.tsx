@@ -1,6 +1,14 @@
 import { MenuIcon } from 'lucide-react';
 import Link from 'next/link';
+import { Hina_Mincho } from 'next/font/google';
 import { AuthButton } from '@/components/AuthButton';
+import { cn } from '@/lib/cn';
+
+const hinaMincho = Hina_Mincho({
+  variable: '--font-hina-mincho',
+  weight: '400',
+  subsets: ['latin'],
+});
 
 export const menuLinks = [
   { href: '/', label: 'ホーム' },
@@ -16,7 +24,7 @@ export function HomeHeader() {
         <nav className="hidden md:flex space-x-12 lg:space-x-16 mr-16 lg:mr-32">
           {menuLinks.map((link, index) => (
             <Link
-              className="text-white hover:text-gray-300 transition-colors font-medium text-shadow-lg"
+              className="text-white hover:text-gray-300 transition-colors md:text-base lg:text-lg font-medium text-shadow-lg"
               href={link.href}
               key={index}
             >
@@ -42,7 +50,9 @@ export function MapHeader() {
       <div className="container mx-auto flex items-center justify-between p-4">
         <div className="flex items-center">
           <Link className="flex items-center" href="/">
-            <span className="text-2xl font-bold">くひめぐり</span>
+            <span className={cn('text-2xl font-bold', hinaMincho.className)}>
+              くひめぐり
+            </span>
           </Link>
 
           <nav className="hidden md:flex space-x-8 ml-12 lg:ml-24">
@@ -75,7 +85,9 @@ export function Header() {
       <div className="container mx-auto flex items-center justify-between p-4">
         <div className="flex items-center">
           <Link className="flex items-center" href="/">
-            <span className="text-2xl font-bold">くひめぐり</span>
+            <span className={cn('text-2xl font-bold', hinaMincho.className)}>
+              くひめぐり
+            </span>
           </Link>
 
           <nav className="hidden md:flex space-x-8 ml-12 lg:ml-24">
