@@ -1,4 +1,4 @@
-import { ClientHistoryChart } from './ClientHistoryChart';
+import { ClientHistoryChart } from './index.stories';
 import { getAllHaikuMonuments } from '@/lib/api';
 import { processHistoryData } from './utils';
 
@@ -8,7 +8,7 @@ export async function HaikuHistoryChart() {
   const historyData = processHistoryData(monuments);
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto">
       <ClientHistoryChart historyData={historyData} />
     </div>
   );
