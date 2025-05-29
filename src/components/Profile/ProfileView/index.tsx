@@ -5,10 +5,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { MapPin, Heart, Settings } from 'lucide-react';
+import { MapPin, Heart, Loader2, X } from 'lucide-react';
 import { Session } from 'next-auth';
 import { HaikuCard } from '@/components/shared/HaikuCard';
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument, UserHaikuMonument } from '@/types/haiku';
+import {
+  useUserFavorites,
+  useUserVisits,
+  useRemoveFavorite,
+  useRemoveVisit,
+} from '@/lib/api-hooks';
 
 type ProfileViewProps = {
   user: Session['user'];
@@ -17,8 +23,130 @@ type ProfileViewProps = {
 export function ProfileView({ user }: ProfileViewProps) {
   const [activeTab, setActiveTab] = useState('favorites');
 
-  const favorites: HaikuMonument[] = [];
-  const visited: HaikuMonument[] = [];
+  const { data: favoritesData, isLoading: favoritesLoading } =
+    useUserFavorites();
+  const { data: visitsData, isLoading: visitsLoading } = useUserVisits();
+  const removeFavoriteMutation = useRemoveFavorite();
+  const removeVisitMutation = useRemoveVisit();
+
+  const loading = favoritesLoading || visitsLoading;
+
+  const convertToHaikuMonument = (
+    userMonument: UserHaikuMonument
+  ): HaikuMonument => {
+    return {
+      id: userMonument.id,
+      inscription: userMonument.inscription,
+      commentary: userMonument.commentary || null,
+      kigo: userMonument.kigo || null,
+      season: userMonument.season || null,
+      is_reliable: userMonument.isReliable || null,
+      has_reverse_inscription: userMonument.hasReverseInscription || null,
+      material: userMonument.material || null,
+      total_height: userMonument.totalHeight
+        ? Number(userMonument.totalHeight)
+        : null,
+      width: userMonument.width ? Number(userMonument.width) : null,
+      depth: userMonument.depth ? Number(userMonument.depth) : null,
+      established_date: userMonument.establishedDate || null,
+      established_year: userMonument.establishedYear || null,
+      founder: userMonument.founder || null,
+      monument_type: userMonument.monumentType || null,
+      designation_status: userMonument.designationStatus || null,
+      photo_url: userMonument.photoUrl || null,
+      photo_date: userMonument.photoDate || null,
+      photographer: userMonument.photographer || null,
+      model_3d_url: userMonument.model3dUrl || null,
+      remarks: userMonument.remarks || null,
+      created_at:
+        userMonument.createdAt instanceof Date
+          ? userMonument.createdAt.toISOString()
+          : userMonument.createdAt,
+      updated_at:
+        userMonument.updatedAt instanceof Date
+          ? userMonument.updatedAt.toISOString()
+          : userMonument.updatedAt,
+      poet_id: userMonument.poetId || 0,
+      source_id: userMonument.sourceId || 0,
+      location_id: userMonument.locationId || 0,
+      poets: [
+        {
+          id: userMonument.poetId || 0,
+          name: userMonument.poetName || '',
+          biography: userMonument.poetBiography || null,
+          link_url: userMonument.poetLinkUrl || null,
+          image_url: userMonument.poetImageUrl || null,
+          created_at:
+            userMonument.createdAt instanceof Date
+              ? userMonument.createdAt.toISOString()
+              : userMonument.createdAt,
+          updated_at:
+            userMonument.updatedAt instanceof Date
+              ? userMonument.updatedAt.toISOString()
+              : userMonument.updatedAt,
+        },
+      ],
+      sources: [
+        {
+          id: userMonument.sourceId || 0,
+          title: userMonument.sourceTitle || '',
+          author: userMonument.sourceAuthor || null,
+          publisher: userMonument.sourcePublisher || null,
+          source_year: userMonument.sourceYear || null,
+          url: userMonument.sourceUrl || null,
+          created_at:
+            userMonument.createdAt instanceof Date
+              ? userMonument.createdAt.toISOString()
+              : userMonument.createdAt,
+          updated_at:
+            userMonument.updatedAt instanceof Date
+              ? userMonument.updatedAt.toISOString()
+              : userMonument.updatedAt,
+        },
+      ],
+      locations: [
+        {
+          id: userMonument.locationId || 0,
+          region: userMonument.locationRegion || '',
+          prefecture: userMonument.locationPrefecture || '',
+          municipality: userMonument.locationMunicipality || null,
+          address: userMonument.locationAddress || null,
+          place_name: userMonument.locationPlaceName || null,
+          latitude: userMonument.locationLatitude
+            ? Number(userMonument.locationLatitude)
+            : null,
+          longitude: userMonument.locationLongitude
+            ? Number(userMonument.locationLongitude)
+            : null,
+        },
+      ],
+    };
+  };
+
+  const favorites =
+    favoritesData?.favorites?.map((fav) =>
+      convertToHaikuMonument(fav.monument)
+    ) || [];
+  const visited =
+    visitsData?.visits?.map((visit) =>
+      convertToHaikuMonument(visit.monument)
+    ) || [];
+
+  const handleRemoveFavorite = async (monumentId: number) => {
+    try {
+      await removeFavoriteMutation.mutateAsync({ monumentId });
+    } catch (error) {
+      console.error('Failed to remove favorite:', error);
+    }
+  };
+
+  const handleRemoveVisit = async (monumentId: number) => {
+    try {
+      await removeVisitMutation.mutateAsync(monumentId);
+    } catch (error) {
+      console.error('Failed to remove visit:', error);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -42,19 +170,6 @@ export function ProfileView({ user }: ProfileViewProps) {
 
         <div className="flex-1">
           <h2 className="text-2xl font-bold">{user?.name || 'ユーザー'}</h2>
-          <p className="text-muted-foreground">{user?.email}</p>
-          {user?.bio && (
-            <p className="mt-2 text-sm text-muted-foreground">{user.bio}</p>
-          )}
-        </div>
-
-        <div className="mt-4 md:mt-0">
-          <Button asChild className="gap-2" variant="outline">
-            <Link href="/profile/settings">
-              <Settings size={16} />
-              設定
-            </Link>
-          </Button>
         </div>
       </div>
 
@@ -75,10 +190,28 @@ export function ProfileView({ user }: ProfileViewProps) {
         </TabsList>
 
         <TabsContent value="favorites">
-          {favorites.length > 0 ? (
+          {loading ? (
+            <div className="py-12 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <p className="text-muted-foreground">読み込み中...</p>
+            </div>
+          ) : favorites.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {favorites.map((monument) => (
-                <HaikuCard key={monument.id} monument={monument} />
+                <div className="relative" key={monument.id}>
+                  <HaikuCard monument={monument} showFavoriteButton={false} />
+                  <button
+                    className="absolute top-4 right-4"
+                    disabled={removeFavoriteMutation.isPending}
+                    onClick={() => handleRemoveFavorite(monument.id)}
+                  >
+                    {removeFavoriteMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <X className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               ))}
             </div>
           ) : (
@@ -98,10 +231,28 @@ export function ProfileView({ user }: ProfileViewProps) {
         </TabsContent>
 
         <TabsContent value="visited">
-          {visited.length > 0 ? (
+          {loading ? (
+            <div className="py-12 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <p className="text-muted-foreground">読み込み中...</p>
+            </div>
+          ) : visited.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {visited.map((monument) => (
-                <HaikuCard key={monument.id} monument={monument} />
+                <div className="relative" key={monument.id}>
+                  <HaikuCard monument={monument} showFavoriteButton={false} />
+                  <button
+                    className="absolute top-4 right-4"
+                    disabled={removeVisitMutation.isPending}
+                    onClick={() => handleRemoveVisit(monument.id)}
+                  >
+                    {removeVisitMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <X className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               ))}
             </div>
           ) : (

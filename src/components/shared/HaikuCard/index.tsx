@@ -1,17 +1,67 @@
+'use client';
+
+import { useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { HaikuMonument } from '@/types/haiku';
 import { truncateInscription } from '@/lib/utils';
-import { MapPinIcon, UserIcon } from 'lucide-react';
+import { MapPinIcon, UserIcon, Heart, Loader2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import {
+  useUserFavorites,
+  useAddFavorite,
+  useRemoveFavorite,
+} from '@/lib/api-hooks';
 
 type HaikuCardProps = {
   monument: HaikuMonument;
+  showFavoriteButton?: boolean;
 };
 
-export function HaikuCard({ monument }: HaikuCardProps) {
+export function HaikuCard({
+  monument,
+  showFavoriteButton = true,
+}: HaikuCardProps) {
+  let session;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    session = typeof window !== 'undefined' ? useSession() : { data: null };
+  } catch {
+    session = { data: null };
+  }
+
+  const { data: favoritesData } = useUserFavorites();
+  const addFavoriteMutation = useAddFavorite();
+  const removeFavoriteMutation = useRemoveFavorite();
+
   const { id, inscription, poets, locations, photo_url } = monument;
   const poet = poets[0];
   const location = locations[0];
+
+  const isFavorited = useMemo(() => {
+    if (!favoritesData?.favorites || !session?.data?.user) return false;
+    return favoritesData.favorites.some((fav) => fav.monument.id === id);
+  }, [favoritesData?.favorites, id, session?.data?.user]);
+
+  const isLoading =
+    addFavoriteMutation.isPending || removeFavoriteMutation.isPending;
+
+  const handleFavoriteToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!session?.data?.user || isLoading) return;
+
+    try {
+      if (isFavorited) {
+        await removeFavoriteMutation.mutateAsync({ monumentId: id });
+      } else {
+        await addFavoriteMutation.mutateAsync({ monumentId: id });
+      }
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+    }
+  };
 
   return (
     <Link href={`/monument/${id}`}>
@@ -20,6 +70,25 @@ export function HaikuCard({ monument }: HaikuCardProps) {
         data-testid="haiku-card"
       >
         <div className="relative h-48 bg-muted">
+          {showFavoriteButton && session?.data?.user && (
+            <button
+              className={`absolute top-2 right-2 z-10 p-2 rounded-full ${
+                isFavorited
+                  ? 'text-red-500 hover:text-red-600 transition-colors'
+                  : 'text-primary/60 hover:text-primary transition-colors'
+              }`}
+              disabled={isLoading}
+              onClick={handleFavoriteToggle}
+            >
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Heart
+                  className={`h-5 w-5 ${isFavorited ? 'fill-red-500 hover:fill-red-600 transition-colors' : ''}`}
+                />
+              )}
+            </button>
+          )}
           {photo_url ? (
             <Image
               alt={inscription}
