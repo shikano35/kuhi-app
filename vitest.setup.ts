@@ -1,10 +1,8 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
-// Leaflet CSS mockの設定
 vi.mock('leaflet/dist/leaflet.css', () => ({}));
 
-// Leaflet global variables
 Object.defineProperty(window, 'L', {
   value: {
     Icon: {
@@ -17,9 +15,22 @@ Object.defineProperty(window, 'L', {
   writable: true,
 });
 
-// ResizeObserver mock
-global.ResizeObserver = class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-};
+if (typeof global !== 'undefined') {
+  global.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+} else if (typeof globalThis !== 'undefined') {
+  (globalThis as any).ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+} else if (typeof window !== 'undefined') {
+  (window as any).ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
