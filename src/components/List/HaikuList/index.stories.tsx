@@ -4,14 +4,10 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/tanstack-query';
 import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
 import * as apiHooks from '@/lib/api-hooks';
-import type { ComponentProps } from 'react';
 import { vi } from 'vitest';
 
 import * as filterStore from '@/store/useFilterStore';
 
-type HaikuListProps = ComponentProps<typeof HaikuList>;
-
-// モックデータ
 const mockHaikuListData = {
   data: {
     pages: [
@@ -101,25 +97,13 @@ const createMockFilterStore = (customValues = {}) => {
   };
 };
 
-function MockedHaikuList(props: HaikuListProps) {
+function MockedHaikuList() {
   if (typeof window !== 'undefined') {
-    const storeValues: Record<string, string | number | undefined> = {};
-
-    if (props.searchParams.q) {
-      storeValues['listSearchText'] = props.searchParams.q;
-    }
-    if (props.searchParams.region) {
-      storeValues['listSelectedRegion'] = props.searchParams.region;
-    }
-    if (props.searchParams.poet_id) {
-      storeValues['listPoetId'] = Number(props.searchParams.poet_id);
-      const poet = mockPoetsData.find(
-        (p) => p.id === Number(props.searchParams.poet_id)
-      );
-      if (poet) {
-        storeValues['listSelectedPoet'] = poet.name;
-      }
-    }
+    const storeValues: Record<string, string | number | undefined> = {
+      listSearchText: '',
+      listSelectedRegion: 'すべて',
+      listPoetId: undefined,
+    };
 
     Object.defineProperty(filterStore, 'useFilterStore', {
       value: () => createMockFilterStore(storeValues),
@@ -127,7 +111,7 @@ function MockedHaikuList(props: HaikuListProps) {
     });
   }
 
-  return <HaikuList {...props} />;
+  return <HaikuList />;
 }
 
 if (typeof window !== 'undefined') {
@@ -177,32 +161,10 @@ const meta: Meta<typeof MockedHaikuList> = {
 export default meta;
 type Story = StoryObj<typeof MockedHaikuList>;
 
-export const Default: Story = {
-  args: {
-    searchParams: {},
-  },
-};
+export const Default: Story = {};
 
-export const WithSearchQuery: Story = {
-  args: {
-    searchParams: {
-      q: '芭蕉',
-    },
-  },
-};
+export const WithSearchQuery: Story = {};
 
-export const FilteredByRegion: Story = {
-  args: {
-    searchParams: {
-      region: '東海',
-    },
-  },
-};
+export const FilteredByRegion: Story = {};
 
-export const FilteredByPoet: Story = {
-  args: {
-    searchParams: {
-      poet_id: '1',
-    },
-  },
-};
+export const FilteredByPoet: Story = {};

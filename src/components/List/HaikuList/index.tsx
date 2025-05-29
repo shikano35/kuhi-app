@@ -7,28 +7,14 @@ import { useHaikuList } from '@/lib/api-hooks';
 import { useInView } from 'react-intersection-observer';
 import { useFilterStore } from '@/store/useFilterStore';
 
-type HaikuListProps = {
-  searchParams: {
-    q?: string;
-    region?: string;
-    prefecture?: string;
-    poet_id?: string;
-    filter?: string;
-    view?: string;
-  };
-};
-
-export function HaikuList({ searchParams }: HaikuListProps) {
+export function HaikuList() {
   const { ref, inView } = useInView();
   const { listSearchText, listSelectedRegion, listPoetId } = useFilterStore();
 
-  const searchQuery = searchParams.q || listSearchText;
+  const searchQuery = listSearchText;
   const regionFilter =
-    searchParams.region ||
-    (listSelectedRegion !== 'すべて' ? listSelectedRegion : undefined);
-  const poetIdFilter = searchParams.poet_id
-    ? Number(searchParams.poet_id)
-    : listPoetId;
+    listSelectedRegion !== 'すべて' ? listSelectedRegion : undefined;
+  const poetIdFilter = listPoetId;
 
   const {
     data,
@@ -56,7 +42,7 @@ export function HaikuList({ searchParams }: HaikuListProps) {
   return (
     <div>
       <div className="mb-4">
-        <ListFilter searchParams={searchParams} />
+        <ListFilter />
       </div>
 
       {isError && (
