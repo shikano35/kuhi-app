@@ -7,6 +7,18 @@ import { getAllPoets, getHaikuMonumentsByPoet } from '@/lib/api';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { Button } from '@/components/ui/button';
 
+export async function generateStaticParams() {
+  try {
+    const poets = await getAllPoets();
+    return poets.map((poet) => ({
+      id: poet.id.toString(),
+    }));
+  } catch (error) {
+    console.error('Failed to generate static params for poets:', error);
+    return [];
+  }
+}
+
 type PoetPageProps = {
   params: Promise<{ id: string }>;
 };
