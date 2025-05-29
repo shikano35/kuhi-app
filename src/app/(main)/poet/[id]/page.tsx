@@ -58,10 +58,10 @@ export default async function PoetPage({ params }: PoetPageProps) {
       <div className="container mx-auto py-8 px-4">
         <Button asChild className="mb-6 hover:bg-input" variant="ghost">
           <Link
-            className="flex items-center text-primary mb-6 hover:text-primary/80"
-            href="/list"
+            className="flex items-center text-lg text-primary mb-6 hover:text-primary/80"
+            href="/poets"
           >
-            <ArrowLeft className="mr-1" size={16} />
+            <ArrowLeft className="mr-1 mt-0.5" size={16} />
             一覧に戻る
           </Link>
         </Button>
@@ -70,7 +70,7 @@ export default async function PoetPage({ params }: PoetPageProps) {
           <div className="p-6 md:p-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               {poet.image_url && (
-                <div className="relative w-48 h-48 rounded-full overflow-hidden flex-shrink-0 border-4 border-muted">
+                <div className="relative w-48 h-80 rounded-2xl overflow-hidden flex-shrink-0 border-4 border-muted">
                   <Image
                     alt={poet.name}
                     className="object-cover"
@@ -83,12 +83,12 @@ export default async function PoetPage({ params }: PoetPageProps) {
               )}
 
               <div className="flex-grow text-center md:text-left">
-                <h1 className="text-3xl font-bold mb-4 text-primary">
+                <h1 className="text-3xl md:text-4xl font-bold mb-8 text-primary">
                   {poet.name}
                 </h1>
 
                 {poet.biography && (
-                  <p className="text-muted-foreground mb-4 whitespace-pre-line leading-6.5">
+                  <p className="text-muted-foreground mb-12 whitespace-pre-line leading-6.5">
                     {poet.biography}
                   </p>
                 )}
