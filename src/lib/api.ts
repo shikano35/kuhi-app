@@ -189,6 +189,20 @@ export async function getAllSources(): Promise<Source[]> {
   }
 }
 
+// export async function getAllNews(): Promise<News[]> {
+//   try {
+//     const response = await fetch(`${API_BASE_URL}/news`);
+//     if (!response.ok) {
+//       throw new Error('お知らせデータの取得に失敗しました');
+//     }
+//     const data = (await response.json()) as News[];
+//     return data;
+//   } catch (error) {
+//     console.error('お知らせデータの取得中にエラーが発生しました:', error);
+//     return [];
+//   }
+// }
+
 export async function getHaikuMonumentsByCoordinates(
   lat: number,
   lon: number,

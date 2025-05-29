@@ -1,21 +1,47 @@
 import Image from 'next/image';
 import { Metadata } from 'next';
 import { baseMetadata } from '@/lib/metadata';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   ...baseMetadata,
-  title: '句碑とは | くひめぐり',
-  description: '句碑の歴史や意義、特徴について解説しています。',
+  title: 'このサイトについて | くひめぐり',
+  description:
+    '句碑とは何か、句碑めぐりサイトの目的や使い方について解説しています。',
 };
 
 export default function AboutPage() {
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="text-4xl font-bold mb-8 text-center">句碑とは</h1>
+      <h1 className="text-4xl font-bold mb-8 text-center">
+        このサイトについて
+      </h1>
       <div className="max-w-3xl mx-auto">
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
-            句碑の概要
+            「くひめぐり」とは
+          </h2>
+          <div className="mb-6 relative h-64 w-full">
+            <Image
+              alt="くひめぐりアプリのイメージ"
+              className="object-cover rounded-lg shadow-md"
+              fill
+              src="/images/kuhi-example.jpg"
+            />
+          </div>
+          <p className="mb-4 text-lg">
+            「くひめぐり」は、日本全国に点在する句碑を簡単に検索し、めぐることができるWebアプリケーションです。
+            俳句文化の保存と普及を目的に、句碑の位置情報や解説、関連する俳人の情報などを提供しています。
+          </p>
+          <p className="mb-4 text-lg">
+            当サイトを通じて、より多くの方々に日本の伝統文化である俳句に親しんでいただき、
+            実際に句碑をめぐる旅の計画にお役立ていただければ幸いです。
+          </p>
+        </section>
+
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+            句碑とは
           </h2>
           <div className="mb-6 relative h-64 w-full">
             <Image
@@ -129,6 +155,71 @@ export default function AboutPage() {
             当サイトでは、こうした句碑の情報を収集・整理し、多くの方々に知っていただくことを目的としています。
             句碑を通じて、日本の豊かな俳句文化に触れていただければ幸いです。
           </p>
+        </section>
+
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+            サイトの使い方
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-muted/30 p-6 rounded-lg">
+              <h3 className="text-xl font-medium mb-3">句碑を探す</h3>
+              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                <li>
+                  地図から探す - 地図上のマーカーをクリックして句碑情報を閲覧
+                </li>
+                <li>一覧から探す - 検索やフィルターで条件に合った句碑を検索</li>
+                <li>俳人から探す - 特定の俳人に関連する句碑をまとめて閲覧</li>
+              </ul>
+            </div>
+            <div className="bg-muted/30 p-6 rounded-lg">
+              <h3 className="text-xl font-medium mb-3">アカウント機能</h3>
+              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                <li>お気に入り登録 - 気になる句碑をブックマーク</li>
+                <li>訪問記録 - 訪れた句碑を記録して思い出を残す</li>
+                <li>句碑情報の投稿 - 新しい句碑情報の追加や修正の提案</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+            利用規約・プライバシーポリシー
+          </h2>
+          <p className="mb-4 text-lg">
+            当サイトのご利用にあたっては、以下の規約およびプライバシーポリシーに同意いただいたものとみなします。
+            詳細については各リンク先をご確認ください。
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 mt-6">
+            <Link
+              className="inline-flex items-center justify-center px-6 py-3 border border-primary rounded-md font-medium text-primary hover:bg-primary hover:text-white transition-colors"
+              href="/"
+            >
+              利用規約を見る
+            </Link>
+            <Link
+              className="inline-flex items-center justify-center px-6 py-3 border border-primary rounded-md font-medium text-primary hover:bg-primary hover:text-white transition-colors"
+              href="/"
+            >
+              プライバシーポリシーを見る
+            </Link>
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+            お問い合わせ
+          </h2>
+          <p className="mb-4 text-lg">
+            ご意見・ご要望・お問い合わせなどございましたら、以下のフォームよりご連絡ください。
+          </p>
+          <Link
+            className="inline-flex items-center justify-center px-6 py-3 bg-primary rounded-md font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            href="/"
+          >
+            お問い合わせフォームへ
+          </Link>
         </section>
       </div>
     </div>
