@@ -124,6 +124,7 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
     mapSelectedPrefecture,
     mapSelectedPoet,
     mapSearchText,
+    onFilterChange,
   ]);
 
   const handleRegionChange = (region: string) => {
