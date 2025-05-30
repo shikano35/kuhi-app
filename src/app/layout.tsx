@@ -1,4 +1,4 @@
-import { Klee_One, Geist_Mono } from 'next/font/google';
+import { Shippori_Mincho, Geist_Mono } from 'next/font/google';
 import '../styles/globals.css';
 import { Layout } from '@/layouts';
 import { baseMetadata } from '@/lib/metadata';
@@ -6,8 +6,8 @@ import { TanstackProvider } from '@/components/Providers/TanstackProvider';
 import AuthProvider from '@/components/Providers/AuthProvider';
 import { MswScript } from '@/components/Providers/MswScript';
 
-const kleeOne = Klee_One({
-  variable: '--font-klee-one',
+const shipporiMincho = Shippori_Mincho({
+  variable: '--font-shippori-mincho',
   weight: '600',
   subsets: ['latin'],
 });
@@ -27,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="ja">
       {process.env.NODE_ENV === 'development' && <MswScript />}
-      <body className={`${kleeOne.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${shipporiMincho.variable} ${geistMono.variable} antialiased`}
+      >
         <TanstackProvider>
           <AuthProvider>
             <Layout>{children}</Layout>
