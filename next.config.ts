@@ -25,9 +25,21 @@ const nextConfig: NextConfig = {
         port: '3000',
         pathname: '/uploads/**',
       },
-    ],
-    domains: [
-      'lh3.googleusercontent.com',
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'example.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+        pathname: '**',
+      },
     ],
   },
   experimental: {
