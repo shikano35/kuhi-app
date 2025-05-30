@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { MapFilter } from '../MapFilter';
-import { HaikuInfoPanel } from '../HaikuInfoPanel';
+import { HaikuInfoPanel } from '../HaikuInfoPanel/index';
 import { HaikuMonument } from '@/types/haiku';
 import { useQuery } from '@tanstack/react-query';
 import { getAllHaikuMonuments } from '@/lib/api';
@@ -19,8 +19,18 @@ const Map = dynamic(() => import('./LeafletMap'), {
   ),
 });
 
-export function HaikuMap() {
-  const { data, isLoading, error } = useQuery({
+type MapClientComponentProps = {
+  initialMonuments: HaikuMonument[];
+};
+
+export function MapClientComponent({
+  initialMonuments,
+}: MapClientComponentProps) {
+  const {
+    data: _data,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['haiku-monuments'],
     queryFn: () => getAllHaikuMonuments(),
   });
@@ -34,7 +44,7 @@ export function HaikuMap() {
     mapSearchText,
   } = useFilterStore();
 
-  const monuments = useMemo(() => data || [], [data]);
+  const monuments = useMemo(() => initialMonuments || [], [initialMonuments]);
 
   const [displayMonuments, setDisplayMonuments] = useState<HaikuMonument[]>([]);
   const [selectedMonument, setSelectedMonument] =
@@ -99,7 +109,7 @@ export function HaikuMap() {
   return (
     <div className="relative w-full h-screen">
       {isLoading && (
-        <div className="fixed top-16 left-0 w-full h-[calc(100vh-4rem)] bg-background/80 flex items-center justify-center z-50">
+        <div className="fixed top-0 left-0 w-full min-h-screen bg-background flex items-center justify-center z-50">
           <div className="flex flex-col items-center">
             <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mb-3" />
             <p className="text-primary">地図データを読み込み中...</p>
@@ -141,7 +151,7 @@ export function HaikuMap() {
       </div>
 
       {selectedMonument && isInfoPanelOpen && (
-        <div className="fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 bg-background shadow-lg z-10 overflow-y-auto">
+        <div className="fixed top-16 right-0 h-[calc(100vh-4rem)] w-96 bg-background shadow-lg z-10 overflow-y-auto">
           <HaikuInfoPanel
             monument={selectedMonument}
             onClose={handleCloseInfoPanel}

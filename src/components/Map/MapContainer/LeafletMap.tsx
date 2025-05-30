@@ -17,10 +17,10 @@ L.Icon.Default.mergeOptions({
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-interface LeafletMapProps {
+type LeafletMapProps = {
   monuments: HaikuMonument[];
   onMarkerClick: (monument: HaikuMonument) => void;
-}
+};
 
 export default function LeafletMap({
   monuments,
@@ -35,6 +35,7 @@ export default function LeafletMap({
       scrollWheelZoom={true}
       style={{ height: '100%', width: '100%' }}
       zoom={zoom}
+      zoomControl={false}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

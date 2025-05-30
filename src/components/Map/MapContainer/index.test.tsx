@@ -29,6 +29,10 @@ vi.mock('leaflet', () => ({
         prototype: {},
       },
     },
+    divIcon: vi.fn(() => ({
+      options: {},
+      createIcon: vi.fn(),
+    })),
   },
 }));
 
@@ -50,7 +54,7 @@ vi.mock('@/store/useFilterStore', () => ({
 }));
 
 // コンポーネントのインポートをモックの後に配置
-import { HaikuMap } from './index';
+import { MapClientComponent } from './MapClientComponent';
 
 describe('HaikuMap', () => {
   let queryClient: QueryClient;
@@ -69,7 +73,7 @@ describe('HaikuMap', () => {
   test('データ読み込み時にマーカーが表示されること', async () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <HaikuMap />
+        <MapClientComponent initialMonuments={mockHaikuMonuments} />
       </QueryClientProvider>
     );
 
@@ -86,7 +90,7 @@ describe('HaikuMap', () => {
   test('フィルターが適用されるとマーカーの表示が変わること', async () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <HaikuMap />
+        <MapClientComponent initialMonuments={mockHaikuMonuments} />
       </QueryClientProvider>
     );
 

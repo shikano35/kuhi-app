@@ -16,8 +16,8 @@ export default function MapLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="h-screen flex flex-col fixed inset-0 ">
-      <div className="flex-none">
+    <div className="h-screen flex flex-col fixed inset-0">
+      <div className="flex-none z-50">
         <MapHeader />
       </div>
       <div className="flex-1 overflow-hidden">
