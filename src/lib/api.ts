@@ -1,20 +1,20 @@
-import { HaikuMonument, Location, Poet, Source } from '@/types/haiku';
+import { HaikuMonument, Location, Poet, Source, News } from '@/types/haiku';
 
 const API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhiapi.com';
 
-interface HaikuMonumentsResponse {
+type HaikuMonumentsResponse = {
   haiku_monuments: HaikuMonument[];
-}
+};
 
-interface SingleHaikuMonumentResponse {
+type SingleHaikuMonumentResponse = {
   haiku_monument: HaikuMonument;
-}
+};
 
-interface HaikuMonumentsByCoordinatesResponse {
+type HaikuMonumentsByCoordinatesResponse = {
   haiku_monuments: HaikuMonument[];
-}
+};
 
-interface GetHaikuMonumentsOptions {
+type GetHaikuMonumentsOptions = {
   limit?: number;
   offset?: number;
   search?: string;
@@ -24,7 +24,7 @@ interface GetHaikuMonumentsOptions {
   title_contains?: string;
   name_contains?: string;
   ordering?: string[];
-}
+};
 
 export async function getAllHaikuMonuments(
   options?: GetHaikuMonumentsOptions
@@ -189,19 +189,19 @@ export async function getAllSources(): Promise<Source[]> {
   }
 }
 
-// export async function getAllNews(): Promise<News[]> {
-//   try {
-//     const response = await fetch(`${API_BASE_URL}/news`);
-//     if (!response.ok) {
-//       throw new Error('お知らせデータの取得に失敗しました');
-//     }
-//     const data = (await response.json()) as News[];
-//     return data;
-//   } catch (error) {
-//     console.error('お知らせデータの取得中にエラーが発生しました:', error);
-//     return [];
-//   }
-// }
+export async function getAllNews(): Promise<News[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/news`);
+    if (!response.ok) {
+      throw new Error('お知らせデータの取得に失敗しました');
+    }
+    const data = (await response.json()) as News[];
+    return data;
+  } catch (error) {
+    console.error('お知らせデータの取得中にエラーが発生しました:', error);
+    return [];
+  }
+}
 
 export async function getHaikuMonumentsByCoordinates(
   lat: number,

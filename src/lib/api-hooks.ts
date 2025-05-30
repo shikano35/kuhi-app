@@ -24,6 +24,7 @@ import {
 import {
   HaikuMonument,
   GetUserFavoritesResponse,
+  GetUserVisitsResponse,
   UserFavorite,
   UserHaikuMonument,
 } from '@/types/haiku';
@@ -93,13 +94,16 @@ export function useHaikuDetail(id: number) {
   });
 }
 
-export function useUserFavorites() {
+export function useUserFavorites(options?: {
+  initialData?: GetUserFavoritesResponse;
+}) {
   return useQuery({
     queryKey: ['user-favorites'],
     queryFn: getUserFavorites,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
+    initialData: options?.initialData,
     retry: (failureCount, error) => {
       if (error instanceof Error && error.message.includes('Network')) {
         return failureCount < 3;
@@ -201,13 +205,16 @@ export function useRemoveFavorite() {
   });
 }
 
-export function useUserVisits() {
+export function useUserVisits(options?: {
+  initialData?: GetUserVisitsResponse;
+}) {
   return useQuery({
     queryKey: ['user-visits'],
     queryFn: getUserVisits,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
+    initialData: options?.initialData,
     retry: (failureCount, error) => {
       if (error instanceof Error && error.message.includes('Network')) {
         return failureCount < 3;
