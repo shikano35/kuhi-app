@@ -21,7 +21,12 @@ import {
   addVisit,
   removeVisitByMonumentId,
 } from './user-haiku-api';
-import { HaikuMonument } from '@/types/haiku';
+import {
+  HaikuMonument,
+  GetUserFavoritesResponse,
+  UserFavorite,
+  UserHaikuMonument,
+} from '@/types/haiku';
 
 const PAGE_SIZE = 12;
 
@@ -93,6 +98,14 @@ export function useUserFavorites() {
     queryKey: ['user-favorites'],
     queryFn: getUserFavorites,
     staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: (failureCount, error) => {
+      if (error instanceof Error && error.message.includes('Network')) {
+        return failureCount < 3;
+      }
+      return false;
+    },
   });
 }
 
@@ -106,32 +119,37 @@ export function useAddFavorite() {
 
       const previousData = queryClient.getQueryData(['user-favorites']);
 
-      queryClient.setQueryData(['user-favorites'], (old: any) => {
-        if (!old?.favorites) return old;
+      queryClient.setQueryData(
+        ['user-favorites'],
+        (old: GetUserFavoritesResponse | undefined) => {
+          if (!old?.favorites) return old;
 
-        // 既にお気に入りに登録されていないかチェック
-        const isAlreadyFavorited = old.favorites.some(
-          (fav: any) => fav.monument.id === newFavorite.monumentId
-        );
-        if (isAlreadyFavorited) return old;
+          // 既にお気に入りに登録されていないかチェック
+          const isAlreadyFavorited = old.favorites.some(
+            (fav) => fav.monument.id === newFavorite.monumentId
+          );
+          if (isAlreadyFavorited) return old;
 
-        // 新しいお気に入りを追加
-        const newFavoriteData = {
-          id: `temp-${Date.now()}`,
-          userId: 'current-user',
-          monumentId: newFavorite.monumentId,
-          createdAt: new Date(),
-          monument: {
-            id: newFavorite.monumentId,
-            inscription: '読み込み中...',
-          },
-        };
+          // 新しいお気に入りを追加
+          const newFavoriteData = {
+            id: `temp-${Date.now()}`,
+            userId: 'current-user',
+            monumentId: newFavorite.monumentId,
+            createdAt: new Date(),
+            monument: {
+              id: newFavorite.monumentId,
+              inscription: '読み込み中...',
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            } as UserHaikuMonument,
+          } as UserFavorite & { monument: UserHaikuMonument };
 
-        return {
-          ...old,
-          favorites: [...old.favorites, newFavoriteData],
-        };
-      });
+          return {
+            ...old,
+            favorites: [...old.favorites, newFavoriteData],
+          };
+        }
+      );
 
       return { previousData };
     },
@@ -156,16 +174,19 @@ export function useRemoveFavorite() {
 
       const previousData = queryClient.getQueryData(['user-favorites']);
 
-      queryClient.setQueryData(['user-favorites'], (old: any) => {
-        if (!old?.favorites) return old;
+      queryClient.setQueryData(
+        ['user-favorites'],
+        (old: GetUserFavoritesResponse | undefined) => {
+          if (!old?.favorites) return old;
 
-        return {
-          ...old,
-          favorites: old.favorites.filter(
-            (fav: any) => fav.monument.id !== removeFavorite.monumentId
-          ),
-        };
-      });
+          return {
+            ...old,
+            favorites: old.favorites.filter(
+              (fav) => fav.monument.id !== removeFavorite.monumentId
+            ),
+          };
+        }
+      );
 
       return { previousData };
     },
@@ -185,6 +206,14 @@ export function useUserVisits() {
     queryKey: ['user-visits'],
     queryFn: getUserVisits,
     staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: (failureCount, error) => {
+      if (error instanceof Error && error.message.includes('Network')) {
+        return failureCount < 3;
+      }
+      return false;
+    },
   });
 }
 
