@@ -16,6 +16,9 @@ vi.mock('@/lib/api-hooks', () => ({
   }) => mockUseHaikuList(options),
   usePoetsList: () => mockUsePoetsList(),
   useLocationsList: () => mockUseLocationsList(),
+  useUserFavorites: () => ({ data: { favorites: [] }, isLoading: false }),
+  useAddFavorite: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useRemoveFavorite: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 const allMockMonuments = [
   {

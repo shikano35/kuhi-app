@@ -1,7 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import { HaikuCard } from './index';
 import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
-import { describe, expect } from 'vitest';
+import { describe, expect, vi, beforeEach } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// api-hooksのモック
+vi.mock('@/lib/api-hooks', () => ({
+  useUserFavorites: () => ({ data: { favorites: [] }, isLoading: false }),
+  useAddFavorite: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useRemoveFavorite: () => ({ mutateAsync: vi.fn(), isPending: false }),
+}));
 
 vi.mock('next/image', () => ({
   default: ({ src, alt }: { src: string; alt: string }) => (
@@ -25,9 +33,27 @@ vi.mock('next/link', () => ({
 
 describe('HaikuCard', () => {
   const testMonument = mockHaikuMonuments[0];
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
+  });
+
+  const renderWithProvider = (component: React.ReactElement) => {
+    return render(
+      <QueryClientProvider client={queryClient}>
+        {component}
+      </QueryClientProvider>
+    );
+  };
 
   test('句碑情報を正しく表示すること', () => {
-    render(<HaikuCard monument={testMonument} />);
+    renderWithProvider(<HaikuCard monument={testMonument} />);
 
     // 俳句が表示されることを確認
     expect(screen.getByText(testMonument.inscription)).toBeInTheDocument();
@@ -56,7 +82,7 @@ describe('HaikuCard', () => {
       photo_url: null,
     };
 
-    render(<HaikuCard monument={monumentWithoutPhoto} />);
+    renderWithProvider(<HaikuCard monument={monumentWithoutPhoto} />);
 
     const placeholderText = screen.getByText('写真はありません');
     expect(placeholderText).toBeInTheDocument();
@@ -69,7 +95,7 @@ describe('HaikuCard', () => {
         '古池や蛙飛び込む水の音春の海終日のたりのたりかな閑さや岩にしみ入る蝉の声これは非常に長い俳句の例です',
     };
 
-    render(<HaikuCard monument={longInscriptionMonument} />);
+    renderWithProvider(<HaikuCard monument={longInscriptionMonument} />);
 
     // 省略されたテキストが含まれているか確認
     const displayedText =

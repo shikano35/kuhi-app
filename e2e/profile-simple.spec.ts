@@ -95,8 +95,8 @@ test('シンプルなプロフィールページテスト', async ({ page }) => 
   // プロフィールページにアクセス
   await page.goto('/profile');
 
-  // プロフィールページのタイトルが表示されることを確認
-  await expect(page.locator('h1')).toContainText('プロフィール');
+  // ユーザー名がh1として表示されることを確認
+  await expect(page.locator('h1')).toContainText('テストユーザー');
 
   // 少し待機してデータが読み込まれるのを待つ
   await page.waitForTimeout(3000);

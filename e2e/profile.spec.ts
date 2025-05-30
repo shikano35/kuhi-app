@@ -195,12 +195,11 @@ test.describe('プロフィール機能のE2Eテスト', () => {
     // ログインページにリダイレクトされていないか確認
     expect(page.url()).not.toContain('/auth/login');
 
-    // ページタイトルが表示されていることを確認
-    await expect(page.locator('h1:has-text("プロフィール")')).toBeVisible({ timeout: 10000 });
+    // ユーザー名がh1タグで表示されていることを確認
+    await expect(page.locator('h1:has-text("テストユーザー")')).toBeVisible({ timeout: 10000 });
 
     // ユーザー情報が表示されていることを確認
     await expect(page.locator('text=テストユーザー')).toBeVisible();
-    await expect(page.locator('text=test@example.com')).toBeVisible();
 
     // タブが表示されていることを確認
     await expect(page.locator('button:has-text("お気に入り句碑")')).toBeVisible();

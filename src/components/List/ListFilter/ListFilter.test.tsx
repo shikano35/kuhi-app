@@ -101,7 +101,7 @@ describe('ListFilter', () => {
   test('検索フォームが正しく表示されること', () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <ListFilter searchParams={{}} />
+        <ListFilter />
       </QueryClientProvider>
     );
 
@@ -116,7 +116,7 @@ describe('ListFilter', () => {
   test('絞り込みボタンをクリックするとフィルターオプションが表示されること', async () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <ListFilter searchParams={{}} />
+        <ListFilter />
       </QueryClientProvider>
     );
 
@@ -133,7 +133,7 @@ describe('ListFilter', () => {
   test('検索フォームに入力して送信できること', () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <ListFilter searchParams={{}} />
+        <ListFilter />
       </QueryClientProvider>
     );
 
@@ -151,7 +151,7 @@ describe('ListFilter', () => {
   test('リセットボタンをクリックするとフォームがクリアされること', async () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <ListFilter searchParams={{}} />
+        <ListFilter />
       </QueryClientProvider>
     );
 
