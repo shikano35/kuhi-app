@@ -1,11 +1,10 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { ExternalLink, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { ExternalLink } from 'lucide-react';
 import { getAllPoets, getHaikuMonumentsByPoet } from '@/lib/api';
 import { HaikuCard } from '@/components/shared/HaikuCard';
-import { Button } from '@/components/ui/button';
+import { BackButton } from '@/components/BackButton';
 
 export async function generateStaticParams() {
   try {
@@ -56,15 +55,7 @@ export default async function PoetPage({ params }: PoetPageProps) {
   return (
     <div className="min-h-screen bg-muted/50">
       <div className="container mx-auto py-8 px-4">
-        <Button asChild className="mb-6 hover:bg-input" variant="ghost">
-          <Link
-            className="flex items-center text-lg text-primary mb-6 hover:text-primary/80"
-            href="/poets"
-          >
-            <ArrowLeft className="mr-1 mt-0.5" size={16} />
-            一覧に戻る
-          </Link>
-        </Button>
+        <BackButton fallbackUrl="/poets">一覧に戻る</BackButton>
 
         <div className="bg-background rounded-lg shadow-md overflow-hidden mb-8">
           <div className="p-6 md:p-8">
