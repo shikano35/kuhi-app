@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { baseMetadata } from '@/lib/metadata';
 import { auth } from '@/lib/auth';
-import { ProfileView } from '@/components/Profile/ProfileView';
+import { ProfileContainer } from '@/components/Profile/ProfileContainer';
 
 export const metadata: Metadata = {
   ...baseMetadata,
@@ -21,7 +21,7 @@ export default async function ProfilePage() {
     };
     return (
       <div className="container mx-auto py-8 px-4">
-        <ProfileView user={mockUser} />
+        <ProfileContainer user={mockUser} />
       </div>
     );
   }
@@ -34,7 +34,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <ProfileView user={session.user} />
+      <ProfileContainer user={session.user} />
     </div>
   );
 }
