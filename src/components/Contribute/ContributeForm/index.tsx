@@ -5,9 +5,9 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { submitContribution } from '@/lib/actions';
-import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { CheckCircle } from 'lucide-react';
+import { LoginModal } from '@/components/Auth/LoginModal';
 
 const contributionSchema = z.object({
   title: z.string().min(1, '句碑の題名または俳句を入力してください'),
@@ -76,7 +76,6 @@ export function ContributeForm() {
   const [success, setSuccess] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
   const { data: session } = useSession();
 
   const {
@@ -133,12 +132,11 @@ export function ContributeForm() {
           句碑情報を投稿するにはログインが必要です。
         </p>
         <div className="mt-12">
-          <button
-            className="text-muted-foreground hover:text-primary hover:underline hover:underline-offset-2"
-            onClick={() => router.push('/auth/login?callbackUrl=/contribute')}
-          >
-            ログインページへ
-          </button>
+          <LoginModal>
+            <button className="text-muted-foreground hover:text-primary hover:underline hover:underline-offset-2">
+              ログインページへ
+            </button>
+          </LoginModal>
         </div>
       </div>
     );
