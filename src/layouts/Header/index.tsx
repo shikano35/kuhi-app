@@ -1,8 +1,8 @@
-import { MenuIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Hina_Mincho } from 'next/font/google';
 import { AuthButton } from '@/components/AuthButton';
 import { cn } from '@/lib/cn';
+import { MobileMenu } from '@/components/shared/MobileMenu';
 
 const hinaMincho = Hina_Mincho({
   variable: '--font-hina-mincho',
@@ -35,9 +35,7 @@ export function HomeHeader() {
 
         <div className="flex items-center space-x-4">
           <AuthButton isFlag={true} />
-          <button className="md:hidden">
-            <MenuIcon className="w-6 h-6 text-white" />
-          </button>
+          <MobileMenu variant="home" />
         </div>
       </div>
     </header>
@@ -47,7 +45,7 @@ export function HomeHeader() {
 export function MapHeader() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 shadow-sm bg-background">
-      <div className="container mx-auto flex items-center justify-between p-4">
+      <div className="mx-auto flex items-center justify-between p-4">
         <div className="flex items-center">
           <Link className="flex items-center" href="/">
             <span className={cn('text-2xl font-bold', hinaMincho.className)}>
@@ -70,9 +68,7 @@ export function MapHeader() {
 
         <div className="flex items-center space-x-4">
           <AuthButton />
-          <button className="md:hidden">
-            <MenuIcon className="w-6 h-6" />
-          </button>
+          <MobileMenu />
         </div>
       </div>
     </header>
@@ -82,7 +78,7 @@ export function MapHeader() {
 export function Header() {
   return (
     <header className="top-0 left-0 right-0 z-50 shadow-sm">
-      <div className="container mx-auto flex items-center justify-between p-4">
+      <div className="mx-auto flex items-center justify-between p-4">
         <div className="flex items-center">
           <Link className="flex items-center" href="/">
             <span className={cn('text-2xl font-bold', hinaMincho.className)}>
@@ -105,9 +101,7 @@ export function Header() {
 
         <div className="flex items-center space-x-4">
           <AuthButton />
-          <button className="md:hidden">
-            <MenuIcon className="w-6 h-6" />
-          </button>
+          <MobileMenu />
         </div>
       </div>
     </header>
