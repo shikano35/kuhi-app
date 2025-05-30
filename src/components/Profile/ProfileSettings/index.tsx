@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -30,7 +29,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Save, Trash2, Upload, User } from 'lucide-react';
+import { Save, Trash2, Upload, User } from 'lucide-react';
+import { BackButton } from '@/components/BackButton';
 import {
   updateProfile,
   uploadProfileImage,
@@ -154,12 +154,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Button asChild className="mb-6" variant="ghost">
-        <Link className="flex items-center gap-2" href="/profile">
-          <ArrowLeft size={16} />
-          プロフィールに戻る
-        </Link>
-      </Button>
+      <BackButton fallbackUrl="/profile">プロフィールに戻る</BackButton>
 
       {successMessage && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-md">
