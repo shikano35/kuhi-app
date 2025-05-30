@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { SessionProvider } from 'next-auth/react';
 import { HaikuCard } from './index';
 import { HaikuMonument } from '@/types/haiku';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -18,9 +19,11 @@ const meta: Meta<typeof HaikuCard> = {
   component: HaikuCard,
   decorators: [
     (Story) => (
-      <QueryClientProvider client={queryClient}>
-        <Story />
-      </QueryClientProvider>
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          <Story />
+        </QueryClientProvider>
+      </SessionProvider>
     ),
   ],
   parameters: {

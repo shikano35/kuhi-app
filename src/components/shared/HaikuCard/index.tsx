@@ -22,14 +22,7 @@ export function HaikuCard({
   monument,
   showFavoriteButton = true,
 }: HaikuCardProps) {
-  let session;
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    session = typeof window !== 'undefined' ? useSession() : { data: null };
-  } catch {
-    session = { data: null };
-  }
-
+  const { data: session } = useSession();
   const { data: favoritesData } = useUserFavorites();
   const addFavoriteMutation = useAddFavorite();
   const removeFavoriteMutation = useRemoveFavorite();
@@ -39,9 +32,9 @@ export function HaikuCard({
   const location = locations[0];
 
   const isFavorited = useMemo(() => {
-    if (!favoritesData?.favorites || !session?.data?.user) return false;
+    if (!favoritesData?.favorites || !session?.user) return false;
     return favoritesData.favorites.some((fav) => fav.monument.id === id);
-  }, [favoritesData?.favorites, id, session?.data?.user]);
+  }, [favoritesData?.favorites, id, session?.user]);
 
   const isLoading =
     addFavoriteMutation.isPending || removeFavoriteMutation.isPending;
@@ -50,7 +43,7 @@ export function HaikuCard({
     e.preventDefault();
     e.stopPropagation();
 
-    if (!session?.data?.user || isLoading) return;
+    if (!session?.user || isLoading) return;
 
     try {
       if (isFavorited) {
@@ -70,7 +63,7 @@ export function HaikuCard({
         data-testid="haiku-card"
       >
         <div className="relative h-48 bg-muted">
-          {showFavoriteButton && session?.data?.user && (
+          {showFavoriteButton && session?.user && (
             <button
               className={`absolute top-2 right-2 z-10 p-2 rounded-full ${
                 isFavorited
