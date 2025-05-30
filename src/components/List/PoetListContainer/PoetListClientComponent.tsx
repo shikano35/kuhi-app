@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Poet } from '@/types/haiku';
 import { Search, User } from 'lucide-react';
+import { MenuDropdown } from '@/components/shared/MenuDropdown';
 
 type PoetListClientComponentProps = {
   poets: Poet[];
@@ -16,6 +17,7 @@ export function PoetListClientComponent({
   poets,
 }: PoetListClientComponentProps) {
   const [search, setSearch] = useState('');
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
   const filteredPoets = useMemo(() => {
     if (!search) {
@@ -32,7 +34,11 @@ export function PoetListClientComponent({
   }, [search, poets]);
 
   return (
-    <div className="space-y-6">
+    <div
+      className="space-y-6"
+      onMouseEnter={() => setIsDropdownVisible(true)}
+      onMouseLeave={() => setIsDropdownVisible(false)}
+    >
       <div className="flex flex-col sm:flex-row gap-4 items-center">
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -92,6 +98,8 @@ export function PoetListClientComponent({
           ))}
         </div>
       )}
+
+      <MenuDropdown isVisible={isDropdownVisible} />
     </div>
   );
 }

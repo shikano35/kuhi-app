@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { ListFilter } from '@/components/List/ListFilter';
+import { MenuDropdown } from '@/components/shared/MenuDropdown';
 import { HaikuMonument, Poet, Location } from '@/types/haiku';
 
 type HaikuListClientComponentProps = {
@@ -32,6 +33,7 @@ export function HaikuListClientComponent({
 
   const [currentPage, setCurrentPage] = useState(0);
   const [allMonuments, setAllMonuments] = useState(initialMonuments);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
   const searchQuery = searchParams.get('q') || '';
   const regionFilter = searchParams.get('region') || 'すべて';
@@ -130,7 +132,11 @@ export function HaikuListClientComponent({
   }
 
   return (
-    <div className="space-y-6">
+    <div
+      className="space-y-6"
+      onMouseEnter={() => setIsDropdownVisible(true)}
+      onMouseLeave={() => setIsDropdownVisible(false)}
+    >
       <ListFilter locations={locations} poets={poets} />
 
       <div className="text-sm text-muted-foreground">
@@ -163,6 +169,8 @@ export function HaikuListClientComponent({
           )}
         </>
       )}
+
+      <MenuDropdown isVisible={isDropdownVisible} />
     </div>
   );
 }
