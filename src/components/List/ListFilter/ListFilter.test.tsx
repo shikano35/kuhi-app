@@ -5,6 +5,7 @@ import { describe, expect, vi, beforeEach } from 'vitest';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
+import { SessionProvider } from 'next-auth/react';
 
 // FilterStoreのモック
 const mockSetListSearchText = vi.fn();
@@ -100,9 +101,11 @@ describe('ListFilter', () => {
 
   test('検索フォームが正しく表示されること', () => {
     render(
-      <QueryClientProvider client={queryClient}>
-        <ListFilter />
-      </QueryClientProvider>
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          <ListFilter />
+        </QueryClientProvider>
+      </SessionProvider>
     );
 
     const searchInput =
@@ -115,9 +118,11 @@ describe('ListFilter', () => {
 
   test('絞り込みボタンをクリックするとフィルターオプションが表示されること', async () => {
     render(
-      <QueryClientProvider client={queryClient}>
-        <ListFilter />
-      </QueryClientProvider>
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          <ListFilter />
+        </QueryClientProvider>
+      </SessionProvider>
     );
 
     expect(screen.queryByLabelText('地域')).not.toBeInTheDocument();
@@ -132,9 +137,11 @@ describe('ListFilter', () => {
 
   test('検索フォームに入力して送信できること', () => {
     render(
-      <QueryClientProvider client={queryClient}>
-        <ListFilter />
-      </QueryClientProvider>
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          <ListFilter />
+        </QueryClientProvider>
+      </SessionProvider>
     );
 
     const searchInput =
@@ -150,9 +157,11 @@ describe('ListFilter', () => {
 
   test('リセットボタンをクリックするとフォームがクリアされること', async () => {
     render(
-      <QueryClientProvider client={queryClient}>
-        <ListFilter />
-      </QueryClientProvider>
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          <ListFilter />
+        </QueryClientProvider>
+      </SessionProvider>
     );
 
     fireEvent.click(screen.getByRole('button', { name: /絞り込み/ }));

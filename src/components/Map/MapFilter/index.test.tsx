@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SessionProvider } from 'next-auth/react';
 import { MapFilter } from './index';
 import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
 import { vi } from 'vitest';
@@ -45,16 +46,18 @@ describe('MapFilter', () => {
     });
   });
 
-  const renderWithQueryClient = (component: React.ReactNode) => {
+  const renderWithProviders = (component: React.ReactNode) => {
     return render(
-      <QueryClientProvider client={queryClient}>
-        {component}
-      </QueryClientProvider>
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          {component}
+        </QueryClientProvider>
+      </SessionProvider>
     );
   };
 
   test('初期レンダリング時にはフィルターが適用されること', () => {
-    renderWithQueryClient(
+    renderWithProviders(
       <MapFilter
         monuments={mockHaikuMonuments}
         onFilterChange={mockOnFilterChange}
@@ -90,7 +93,7 @@ describe('MapFilter', () => {
       }),
     }));
 
-    renderWithQueryClient(
+    renderWithProviders(
       <MapFilter
         monuments={mockHaikuMonuments}
         onFilterChange={mockOnFilterChange}
@@ -122,7 +125,7 @@ describe('MapFilter', () => {
       }),
     }));
 
-    renderWithQueryClient(
+    renderWithProviders(
       <MapFilter
         monuments={mockHaikuMonuments}
         onFilterChange={mockOnFilterChange}
@@ -133,7 +136,7 @@ describe('MapFilter', () => {
   });
 
   test('リセットボタンをクリックするとフィルターがリセットされること', async () => {
-    renderWithQueryClient(
+    renderWithProviders(
       <MapFilter
         monuments={mockHaikuMonuments}
         onFilterChange={mockOnFilterChange}

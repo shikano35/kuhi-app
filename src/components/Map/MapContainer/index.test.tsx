@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import { SessionProvider } from 'next-auth/react';
 import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
 import { vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -70,11 +71,19 @@ describe('HaikuMap', () => {
     mapFilteredMonuments = [];
   });
 
+  const renderWithProviders = (component: React.ReactNode) => {
+    return render(
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          {component}
+        </QueryClientProvider>
+      </SessionProvider>
+    );
+  };
+
   test('データ読み込み時にマーカーが表示されること', async () => {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MapClientComponent initialMonuments={mockHaikuMonuments} />
-      </QueryClientProvider>
+    renderWithProviders(
+      <MapClientComponent initialMonuments={mockHaikuMonuments} />
     );
 
     // ローディング表示を確認
@@ -88,10 +97,8 @@ describe('HaikuMap', () => {
   });
 
   test('フィルターが適用されるとマーカーの表示が変わること', async () => {
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MapClientComponent initialMonuments={mockHaikuMonuments} />
-      </QueryClientProvider>
+    renderWithProviders(
+      <MapClientComponent initialMonuments={mockHaikuMonuments} />
     );
 
     // データ読み込み後の初期マーカー数を確認
