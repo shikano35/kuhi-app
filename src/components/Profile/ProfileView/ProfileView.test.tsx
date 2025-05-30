@@ -87,7 +87,6 @@ describe('ProfileView', () => {
   test('タブに件数バッジが表示される', () => {
     render(<ProfileView user={mockUser} />);
 
-    // バッジが表示されていることを確認
     const badges = screen.getAllByText('1');
     expect(badges).toHaveLength(2);
   });
