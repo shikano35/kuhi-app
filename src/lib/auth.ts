@@ -32,6 +32,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.userId = user.id;
         token.role = user.role;
+        token.bio = user.bio;
+        token.emailNotifications = user.emailNotifications;
       }
 
       if (!token.role && token.userId) {
@@ -45,6 +47,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           if (dbUser) {
             token.role = dbUser.role;
+            token.bio = dbUser.bio ?? undefined;
+            token.emailNotifications = dbUser.emailNotifications;
           }
         } catch (error) {
           console.error('Error fetching user role:', error);
@@ -57,6 +61,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.id = token.userId as string;
         session.user.role = token.role as string;
+        session.user.bio = token.bio as string | undefined;
+        session.user.emailNotifications = token.emailNotifications as
+          | boolean
+          | undefined;
       }
       return session;
     },

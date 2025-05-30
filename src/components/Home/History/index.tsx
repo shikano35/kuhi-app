@@ -36,7 +36,7 @@ export function HistorySection() {
   return (
     <section className="py-24 px-4">
       <div className="container mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-16">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
           俳句と句碑の歴史
         </h2>
 

@@ -1,6 +1,11 @@
 'use client';
 
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {
   getAllHaikuMonuments,
   getHaikuMonumentsByPoet,
@@ -8,7 +13,20 @@ import {
   getAllLocations,
   getHaikuMonumentById,
 } from './api';
-import { HaikuMonument } from '@/types/haiku';
+import {
+  getUserFavorites,
+  addFavorite,
+  removeFavorite,
+  getUserVisits,
+  addVisit,
+  removeVisitByMonumentId,
+} from './user-haiku-api';
+import {
+  HaikuMonument,
+  GetUserFavoritesResponse,
+  UserFavorite,
+  UserHaikuMonument,
+} from '@/types/haiku';
 
 const PAGE_SIZE = 12;
 
@@ -72,5 +90,151 @@ export function useHaikuDetail(id: number) {
     queryKey: ['haiku-monument', id],
     queryFn: () => getHaikuMonumentById(id),
     enabled: !!id,
+  });
+}
+
+export function useUserFavorites() {
+  return useQuery({
+    queryKey: ['user-favorites'],
+    queryFn: getUserFavorites,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: (failureCount, error) => {
+      if (error instanceof Error && error.message.includes('Network')) {
+        return failureCount < 3;
+      }
+      return false;
+    },
+  });
+}
+
+export function useAddFavorite() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: addFavorite,
+    onMutate: async (newFavorite) => {
+      await queryClient.cancelQueries({ queryKey: ['user-favorites'] });
+
+      const previousData = queryClient.getQueryData(['user-favorites']);
+
+      queryClient.setQueryData(
+        ['user-favorites'],
+        (old: GetUserFavoritesResponse | undefined) => {
+          if (!old?.favorites) return old;
+
+          // 既にお気に入りに登録されていないかチェック
+          const isAlreadyFavorited = old.favorites.some(
+            (fav) => fav.monument.id === newFavorite.monumentId
+          );
+          if (isAlreadyFavorited) return old;
+
+          // 新しいお気に入りを追加
+          const newFavoriteData = {
+            id: `temp-${Date.now()}`,
+            userId: 'current-user',
+            monumentId: newFavorite.monumentId,
+            createdAt: new Date(),
+            monument: {
+              id: newFavorite.monumentId,
+              inscription: '読み込み中...',
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            } as UserHaikuMonument,
+          } as UserFavorite & { monument: UserHaikuMonument };
+
+          return {
+            ...old,
+            favorites: [...old.favorites, newFavoriteData],
+          };
+        }
+      );
+
+      return { previousData };
+    },
+    onError: (err, newFavorite, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(['user-favorites'], context.previousData);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-favorites'] });
+    },
+  });
+}
+
+export function useRemoveFavorite() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: removeFavorite,
+    onMutate: async (removeFavorite) => {
+      await queryClient.cancelQueries({ queryKey: ['user-favorites'] });
+
+      const previousData = queryClient.getQueryData(['user-favorites']);
+
+      queryClient.setQueryData(
+        ['user-favorites'],
+        (old: GetUserFavoritesResponse | undefined) => {
+          if (!old?.favorites) return old;
+
+          return {
+            ...old,
+            favorites: old.favorites.filter(
+              (fav) => fav.monument.id !== removeFavorite.monumentId
+            ),
+          };
+        }
+      );
+
+      return { previousData };
+    },
+    onError: (err, removeFavorite, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(['user-favorites'], context.previousData);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-favorites'] });
+    },
+  });
+}
+
+export function useUserVisits() {
+  return useQuery({
+    queryKey: ['user-visits'],
+    queryFn: getUserVisits,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    retry: (failureCount, error) => {
+      if (error instanceof Error && error.message.includes('Network')) {
+        return failureCount < 3;
+      }
+      return false;
+    },
+  });
+}
+
+export function useAddVisit() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: addVisit,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-visits'] });
+    },
+  });
+}
+
+export function useRemoveVisit() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: removeVisitByMonumentId,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-visits'] });
+    },
   });
 }

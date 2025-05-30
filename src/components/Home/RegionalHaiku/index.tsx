@@ -99,7 +99,7 @@ export function RegionalHaikuSection() {
   return (
     <section className="py-32">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-8 text-center text-primary">
+        <h2 className="text-3xl md:text-4xl mb-8 text-center text-primary">
           地域で探す
         </h2>
 

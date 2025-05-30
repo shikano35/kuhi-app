@@ -19,9 +19,27 @@ const nextConfig: NextConfig = {
         hostname: '*.kuhiapi.com',
         pathname: '**',
       },
-    ],
-    domains: [
-      'lh3.googleusercontent.com',
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'example.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+        pathname: '**',
+      },
     ],
   },
   experimental: {

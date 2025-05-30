@@ -1,21 +1,10 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePoetsList, useLocationsList } from '@/lib/api-hooks';
 import { FilterIcon } from 'lucide-react';
 import { useFilterStore } from '@/store/useFilterStore';
-
-type ListFilterProps = {
-  searchParams: {
-    q?: string;
-    region?: string;
-    prefecture?: string;
-    poet_id?: string;
-    filter?: string;
-    view?: string;
-  };
-};
 
 const REGIONS = [
   '北海道',
@@ -31,11 +20,10 @@ const REGIONS = [
   'すべて',
 ];
 
-export function ListFilter({ searchParams }: ListFilterProps) {
+export function ListFilter() {
   const router = useRouter();
   const { data: poets = [] } = usePoetsList();
   const { data: locations = [] } = useLocationsList();
-  const isInitialRender = useRef(true);
 
   const {
     listSearchText,
@@ -51,43 +39,6 @@ export function ListFilter({ searchParams }: ListFilterProps) {
   } = useFilterStore();
 
   const [filterVisible, setFilterVisible] = useState(false);
-
-  useEffect(() => {
-    if (!isInitialRender.current) return;
-
-    if (!poets || poets.length === 0) return;
-
-    isInitialRender.current = false;
-
-    if (Object.keys(searchParams).length === 0) return;
-
-    if (searchParams.q) {
-      setListSearchText(searchParams.q);
-    }
-
-    if (searchParams.region) {
-      setListSelectedRegion(searchParams.region);
-    }
-
-    if (searchParams.prefecture) {
-      setListSelectedPrefecture(searchParams.prefecture);
-    }
-
-    if (searchParams.poet_id) {
-      const poetId = Number(searchParams.poet_id);
-      const poet = poets.find((p) => p.id === poetId);
-      if (poet) {
-        setListSelectedPoet(poet.name, poetId);
-      }
-    }
-  }, [
-    searchParams,
-    poets,
-    setListSearchText,
-    setListSelectedRegion,
-    setListSelectedPrefecture,
-    setListSelectedPoet,
-  ]);
 
   const prefectures = [
     'すべて',

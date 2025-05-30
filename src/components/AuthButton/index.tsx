@@ -58,7 +58,6 @@ export function AuthButton({ isFlag = false }: { isFlag?: boolean }) {
   if (session) {
     const imageUrl = session.user?.image;
     const userName = session.user?.name;
-    const userEmail = session.user?.email;
 
     return isFlag ? (
       <div className="relative flex justify-center items-center bg-foreground rounded-full">
@@ -87,11 +86,7 @@ export function AuthButton({ isFlag = false }: { isFlag?: boolean }) {
               className="absolute right-0 top-12 mt-0 w-64 bg-popover border border-border rounded-lg shadow-lg py-2"
               ref={setMenuRef}
             >
-              <DrawerMenu
-                imageUrl={imageUrl}
-                userEmail={userEmail}
-                userName={userName}
-              />
+              <DrawerMenu imageUrl={imageUrl} userName={userName} />
             </div>
           </FadeIn>
         )}
@@ -123,11 +118,7 @@ export function AuthButton({ isFlag = false }: { isFlag?: boolean }) {
               className="absolute right-0 top-12 mt-0 w-64 bg-background border border-border rounded-lg shadow-lg py-2"
               ref={setMenuRef}
             >
-              <DrawerMenu
-                imageUrl={imageUrl}
-                userEmail={userEmail}
-                userName={userName}
-              />
+              <DrawerMenu imageUrl={imageUrl} userName={userName} />
             </div>
           </FadeIn>
         )}

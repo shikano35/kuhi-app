@@ -29,7 +29,7 @@ export function OtherSection() {
   return (
     <section className="py-32 px-4 bg-secondary">
       <div className="container mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-16 text-primary">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-primary">
           その他コンテンツ
         </h2>
 

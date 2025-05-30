@@ -53,44 +53,40 @@ const POETS: Poet[] = [
 export function PoetSection() {
   return (
     <section className="py-12 bg-muted">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-8 text-center">俳人で探す</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {POETS.map((poet) => (
-            <div
-              className="bg-background rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-              key={poet.id}
-            >
-              <div className="relative h-48">
-                <Image
-                  alt={poet.name}
-                  className="object-cover bg-muted opacity-30"
-                  fill
-                  src={poet.image_url || '/images/poets/default.png'}
-                />
+      <Link className="block" href="/poets/{}">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">
+            俳人で探す
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {POETS.map((poet) => (
+              <div
+                className="bg-background rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                key={poet.id}
+              >
+                <div className="relative h-48">
+                  <Image
+                    alt={poet.name}
+                    className="object-cover bg-muted opacity-30"
+                    fill
+                    src={poet.image_url || '/images/poets/default.png'}
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold mb-1">{poet.name}</h3>
+                  <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
+                    {poet.biography}
+                  </p>
+                </div>
               </div>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold mb-1">{poet.name}</h3>
-                <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
-                  {poet.biography}
-                </p>
-                <Link
-                  className="text-primary hover:underline font-medium"
-                  href={`/list?poet_id=${poet.id}`}
-                >
-                  この俳人の句碑を見る →
-                </Link>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-
-        <div className="mt-8 text-center">
-          <Button asChild className="rounded-full px-8 py-6 text-base">
-            <Link href="/list?filter=poet">すべての俳人を見る</Link>
-          </Button>
-        </div>
+      </Link>
+      <div className="mt-8 text-center">
+        <Button asChild className="rounded-full px-8 py-6 text-base">
+          <Link href="/poets">すべての俳人を見る</Link>
+        </Button>
       </div>
     </section>
   );

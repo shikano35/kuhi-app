@@ -1,10 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { HaikuCard } from './index';
 import { HaikuMonument } from '@/types/haiku';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      staleTime: Infinity,
+      gcTime: Infinity,
+    },
+  },
+});
 
 const meta: Meta<typeof HaikuCard> = {
   title: 'Components/HaikuCard',
   component: HaikuCard,
+  decorators: [
+    (Story) => (
+      <QueryClientProvider client={queryClient}>
+        <Story />
+      </QueryClientProvider>
+    ),
+  ],
   parameters: {
     layout: 'centered',
   },

@@ -16,8 +16,10 @@ const config = [
     ignores: [
       "**/.next/**",
       "node_modules/**",
+      "storybook-static/**",
     ],
   },
+  
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
   },
@@ -74,6 +76,26 @@ const config = [
     },
   },
   prettierConfig,
+
+  {
+    files: ["**/*.test.{js,jsx,ts,tsx}", "**/*.spec.{js,jsx,ts,tsx}"],
+    rules: {
+      "@next/next/no-img-element": "off",
+    },
+  },
+
+  {
+    files: ["e2e/**/*.{js,ts}"],
+    rules: {
+      "testing-library/prefer-screen-queries": "off",
+      "testing-library/no-render-in-setup": "off",
+      "testing-library/no-node-access": "off",
+      "testing-library/prefer-find-by": "off",
+      "testing-library/no-debugging-utils": "off",
+      "testing-library/no-dom-import": "off",
+      "testing-library/prefer-user-event": "off",
+    },
+  },
 ];
 
 export default config;

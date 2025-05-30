@@ -1,12 +1,14 @@
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Klee_One, Geist_Mono } from 'next/font/google';
 import '../styles/globals.css';
 import { Layout } from '@/layouts';
 import { baseMetadata } from '@/lib/metadata';
 import { TanstackProvider } from '@/components/Providers/TanstackProvider';
+import AuthProvider from '@/components/Providers/AuthProvider';
 import { MswScript } from '@/components/Providers/MswScript';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const kleeOne = Klee_One({
+  variable: '--font-klee-one',
+  weight: '600',
   subsets: ['latin'],
 });
 
@@ -25,11 +27,11 @@ export default function RootLayout({
   return (
     <html lang="ja">
       {process.env.NODE_ENV === 'development' && <MswScript />}
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${kleeOne.variable} ${geistMono.variable} antialiased`}>
         <TanstackProvider>
-          <Layout>{children}</Layout>
+          <AuthProvider>
+            <Layout>{children}</Layout>
+          </AuthProvider>
         </TanstackProvider>
       </body>
     </html>
