@@ -21,7 +21,6 @@ export default async function ProfilePage() {
     };
     return (
       <div className="container mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold mb-8">プロフィール</h1>
         <ProfileView user={mockUser} />
       </div>
     );
@@ -35,7 +34,6 @@ export default async function ProfilePage() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8">プロフィール</h1>
       <ProfileView user={session.user} />
     </div>
   );
