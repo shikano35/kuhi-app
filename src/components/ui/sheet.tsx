@@ -35,7 +35,7 @@ function SheetOverlay({
   return (
     <SheetPrimitive.Overlay
       className={cn(
-        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/0',
+        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-40 bg-black/20',
         className
       )}
       data-slot="sheet-overlay"
@@ -48,9 +48,11 @@ function SheetContent({
   className,
   children,
   side = 'right',
+  margin,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: 'top' | 'right' | 'bottom' | 'left';
+  margin?: string;
 }) {
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -59,7 +61,7 @@ function SheetContent({
       <SheetOverlay />
       <SheetPrimitive.Content
         className={cn(
-          'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-20 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
+          'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
           side === 'right' &&
             'data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 border-l',
           side === 'left' &&
@@ -78,8 +80,13 @@ function SheetContent({
           <SheetTitle>フィルターメニュー</SheetTitle>
         </div>
         {children}
-        <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-          <XIcon className="h-4 w-4" />
+        <SheetPrimitive.Close
+          className={cn(
+            'absolute p-2 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 hover:bg-muted',
+            margin
+          )}
+        >
+          <XIcon className="size-5" />
           <span className="sr-only">閉じる</span>
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
