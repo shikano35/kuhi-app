@@ -84,7 +84,7 @@ describe('HaikuCard', () => {
 
     renderWithProvider(<HaikuCard monument={monumentWithoutPhoto} />);
 
-    const placeholderText = screen.getByText('写真はありません');
+    const placeholderText = screen.getByText(/写真がありません/);
     expect(placeholderText).toBeInTheDocument();
   });
 
