@@ -1,9 +1,9 @@
-import { HaikuMap } from '@/components/Map/HaikuMap';
+import { MapContainer } from '@/components/Map/MapContainer';
 
 export default function MapPage() {
   return (
     <main className="w-full h-full">
-      <HaikuMap />
+      <MapContainer />
     </main>
   );
 }

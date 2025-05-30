@@ -2,7 +2,6 @@ import {
   MessageSquarePlusIcon,
   MegaphoneIcon,
   BookOpenCheckIcon,
-  InfoIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -33,7 +32,7 @@ export function OtherSection() {
           その他コンテンツ
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <LinkCard
             description="句碑に関する書籍や論文、Web サイトなどの情報を紹介しています。"
             href="/references"
@@ -53,13 +52,6 @@ export function OtherSection() {
             href="/news"
             icon={<MegaphoneIcon className="w-10 h-10" />}
             title="お知らせ一覧"
-          />
-
-          <LinkCard
-            description="このサイトの目的や運営者情報、お問い合わせ方法について。"
-            href="/about-site"
-            icon={<InfoIcon className="w-10 h-10" />}
-            title="このサイトについて"
           />
         </div>
       </div>

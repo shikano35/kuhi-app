@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { getHaikuMonumentById, getAllHaikuMonuments } from '@/lib/api';
-import { MonumentDetail } from '@/components/Monument/MonumentDetail';
+import { MonumentDetailContainer } from '@/components/Monument/MonumentDetailContainer';
 
 export async function generateStaticParams() {
   try {
@@ -43,5 +43,5 @@ export async function generateMetadata({
 export default async function MonumentPage({ params }: MonumentPageProps) {
   const { id } = await params;
 
-  return <MonumentDetail monumentId={Number(id)} />;
+  return <MonumentDetailContainer monumentId={Number(id)} />;
 }

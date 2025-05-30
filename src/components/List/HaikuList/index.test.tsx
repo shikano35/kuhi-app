@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { HaikuList } from './index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, vi, beforeEach, afterEach } from 'vitest';
+import { SessionProvider } from 'next-auth/react';
 
 // useHaikuListフックのモック
 const mockUseHaikuList = vi.fn();
@@ -163,9 +164,11 @@ describe('HaikuList', () => {
 
   test('句碑リストが正しく表示されること', async () => {
     render(
-      <QueryClientProvider client={queryClient}>
-        <HaikuList />
-      </QueryClientProvider>
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          <HaikuList />
+        </QueryClientProvider>
+      </SessionProvider>
     );
 
     await waitFor(() => {
@@ -206,9 +209,11 @@ describe('HaikuList', () => {
     });
 
     render(
-      <QueryClientProvider client={queryClient}>
-        <HaikuList />
-      </QueryClientProvider>
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          <HaikuList />
+        </QueryClientProvider>
+      </SessionProvider>
     );
 
     // 地域でフィルタリングされた句碑が表示されることを確認
@@ -250,9 +255,11 @@ describe('HaikuList', () => {
     });
 
     render(
-      <QueryClientProvider client={queryClient}>
-        <HaikuList />
-      </QueryClientProvider>
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          <HaikuList />
+        </QueryClientProvider>
+      </SessionProvider>
     );
 
     await waitFor(() => {

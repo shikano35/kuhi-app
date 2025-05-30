@@ -13,32 +13,8 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="text-4xl font-bold mb-8 text-center">
-        このサイトについて
-      </h1>
+      <h1 className="text-4xl font-bold mb-8 text-center">句碑とは</h1>
       <div className="max-w-3xl mx-auto">
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
-            「くひめぐり」とは
-          </h2>
-          <div className="mb-6 relative h-64 w-full">
-            <Image
-              alt="くひめぐりアプリのイメージ"
-              className="object-cover rounded-lg shadow-md"
-              fill
-              src="/images/kuhi-example.jpg"
-            />
-          </div>
-          <p className="mb-4 text-lg">
-            「くひめぐり」は、日本全国に点在する句碑を簡単に検索し、めぐることができるWebアプリケーションです。
-            俳句文化の保存と普及を目的に、句碑の位置情報や解説、関連する俳人の情報などを提供しています。
-          </p>
-          <p className="mb-4 text-lg">
-            当サイトを通じて、より多くの方々に日本の伝統文化である俳句に親しんでいただき、
-            実際に句碑をめぐる旅の計画にお役立ていただければ幸いです。
-          </p>
-        </section>
-
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             句碑とは
@@ -48,7 +24,7 @@ export default function AboutPage() {
               alt="句碑の例"
               className="object-cover rounded-lg shadow-md"
               fill
-              src="/images/kuhi-example.jpg"
+              src="/images/kuhi-example.webp"
             />
           </div>
           <p className="mb-4 text-lg">
@@ -154,6 +130,28 @@ export default function AboutPage() {
           <p className="text-lg">
             当サイトでは、こうした句碑の情報を収集・整理し、多くの方々に知っていただくことを目的としています。
             句碑を通じて、日本の豊かな俳句文化に触れていただければ幸いです。
+          </p>
+        </section>
+
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+            「くひめぐり」とは
+          </h2>
+          <div className="mb-6 relative h-64 w-full">
+            <Image
+              alt="くひめぐりアプリのイメージ"
+              className="object-cover rounded-lg shadow-md"
+              fill
+              src="/images/kuhi-app.webp"
+            />
+          </div>
+          <p className="mb-4 text-lg">
+            「くひめぐり」は、日本全国に点在する句碑を簡単に検索し、めぐることができるWebアプリケーションです。
+            俳句文化の保存と普及を目的に、句碑の位置情報や解説、関連する俳人の情報などを提供しています。
+          </p>
+          <p className="mb-4 text-lg">
+            当サイトを通じて、より多くの方々に日本の伝統文化である俳句に親しんでいただき、
+            実際に句碑をめぐる旅の計画にお役立ていただければ幸いです。
           </p>
         </section>
 

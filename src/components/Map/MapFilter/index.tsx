@@ -2,6 +2,7 @@ import { useEffect, useRef, useMemo } from 'react';
 import { HaikuMonument } from '@/types/haiku';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -12,6 +13,8 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CardHeader } from '@/components/ui/card';
 import { useFilterStore } from '@/store/useFilterStore';
+import { useUserFavorites, useUserVisits } from '@/lib/api-hooks';
+import { useSession } from 'next-auth/react';
 
 type MapFilterProps = {
   monuments: HaikuMonument[];
@@ -33,18 +36,26 @@ const REGIONS = [
 ];
 
 export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
+  const { data: session } = useSession();
   const {
     mapSelectedRegion,
     mapSelectedPrefecture,
     mapSelectedPoet,
     mapSearchText,
     mapFilteredMonuments,
+    mapShowFavoritesOnly,
+    mapShowVisitedOnly,
     setMapSelectedRegion,
     setMapSelectedPrefecture,
     setMapSelectedPoet,
     setMapSearchText,
+    setMapShowFavoritesOnly,
+    setMapShowVisitedOnly,
     resetMapFilters,
   } = useFilterStore();
+
+  const { data: userFavorites } = useUserFavorites();
+  const { data: userVisits } = useUserVisits();
 
   const isFirstRender = useRef(true);
 
@@ -113,6 +124,30 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
       );
     }
 
+    if (mapShowFavoritesOnly || mapShowVisitedOnly) {
+      const favoriteIds =
+        userFavorites?.favorites?.map((fav) => fav.monument.id) || [];
+      const visitedIds =
+        userVisits?.visits?.map((visit) => visit.monument.id) || [];
+
+      if (mapShowFavoritesOnly && mapShowVisitedOnly) {
+        const combinedIds = [...new Set([...favoriteIds, ...visitedIds])];
+        filtered = filtered.filter((monument) =>
+          combinedIds.includes(monument.id)
+        );
+      } else if (mapShowFavoritesOnly) {
+        // お気に入りのみ
+        filtered = filtered.filter((monument) =>
+          favoriteIds.includes(monument.id)
+        );
+      } else if (mapShowVisitedOnly) {
+        // 訪問済みのみ
+        filtered = filtered.filter((monument) =>
+          visitedIds.includes(monument.id)
+        );
+      }
+    }
+
     onFilterChange(filtered);
 
     if (isFirstRender.current) {
@@ -124,6 +159,10 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
     mapSelectedPrefecture,
     mapSelectedPoet,
     mapSearchText,
+    mapShowFavoritesOnly,
+    mapShowVisitedOnly,
+    userFavorites,
+    userVisits,
     onFilterChange,
   ]);
 
@@ -152,7 +191,9 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
     mapSelectedRegion !== 'すべて' ||
     mapSelectedPrefecture !== 'すべて' ||
     mapSelectedPoet !== 'すべて' ||
-    mapSearchText;
+    mapSearchText ||
+    mapShowFavoritesOnly ||
+    mapShowVisitedOnly;
 
   return (
     <div className="h-full w-full min-w-80 flex flex-col">
@@ -178,6 +219,40 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
             />
           </div>
         </div>
+
+        {session?.user && (
+          <div className="space-y-4 mb-6">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                checked={mapShowFavoritesOnly}
+                id="favorites-only"
+                onCheckedChange={(checked) =>
+                  setMapShowFavoritesOnly(!!checked)
+                }
+              />
+              <label
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                htmlFor="favorites-only"
+              >
+                お気に入りのみ表示
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                checked={mapShowVisitedOnly}
+                id="visited-only"
+                onCheckedChange={(checked) => setMapShowVisitedOnly(!!checked)}
+              />
+              <label
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                htmlFor="visited-only"
+              >
+                訪問済みのみ表示
+              </label>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-4 mb-12">
           <div>

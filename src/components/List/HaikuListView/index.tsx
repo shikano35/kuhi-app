@@ -21,6 +21,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { HaikuMonument } from '@/types/haiku';
 import { Search } from 'lucide-react';
+import { MenuDropdown } from '@/components/shared/MenuDropdown';
 
 type HaikuListViewProps = {
   poems: HaikuMonument[];
@@ -28,7 +29,8 @@ type HaikuListViewProps = {
 
 export function HaikuListView({ poems }: HaikuListViewProps) {
   const [search, setSearch] = useState('');
-  const [season, setSeason] = useState('');
+  const [season, setSeason] = useState('all');
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [filteredPoems, setFilteredPoems] = useState<HaikuMonument[]>(poems);
 
   useEffect(() => {
@@ -48,19 +50,25 @@ export function HaikuListView({ poems }: HaikuListViewProps) {
       });
     }
 
-    if (season) {
-      filtered = filtered.filter((poem) => poem.season === season);
+    if (season && season !== 'all') {
+      filtered = filtered.filter((poem) => {
+        if (!poem.season) return false;
+        const seasons = poem.season.split(',').map((s) => s.trim());
+        return seasons.includes(season);
+      });
     }
 
     setFilteredPoems(filtered);
   }, [search, season, poems]);
 
-  const seasons = [
-    ...new Set(poems.map((poem) => poem.season).filter(Boolean)),
-  ];
+  const seasons = ['春', '夏', '秋', '冬'];
 
   return (
-    <div className="space-y-6">
+    <div
+      className="space-y-6"
+      onMouseEnter={() => setIsDropdownVisible(true)}
+      onMouseLeave={() => setIsDropdownVisible(false)}
+    >
       <div className="flex flex-col sm:flex-row gap-4 items-center">
         <div className="relative w-full sm:w-2/3">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -81,7 +89,7 @@ export function HaikuListView({ poems }: HaikuListViewProps) {
             <SelectContent>
               <SelectItem value="all">すべての季節</SelectItem>
               {seasons.map((s) => (
-                <SelectItem key={s} value={s || ''}>
+                <SelectItem key={s} value={s}>
                   {s}
                 </SelectItem>
               ))}
@@ -142,6 +150,8 @@ export function HaikuListView({ poems }: HaikuListViewProps) {
           ))}
         </div>
       )}
+
+      <MenuDropdown isVisible={isDropdownVisible} />
     </div>
   );
 }

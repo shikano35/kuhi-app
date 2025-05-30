@@ -48,14 +48,14 @@ export function VisitButton({ monumentId }: VisitButtonProps) {
   return (
     <div className="bg-background rounded-lg shadow p-4">
       <h3 className="text-lg font-semibold mb-3 flex items-center">
-        <MapPin className="mr-2 text-primary size-5" />
+        <MapPin className="mr-2 mt-0.25  text-primary size-5" />
         訪問記録
       </h3>
 
       {isVisited && visitData ? (
         <div className="space-y-3">
           <div className="flex items-center text-green-600">
-            <Calendar className="mr-2 size-4" />
+            <Calendar className="mr-2 mt-0.25  size-4" />
             <span className="text-sm">
               {format(new Date(visitData.visitedAt), 'yyyy年M月d日', {
                 locale: ja,
@@ -66,7 +66,7 @@ export function VisitButton({ monumentId }: VisitButtonProps) {
 
           {visitData.rating && (
             <div className="flex items-center">
-              <Star className="mr-2 size-4 fill-yellow-400 text-yellow-400" />
+              <Star className="mr-2 mt-0.25  size-4 fill-yellow-400 text-yellow-400" />
               <span className="text-sm">評価: {visitData.rating}/5</span>
             </div>
           )}
@@ -86,12 +86,12 @@ export function VisitButton({ monumentId }: VisitButtonProps) {
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 mt-0.25  h-4 w-4 animate-spin" />
                 解除中...
               </>
             ) : (
               <>
-                <X className="mr-2 h-4 w-4" />
+                <X className="mr-2 mt-0.25  h-4 w-4" />
                 訪問記録を削除
               </>
             )}
@@ -110,12 +110,12 @@ export function VisitButton({ monumentId }: VisitButtonProps) {
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 mt-0.25  h-4 w-4 animate-spin" />
                 記録中...
               </>
             ) : (
               <>
-                <MapPin className="mr-2 h-4 w-4" />
+                <MapPin className="mr-2 mt-0.25  h-4 w-4" />
                 訪問済みにする
               </>
             )}

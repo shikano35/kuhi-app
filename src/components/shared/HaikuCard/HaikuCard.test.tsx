@@ -3,6 +3,7 @@ import { HaikuCard } from './index';
 import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
 import { describe, expect, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SessionProvider } from 'next-auth/react';
 
 // api-hooksのモック
 vi.mock('@/lib/api-hooks', () => ({
@@ -46,9 +47,11 @@ describe('HaikuCard', () => {
 
   const renderWithProvider = (component: React.ReactElement) => {
     return render(
-      <QueryClientProvider client={queryClient}>
-        {component}
-      </QueryClientProvider>
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          {component}
+        </QueryClientProvider>
+      </SessionProvider>
     );
   };
 

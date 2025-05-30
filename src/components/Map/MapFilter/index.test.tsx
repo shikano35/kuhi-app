@@ -1,4 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SessionProvider } from 'next-auth/react';
 import { MapFilter } from './index';
 import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
 import { vi } from 'vitest';
@@ -11,23 +13,51 @@ vi.mock('@/store/useFilterStore', () => ({
     mapSelectedPoet: 'すべて',
     mapSearchText: '',
     mapFilteredMonuments: mockHaikuMonuments,
+    mapShowFavoritesOnly: false,
+    mapShowVisitedOnly: false,
     setMapSelectedRegion: vi.fn(),
     setMapSelectedPrefecture: vi.fn(),
     setMapSelectedPoet: vi.fn(),
     setMapSearchText: vi.fn(),
+    setMapShowFavoritesOnly: vi.fn(),
+    setMapShowVisitedOnly: vi.fn(),
     resetMapFilters: resetMapFiltersMock,
   }),
 }));
 
+// API hooks のモック
+vi.mock('@/lib/api-hooks', () => ({
+  useUserFavorites: () => ({ data: [] }),
+  useUserVisits: () => ({ data: [] }),
+}));
+
 describe('MapFilter', () => {
   const mockOnFilterChange = vi.fn();
+  let queryClient: QueryClient;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
   });
 
+  const renderWithProviders = (component: React.ReactNode) => {
+    return render(
+      <SessionProvider session={null}>
+        <QueryClientProvider client={queryClient}>
+          {component}
+        </QueryClientProvider>
+      </SessionProvider>
+    );
+  };
+
   test('初期レンダリング時にはフィルターが適用されること', () => {
-    render(
+    renderWithProviders(
       <MapFilter
         monuments={mockHaikuMonuments}
         onFilterChange={mockOnFilterChange}
@@ -51,15 +81,19 @@ describe('MapFilter', () => {
         mapSelectedPoet: 'すべて',
         mapSearchText: '',
         mapFilteredMonuments: mockHaikuMonuments,
+        mapShowFavoritesOnly: false,
+        mapShowVisitedOnly: false,
         setMapSelectedRegion,
         setMapSelectedPrefecture: vi.fn(),
         setMapSelectedPoet: vi.fn(),
         setMapSearchText: vi.fn(),
+        setMapShowFavoritesOnly: vi.fn(),
+        setMapShowVisitedOnly: vi.fn(),
         resetMapFilters: vi.fn(),
       }),
     }));
 
-    render(
+    renderWithProviders(
       <MapFilter
         monuments={mockHaikuMonuments}
         onFilterChange={mockOnFilterChange}
@@ -79,15 +113,19 @@ describe('MapFilter', () => {
         mapSelectedPoet: 'すべて',
         mapSearchText: '',
         mapFilteredMonuments: mockHaikuMonuments,
+        mapShowFavoritesOnly: false,
+        mapShowVisitedOnly: false,
         setMapSelectedRegion: vi.fn(),
         setMapSelectedPrefecture: vi.fn(),
         setMapSelectedPoet: vi.fn(),
         setMapSearchText,
+        setMapShowFavoritesOnly: vi.fn(),
+        setMapShowVisitedOnly: vi.fn(),
         resetMapFilters: vi.fn(),
       }),
     }));
 
-    render(
+    renderWithProviders(
       <MapFilter
         monuments={mockHaikuMonuments}
         onFilterChange={mockOnFilterChange}
@@ -98,7 +136,7 @@ describe('MapFilter', () => {
   });
 
   test('リセットボタンをクリックするとフィルターがリセットされること', async () => {
-    render(
+    renderWithProviders(
       <MapFilter
         monuments={mockHaikuMonuments}
         onFilterChange={mockOnFilterChange}

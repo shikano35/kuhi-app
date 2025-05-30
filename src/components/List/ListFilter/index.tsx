@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { usePoetsList, useLocationsList } from '@/lib/api-hooks';
 import { FilterIcon } from 'lucide-react';
 import { useFilterStore } from '@/store/useFilterStore';
+import { Poet, Location } from '@/types/haiku';
 
 const REGIONS = [
   '北海道',
@@ -20,10 +20,13 @@ const REGIONS = [
   'すべて',
 ];
 
-export function ListFilter() {
+type ListFilterProps = {
+  poets?: Poet[];
+  locations?: Location[];
+};
+
+export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
   const router = useRouter();
-  const { data: poets = [] } = usePoetsList();
-  const { data: locations = [] } = useLocationsList();
 
   const {
     listSearchText,

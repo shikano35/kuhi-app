@@ -2,7 +2,6 @@
 
 import { useEffect, useReducer, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import Image from 'next/image';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useSession } from 'next-auth/react';
@@ -10,6 +9,7 @@ import { useEventListener } from '@/hooks/useEventListener';
 import { UserIcon } from 'lucide-react';
 import { FadeIn } from '../FadeIn';
 import { DrawerMenu } from '../DrawerMenu';
+import { LoginModal } from '@/components/Auth/LoginModal';
 
 export function AuthButton({ isFlag = false }: { isFlag?: boolean }) {
   const { data: session, status } = useSession();
@@ -127,16 +127,19 @@ export function AuthButton({ isFlag = false }: { isFlag?: boolean }) {
   }
 
   return isFlag ? (
-    <Button
-      asChild
-      className="text-md bg-white/0 text-white hover:bg-white/20 hover:text-white rounded-full transition-colors text-shadow-lg shadow-lg"
-      variant="outline"
-    >
-      <Link href="/auth/login">ログイン</Link>
-    </Button>
+    <LoginModal>
+      <Button
+        className="text-md bg-white/0 text-white hover:bg-white/20 hover:text-white rounded-full transition-colors text-shadow-lg shadow-lg"
+        variant="outline"
+      >
+        ログイン
+      </Button>
+    </LoginModal>
   ) : (
-    <Button asChild className="text-md text-primary-foreground rounded-full">
-      <Link href="/auth/login">ログイン</Link>
-    </Button>
+    <LoginModal>
+      <Button className="text-md text-primary-foreground rounded-full">
+        ログイン
+      </Button>
+    </LoginModal>
   );
 }
