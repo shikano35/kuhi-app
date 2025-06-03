@@ -5,11 +5,19 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { menuLinks } from '@/layouts/Header';
 
-interface MobileMenuProps {
+const menuLinks = [
+  { href: '/', label: 'ホーム' },
+  { href: '/map', label: '句碑マップ' },
+  { href: '/list', label: '句碑リスト' },
+  { href: '/haiku', label: '俳句リスト' },
+  { href: '/poets', label: '俳人リスト' },
+  { href: '/about', label: '句碑とは' },
+];
+
+type MobileMenuProps = {
   variant?: 'default' | 'home';
-}
+};
 
 export function MobileMenu({ variant = 'default' }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);

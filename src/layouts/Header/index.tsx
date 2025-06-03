@@ -11,7 +11,7 @@ const hinaMincho = Hina_Mincho({
   subsets: ['latin'],
 });
 
-export const menuLinks = [
+const menuLinks = [
   { href: '/', label: 'ホーム' },
   { href: '/map', label: '句碑マップ' },
   { href: '/list', label: '句碑リスト' },
