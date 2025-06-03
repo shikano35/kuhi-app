@@ -170,7 +170,7 @@ export function MonumentDetailClientComponent({
                     )}
                     {poet.link_url && (
                       <a
-                        className="absolute bottom-6 right-6 text-muted-foreground hover:underline text-sm flex items-center justify-end hover:text-primary hover:underline-offset-2"
+                        className=" mt-2 text-muted-foreground hover:underline text-sm flex items-center justify-end hover:text-primary hover:underline-offset-2"
                         href={poet.link_url}
                         rel="noopener noreferrer"
                         target="_blank"
@@ -207,7 +207,7 @@ export function MonumentDetailClientComponent({
                 </p>
                 {source.url && (
                   <a
-                    className="absolute bottom-6 right-6 text-muted-foreground hover:underline text-sm mt-6 flex items-center justify-end hover:text-primary hover:underline-offset-2"
+                    className="mt-2 text-muted-foreground hover:underline text-sm mt-6 flex items-center justify-end hover:text-primary hover:underline-offset-2"
                     href={source.url}
                     rel="noopener noreferrer"
                     target="_blank"
@@ -233,7 +233,7 @@ export function MonumentDetailClientComponent({
 
                 {location.latitude && location.longitude && (
                   <Link
-                    className="absolute bottom-6 right-6 text-muted-foreground hover:underline hover:underline-offset-2 hover:text-primary text-sm flex items-center justify-end"
+                    className="mt-2 text-muted-foreground hover:underline hover:underline-offset-2 hover:text-primary text-sm flex items-center justify-end"
                     href={`https://maps.google.com/maps?q=${location.latitude},${location.longitude}`}
                     rel="noopener noreferrer"
                     target="_blank"
