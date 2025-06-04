@@ -31,8 +31,12 @@ export async function RegionalHaikuServerComponent() {
     {} as Record<string, HaikuMonument[]>
   );
 
+  const allMonuments = await getAllHaikuMonuments({});
+  const initialMonuments = allMonuments.slice(0, 6);
+
   return (
     <RegionalHaikuClientComponent
+      initialMonuments={initialMonuments}
       regionMonumentsMap={regionMonumentsMap}
       regions={REGIONS}
     />

@@ -73,7 +73,7 @@ export default async function PoetPage({ params }: PoetPageProps) {
                 </div>
               )}
 
-              <div className="flex-grow text-center md:text-left">
+              <div className="flex-grow text-center md:text-start">
                 <h1 className="text-3xl md:text-4xl font-bold mb-8 text-primary">
                   {poet.name}
                 </h1>
@@ -86,7 +86,7 @@ export default async function PoetPage({ params }: PoetPageProps) {
 
                 {poet.link_url && (
                   <a
-                    className="inline-flex items-center text-muted-foreground hover:underline hover:text-primary hover:underline-offset-2"
+                    className="flex items-center justify-end text-muted-foreground hover:underline hover:text-primary hover:underline-offset-2"
                     href={poet.link_url}
                     rel="noopener noreferrer"
                     target="_blank"
