@@ -26,10 +26,7 @@ export function PoetListClientComponent({
 
     const lowerSearch = search.toLowerCase();
     return poets.filter((poet) => {
-      return (
-        poet.name.toLowerCase().includes(lowerSearch) ||
-        (poet.biography && poet.biography.toLowerCase().includes(lowerSearch))
-      );
+      return poet.name.toLowerCase().includes(lowerSearch);
     });
   }, [search, poets]);
 
@@ -45,7 +42,7 @@ export function PoetListClientComponent({
           <Input
             className="pl-10 w-full"
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="俳人を検索..."
+            placeholder="俳人名を検索..."
             type="text"
             value={search}
           />
