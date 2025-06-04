@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { HaikuHistoryChart } from './HaikuHistoryChart';
 
 type HistoryEvent = {
@@ -58,18 +58,25 @@ const HISTORY_EVENTS: HistoryEvent[] = [
 ];
 
 export function HistorySection() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section
       aria-labelledby="history-heading"
-      className="py-24 px-4 bg-gradient-to-br from-background via-muted/30 to-background"
+      className="py-24 px-4 bg-gradient-to-br from-background via-muted/30 to-background overflow-hidden"
       role="region"
     >
       <div className="container mx-auto max-w-7xl">
         <motion.div
-          animate={{ opacity: 1, y: 0 }}
           className="text-center mb-20"
-          initial={{ opacity: 0, y: 50 }}
+          initial="hidden"
           transition={{ duration: 0.8 }}
+          variants={{
+            hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 50 },
+            visible: { opacity: 1, y: 0 },
+          }}
+          viewport={{ once: true, amount: 0.2 }}
+          whileInView="visible"
         >
           <h2
             className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent"
@@ -83,10 +90,11 @@ export function HistorySection() {
         </motion.div>
 
         <motion.div
-          animate={{ opacity: 1, scale: 1 }}
           className="mb-32"
           initial={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 0.8, delay: shouldReduceMotion ? 0 : 0.2 }}
+          viewport={{ once: true, amount: 0.1 }}
+          whileInView={{ opacity: 1, scale: 1 }}
         >
           <HaikuHistoryChart />
         </motion.div>
@@ -98,17 +106,24 @@ export function HistorySection() {
 
           {HISTORY_EVENTS.map((event, index) => (
             <motion.article
-              animate={{ opacity: 1, x: 0 }}
               aria-labelledby={`event-${event.id}-title`}
               className={`relative mb-24 md:mb-32 ${
                 index % 2 === 0
                   ? 'md:flex md:justify-start'
                   : 'md:flex md:flex-row-reverse md:justify-start'
               }`}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -100 : 100 }}
+              initial={{
+                opacity: 0,
+                x: shouldReduceMotion ? 0 : index % 2 === 0 ? -50 : 50,
+              }}
               key={event.id}
               role="article"
-              transition={{ duration: 0.8, delay: 0.4 + index * 0.2 }}
+              transition={{
+                duration: 0.8,
+                delay: shouldReduceMotion ? 0 : index * 0.1,
+              }}
+              viewport={{ once: true, amount: 0.2 }}
+              whileInView={{ opacity: 1, x: 0 }}
             >
               <div className="hidden md:block md:w-5/12">
                 <div
