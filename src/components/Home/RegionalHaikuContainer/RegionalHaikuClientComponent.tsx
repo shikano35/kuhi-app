@@ -9,17 +9,19 @@ import { HaikuMonument } from '@/types/haiku';
 type RegionalHaikuClientComponentProps = {
   regionMonumentsMap: Record<string, HaikuMonument[]>;
   regions: string[];
+  initialMonuments: HaikuMonument[];
 };
 
 export function RegionalHaikuClientComponent({
   regionMonumentsMap,
   regions,
+  initialMonuments,
 }: RegionalHaikuClientComponentProps) {
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
 
   const displayMonuments = activeRegion
     ? regionMonumentsMap[activeRegion] || []
-    : [];
+    : initialMonuments;
 
   const handleRegionClick = (region: string) => {
     if (activeRegion === region) {
@@ -59,13 +61,7 @@ export function RegionalHaikuClientComponent({
           ))}
         </div>
 
-        {displayMonuments.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayMonuments.map((monument) => (
-              <HaikuCard key={monument.id} monument={monument} />
-            ))}
-          </div>
-        ) : (
+        {displayMonuments.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
               {activeRegion
@@ -73,12 +69,22 @@ export function RegionalHaikuClientComponent({
                 : '地域を選択すると句碑が表示されます。'}
             </p>
           </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {displayMonuments.map((monument) => (
+              <HaikuCard key={monument.id} monument={monument} />
+            ))}
+          </div>
         )}
 
-        {activeRegion && displayMonuments.length >= 6 && (
+        {displayMonuments.length >= 6 && (
           <div className="text-center mt-8">
             <Button asChild className="rounded-full px-8 py-6 text-base">
-              <Link href={`/list?region=${activeRegion}`}>もっと見る</Link>
+              <Link
+                href={activeRegion ? `/list?region=${activeRegion}` : '/list'}
+              >
+                もっと見る
+              </Link>
             </Button>
           </div>
         )}
