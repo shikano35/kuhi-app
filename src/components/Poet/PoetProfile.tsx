@@ -37,7 +37,7 @@ export function PoetProfile({ poet }: PoetProfileProps) {
 
             {poet.link_url && (
               <a
-                className="flex items-center justify-end text-muted-foreground hover:underline hover:text-primary hover:underline-offset-2"
+                className="flex items-center justify-end text-muted-foreground underline hover:text-primary underline-offset-2"
                 href={poet.link_url}
                 rel="noopener noreferrer"
                 target="_blank"

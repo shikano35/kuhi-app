@@ -133,7 +133,7 @@ export function ContributeForm() {
         </p>
         <div className="mt-12">
           <LoginModal>
-            <button className="text-muted-foreground hover:text-primary hover:underline hover:underline-offset-2">
+            <button className="text-muted-foreground hover:text-primary underline underline-offset-2">
               ログインページへ
             </button>
           </LoginModal>
@@ -181,7 +181,7 @@ export function ContributeForm() {
           </p>
           <div className="mt-6">
             <button
-              className="text-muted-foreground hover:text-primary hover:underline hover:underline-offset-4"
+              className="text-muted-foreground hover:text-primary underline underline-offset-4"
               onClick={() => setSuccess(false)}
             >
               別の情報を投稿する
