@@ -32,12 +32,67 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'example.com',
+        hostname: 'via.placeholder.com',
         pathname: '**',
       },
       {
         protocol: 'https',
-        hostname: 'via.placeholder.com',
+        hostname: 'colbase.nich.go.jp',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.go.jp',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.jpsearch.go.jp',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'iss.ndl.go.jp',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dl.ndl.go.jp',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.ndl.go.jp',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'bunka.nii.ac.jp',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.ac.jp',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.fujibi.or.jp',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'image.tnm.jp',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.or.jp',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.jp',
         pathname: '**',
       },
     ],
