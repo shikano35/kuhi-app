@@ -2,6 +2,7 @@ import { unstable_cache } from 'next/cache';
 import {
   getAllHaikuMonuments as _getAllHaikuMonuments,
   getAllPoets as _getAllPoets,
+  getPoetById as _getPoetById,
   getAllLocations as _getAllLocations,
   getHaikuMonumentById as _getHaikuMonumentById,
   getHaikuMonumentsByPoet as _getHaikuMonumentsByPoet,
@@ -42,6 +43,17 @@ export const getAllPoets = unstable_cache(
     return _getAllPoets();
   },
   ['poets'],
+  {
+    revalidate: 60 * 60,
+    tags: ['poets'],
+  }
+);
+
+export const getPoetById = unstable_cache(
+  async (id: number): Promise<Poet | null> => {
+    return _getPoetById(id);
+  },
+  ['poet-by-id'],
   {
     revalidate: 60 * 60,
     tags: ['poets'],
@@ -135,6 +147,10 @@ export function preloadHaikuMonuments(params?: {
 
 export function preloadPoets() {
   void getAllPoets();
+}
+
+export function preloadPoet(id: number) {
+  void getPoetById(id);
 }
 
 export function preloadLocations() {
