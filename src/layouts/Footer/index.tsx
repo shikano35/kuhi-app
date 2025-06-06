@@ -2,19 +2,13 @@ import { ExternalLinkIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Hina_Mincho } from 'next/font/google';
 import { cn } from '@/lib/cn';
+import { menuLinks } from '@/layouts/Header';
 
 const hinaMincho = Hina_Mincho({
   variable: '--font-hina-mincho',
   weight: '400',
   subsets: ['latin'],
 });
-
-const menuLinks = [
-  { href: '/', label: 'ホーム' },
-  { href: '/map', label: '句碑マップ' },
-  { href: '/list', label: '句碑リスト' },
-  { href: '/about', label: '句碑とは' },
-];
 
 const otherLinks = [
   { href: '/references', label: '関連文献・参考文献等' },
