@@ -17,13 +17,13 @@ import { Input } from '@/components/ui/input';
 
 type ThemeType = 'season' | 'region' | 'poet' | 'era';
 
-interface ThemeGalleryClientProps {
+type ThemeGalleryClientProps = {
   initialResults: JapanSearchItem[];
   initialTheme: ThemeType;
   initialQuery: string;
   initialPage: number;
   error?: string | null;
-}
+};
 
 const themeOptions = {
   season: {
@@ -79,11 +79,17 @@ export function ThemeGalleryClient({
   initialPage,
   error: initialError,
 }: ThemeGalleryClientProps) {
-  const [results, setResults] = useState<JapanSearchItem[]>(initialResults);
+  const uniqueInitialResults = initialResults.filter(
+    (item, index, self) => index === self.findIndex((t) => t.id === item.id)
+  );
+
+  const [results, setResults] =
+    useState<JapanSearchItem[]>(uniqueInitialResults);
   const [currentTheme, setCurrentTheme] = useState<ThemeType>(initialTheme);
   const [currentQuery, setCurrentQuery] = useState(initialQuery);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [error, setError] = useState<string | null>(initialError || null);
+  const [hasMoreResults, setHasMoreResults] = useState(true); // 追加結果があるかどうかの状態
   const [filters, setFilters] = useState({
     theme: initialTheme,
     query: initialQuery,
@@ -94,9 +100,9 @@ export function ThemeGalleryClient({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const ITEMS_PER_PAGE = 20;
+  const ITEMS_PER_PAGE = 60;
 
-  // Server Actionを使用した検索実行
+  // 検索実行
   const executeSearch = async (
     theme: ThemeType,
     query: string,
@@ -141,7 +147,12 @@ export function ThemeGalleryClient({
         setCurrentTheme(theme);
         setCurrentQuery(defaultQuery);
         setCurrentPage(1);
-        setResults(newResults);
+        setHasMoreResults(true);
+        const uniqueResults = newResults.filter(
+          (item, index, self) =>
+            index === self.findIndex((t) => t.id === item.id)
+        );
+        setResults(uniqueResults);
 
         // URLを更新
         const params = new URLSearchParams(searchParams);
@@ -166,7 +177,12 @@ export function ThemeGalleryClient({
 
         setCurrentQuery(query);
         setCurrentPage(1);
-        setResults(newResults);
+        setHasMoreResults(true);
+        const uniqueResults = newResults.filter(
+          (item, index, self) =>
+            index === self.findIndex((t) => t.id === item.id)
+        );
+        setResults(uniqueResults);
 
         // URLを更新
         const params = new URLSearchParams(searchParams);
@@ -195,9 +211,18 @@ export function ThemeGalleryClient({
         setCurrentPage(page);
         if (page === 1) {
           setResults(newResults);
+          setHasMoreResults(newResults.length >= ITEMS_PER_PAGE);
         } else {
-          // ページネーションの場合は結果を追加
-          setResults((prev) => [...prev, ...newResults]);
+          setResults((prev) => {
+            const existingIds = new Set(prev.map((item) => item.id));
+            const uniqueNewResults = newResults.filter(
+              (item) => !existingIds.has(item.id)
+            );
+
+            return [...prev, ...uniqueNewResults];
+          });
+
+          setHasMoreResults(newResults.length >= ITEMS_PER_PAGE);
         }
 
         // URLを更新
@@ -225,7 +250,12 @@ export function ThemeGalleryClient({
 
         setCurrentQuery(filters.customQuery.trim());
         setCurrentPage(1);
-        setResults(newResults);
+        setHasMoreResults(true);
+        const uniqueResults = newResults.filter(
+          (item, index, self) =>
+            index === self.findIndex((t) => t.id === item.id)
+        );
+        setResults(uniqueResults);
 
         // URLを更新
         const params = new URLSearchParams(searchParams);
@@ -350,9 +380,15 @@ export function ThemeGalleryClient({
               検索結果: {currentQuery} ({results.length}件)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {results.map((item) => (
-                <JapanSearchCard item={item} key={item.id} variant="default" />
-              ))}
+              {results.map((item, index) => {
+                return (
+                  <JapanSearchCard
+                    item={item}
+                    key={item.id || `item-${index}`}
+                    variant="default"
+                  />
+                );
+              })}
             </div>
           </div>
         )}
@@ -369,19 +405,17 @@ export function ThemeGalleryClient({
           </div>
         )}
 
-        {!isPending &&
-          results.length > 0 &&
-          results.length >= ITEMS_PER_PAGE && (
-            <div className="text-center mt-8">
-              <Button
-                className="transition-colors disabled:opacity-50"
-                disabled={isPending}
-                onClick={() => handlePageChange(currentPage + 1)}
-              >
-                さらに読み込む
-              </Button>
-            </div>
-          )}
+        {!isPending && results.length > 0 && hasMoreResults && (
+          <div className="text-center mt-8">
+            <Button
+              className="transition-colors disabled:opacity-50"
+              disabled={isPending}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              さらに読み込む
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

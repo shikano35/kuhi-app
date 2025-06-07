@@ -2,11 +2,17 @@ import { notFound } from 'next/navigation';
 import { GalleryDetailContainer } from '@/components/Gallery/GalleryDetailContainer';
 import { baseMetadata } from '@/lib/metadata';
 
-export function generateMetadata() {
+export async function generateMetadata({ params }: GalleryDetailPageProps) {
+  const { id } = await params;
+
+  const displayId = id
+    ? (id.includes('-') ? id.split('-')[0] : id).substring(0, 20)
+    : 'unknown';
+
   return {
     ...baseMetadata,
-    title: `ギャラリー詳細 | 句碑アプリ`,
-    description: `Japan Search APIからの文化資料の詳細情報`,
+    title: `文化資料詳細 (${displayId}) | くひめぐり`,
+    description: `Japan Search APIから取得した文化資料の詳細情報を表示しています。ID: ${id}`,
   };
 }
 

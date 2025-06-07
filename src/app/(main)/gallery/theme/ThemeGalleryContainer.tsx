@@ -20,7 +20,7 @@ export async function ThemeGalleryContainer({
   query = '春',
   page = 1,
 }: ThemeGalleryContainerProps) {
-  const ITEMS_PER_PAGE = 50;
+  const ITEMS_PER_PAGE = 60;
 
   let initialResults: JapanSearchItem[] = [];
   let error = null;
