@@ -11,10 +11,11 @@ const hinaMincho = Hina_Mincho({
   subsets: ['latin'],
 });
 
-const menuLinks = [
+export const menuLinks = [
   { href: '/', label: 'ホーム' },
   { href: '/map', label: '句碑マップ' },
   { href: '/list', label: '句碑リスト' },
+  { href: '/gallery', label: 'ギャラリー' },
   { href: '/about', label: '句碑とは' },
 ];
 
@@ -28,7 +29,7 @@ export function HomeHeader() {
   return (
     <header className="absolute top-0 left-0 right-0 z-50">
       <div className="container mx-auto flex items-center p-4 py-8 justify-end">
-        <nav className="hidden md:flex space-x-12 lg:space-x-16 mr-16 lg:mr-32">
+        <nav className="hidden md:flex space-x-12 lg:space-x-16 mr-12 lg:mr-32">
           {menuLinks.map((link, index) => {
             if (link.label === '句碑リスト') {
               return (

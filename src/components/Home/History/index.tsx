@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
 import { HaikuHistoryChart } from './HaikuHistoryChart';
 
 type HistoryEvent = {
@@ -58,8 +58,6 @@ const HISTORY_EVENTS: HistoryEvent[] = [
 ];
 
 export function HistorySection() {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
     <section
       aria-labelledby="history-heading"
@@ -67,17 +65,7 @@ export function HistorySection() {
       role="region"
     >
       <div className="container mx-auto max-w-7xl">
-        <motion.div
-          className="text-center mb-20"
-          initial="hidden"
-          transition={{ duration: 0.8 }}
-          variants={{
-            hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 50 },
-            visible: { opacity: 1, y: 0 },
-          }}
-          viewport={{ once: true, amount: 0.2 }}
-          whileInView="visible"
-        >
+        <div className="text-center mb-20">
           <h2
             className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent"
             id="history-heading"
@@ -87,17 +75,11 @@ export function HistorySection() {
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             1000年以上の歴史を持つ俳句の変遷と、その文化を刻む句碑の物語をたどります。
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="mb-32"
-          initial={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.8, delay: shouldReduceMotion ? 0 : 0.2 }}
-          viewport={{ once: true, amount: 0.1 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-        >
+        <div className="mb-32">
           <HaikuHistoryChart />
-        </motion.div>
+        </div>
 
         <div className="relative">
           <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-primary via-purple-500 to-blue-500 hidden md:block" />
@@ -105,25 +87,15 @@ export function HistorySection() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
 
           {HISTORY_EVENTS.map((event, index) => (
-            <motion.article
+            <article
               aria-labelledby={`event-${event.id}-title`}
               className={`relative mb-24 md:mb-32 ${
                 index % 2 === 0
                   ? 'md:flex md:justify-start'
                   : 'md:flex md:flex-row-reverse md:justify-start'
               }`}
-              initial={{
-                opacity: 0,
-                x: shouldReduceMotion ? 0 : index % 2 === 0 ? -50 : 50,
-              }}
               key={event.id}
               role="article"
-              transition={{
-                duration: 0.8,
-                delay: shouldReduceMotion ? 0 : index * 0.1,
-              }}
-              viewport={{ once: true, amount: 0.2 }}
-              whileInView={{ opacity: 1, x: 0 }}
             >
               <div className="hidden md:block md:w-5/12">
                 <div
@@ -256,7 +228,7 @@ export function HistorySection() {
                   </div>
                 </div>
               </div>
-            </motion.article>
+            </article>
           ))}
         </div>
       </div>
