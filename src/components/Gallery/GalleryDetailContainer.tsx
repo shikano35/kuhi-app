@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
@@ -13,11 +13,11 @@ import {
   Loader2,
   AlertCircle,
 } from 'lucide-react';
-import { JapanSearchItem } from '@/lib/japansearch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
+import { useItemDetail } from '@/lib/japansearch-hooks';
 
 type GalleryDetailContainerProps = {
   itemId: string;
@@ -27,57 +27,15 @@ export function GalleryDetailContainer({
   itemId,
 }: GalleryDetailContainerProps) {
   const router = useRouter();
-  const [item, setItem] = useState<JapanSearchItem | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
 
-  useEffect(() => {
-    const fetchItemDetail = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await fetch(
-          `/api/japansearch/detail/${encodeURIComponent(itemId)}`
-        );
-
-        if (!response.ok) {
-          if (response.status === 404) {
-            const errorData = await response.json();
-            throw new Error(
-              errorData.message || 'アイテムが見つかりませんでした'
-            );
-          }
-          throw new Error(`詳細情報の取得に失敗しました (${response.status})`);
-        }
-
-        const data = await response.json();
-        if (!data || !data.id) {
-          throw new Error('有効なアイテムデータを取得できませんでした');
-        }
-
-        setItem(data);
-      } catch (err) {
-        console.error('詳細取得エラー:', err);
-        setError(
-          err instanceof Error ? err.message : '詳細情報の取得に失敗しました'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (itemId) {
-      fetchItemDetail();
-    }
-  }, [itemId]);
+  const { data: item, isLoading, error } = useItemDetail(itemId);
 
   const handleImageError = () => {
     setImageError(true);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-muted/50 flex items-center justify-center">
         <div className="text-center">
@@ -94,10 +52,13 @@ export function GalleryDetailContainer({
         <div className="text-center max-w-md mx-auto p-6">
           <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
           <h2 className="text-xl font-semibold mb-2">エラー</h2>
-          <p className="text-muted-foreground mb-6">{error}</p>
+          <p className="text-muted-foreground mb-6">
+            {error instanceof Error
+              ? error.message
+              : '詳細情報の取得に失敗しました'}
+          </p>
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-2">
-              {' '}
               <Button
                 onClick={() => window.location.reload()}
                 size="sm"
@@ -281,7 +242,7 @@ export function GalleryDetailContainer({
                         作成者
                       </h4>
                       <div className="space-y-1">
-                        {creator.map((c, index) => (
+                        {creator.map((c: string, index: number) => (
                           <p className="text-muted-foreground" key={index}>
                             {c}
                           </p>
@@ -307,7 +268,7 @@ export function GalleryDetailContainer({
                         場所
                       </h4>
                       <div className="space-y-1">
-                        {spatial.map((s, index) => (
+                        {spatial.map((s: string, index: number) => (
                           <p className="text-muted-foreground" key={index}>
                             {s}
                           </p>
@@ -323,7 +284,7 @@ export function GalleryDetailContainer({
                         主題・分野
                       </h4>
                       <div className="flex flex-wrap gap-1">
-                        {subject.map((s, index) => (
+                        {subject.map((s: string, index: number) => (
                           <Badge key={index} variant="outline">
                             {s}
                           </Badge>

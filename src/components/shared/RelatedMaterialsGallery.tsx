@@ -1,15 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Loader2, Images, BookOpen, AlertCircle } from 'lucide-react';
-import {
-  searchRelatedMaterials,
-  searchImages,
-  JapanSearchItem,
-} from '@/lib/japansearch';
 import { JapanSearchCard } from '@/components/shared/JapanSearchCard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useRelatedMaterials, useRelatedImages } from '@/lib/japansearch-hooks';
 
 type RelatedMaterialsGalleryProps = {
   poetName: string;
@@ -20,133 +15,29 @@ export function RelatedMaterialsGallery({
   poetName,
   className,
 }: RelatedMaterialsGalleryProps) {
-  const [materials, setMaterials] = useState<JapanSearchItem[]>([]);
-  const [images, setImages] = useState<JapanSearchItem[]>([]);
-  const [loadingMaterials, setLoadingMaterials] = useState(false);
-  const [loadingImages, setLoadingImages] = useState(false);
-  const [loadingMoreMaterials, setLoadingMoreMaterials] = useState(false);
-  const [loadingMoreImages, setLoadingMoreImages] = useState(false);
-  const [errorMaterials, setErrorMaterials] = useState<string | null>(null);
-  const [errorImages, setErrorImages] = useState<string | null>(null);
-  const [materialsPage, setMaterialsPage] = useState(1);
-  const [imagesPage, setImagesPage] = useState(1);
-  const [hasMoreMaterials, setHasMoreMaterials] = useState(true);
-  const [hasMoreImages, setHasMoreImages] = useState(true);
+  const {
+    data: materialsData,
+    fetchNextPage: fetchNextMaterials,
+    hasNextPage: hasNextMaterials,
+    isFetchingNextPage: isFetchingNextMaterials,
+    isLoading: isLoadingMaterials,
+    error: errorMaterials,
+  } = useRelatedMaterials(poetName);
 
-  const ITEMS_PER_PAGE = 12;
+  const {
+    data: imagesData,
+    fetchNextPage: fetchNextImages,
+    hasNextPage: hasNextImages,
+    isFetchingNextPage: isFetchingNextImages,
+    isLoading: isLoadingImages,
+    error: errorImages,
+  } = useRelatedImages(poetName);
 
-  // 関連文献を取得
-  const loadMaterials = async (loadMore = false) => {
-    if ((loadingMaterials && !loadMore) || (loadingMoreMaterials && loadMore))
-      return;
-
-    if (loadMore) {
-      setLoadingMoreMaterials(true);
-    } else {
-      setLoadingMaterials(true);
-      setErrorMaterials(null);
-      setMaterials([]);
-      setMaterialsPage(1);
-      setHasMoreMaterials(true);
-    }
-
-    try {
-      const page = loadMore ? materialsPage + 1 : 1;
-      const results = await searchRelatedMaterials(
-        poetName,
-        ITEMS_PER_PAGE,
-        page
-      );
-
-      if (loadMore) {
-        const existingIds = new Set(materials.map((item) => item.id));
-        const newResults = results.filter((item) => !existingIds.has(item.id));
-        setMaterials((prev) => [...prev, ...newResults]);
-        setMaterialsPage(page);
-
-        if (results.length < ITEMS_PER_PAGE) {
-          setHasMoreMaterials(false);
-        }
-      } else {
-        setMaterials(results);
-        if (results.length < ITEMS_PER_PAGE) {
-          setHasMoreMaterials(false);
-        }
-      }
-    } catch (error) {
-      console.error('関連文献の取得に失敗:', error);
-      setErrorMaterials('関連文献の取得に失敗しました。');
-      if (loadMore) {
-        setHasMoreMaterials(false);
-      }
-    } finally {
-      if (loadMore) {
-        setLoadingMoreMaterials(false);
-      } else {
-        setLoadingMaterials(false);
-      }
-    }
-  };
-
-  // 関連画像を取得
-  const loadImages = async (loadMore = false) => {
-    if ((loadingImages && !loadMore) || (loadingMoreImages && loadMore)) return;
-
-    if (loadMore) {
-      setLoadingMoreImages(true);
-    } else {
-      setLoadingImages(true);
-      setErrorImages(null);
-      setImages([]);
-      setImagesPage(1);
-      setHasMoreImages(true);
-    }
-
-    try {
-      const page = loadMore ? imagesPage + 1 : 1;
-      const results = await searchImages(
-        `${poetName} 俳句 句碑`,
-        ITEMS_PER_PAGE,
-        page
-      );
-
-      if (loadMore) {
-        const existingIds = new Set(images.map((item) => item.id));
-        const newResults = results.filter((item) => !existingIds.has(item.id));
-        setImages((prev) => [...prev, ...newResults]);
-        setImagesPage(page);
-
-        if (results.length < ITEMS_PER_PAGE) {
-          setHasMoreImages(false);
-        }
-      } else {
-        setImages(results);
-        if (results.length < ITEMS_PER_PAGE) {
-          setHasMoreImages(false);
-        }
-      }
-    } catch (error) {
-      console.error('関連画像の取得に失敗:', error);
-      setErrorImages('関連画像の取得に失敗しました。');
-      if (loadMore) {
-        setHasMoreImages(false);
-      }
-    } finally {
-      if (loadMore) {
-        setLoadingMoreImages(false);
-      } else {
-        setLoadingImages(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    loadMaterials();
-    loadImages();
-  }, [poetName]);
+  const materials = materialsData?.pages.flatMap((page) => page) || [];
+  const images = imagesData?.pages.flatMap((page) => page) || [];
 
   const hasResults = materials.length > 0 || images.length > 0;
-  const isLoading = loadingMaterials || loadingImages;
+  const isLoading = isLoadingMaterials || isLoadingImages;
 
   if (isLoading && !hasResults) {
     return (
@@ -196,10 +87,10 @@ export function RelatedMaterialsGallery({
             {errorMaterials ? (
               <div className="text-center py-8">
                 <AlertCircle className="w-8 h-8 text-destructive mx-auto mb-4" />
-                <p className="text-destructive">{errorMaterials}</p>
+                <p className="text-destructive">{errorMaterials.message}</p>
                 <Button
                   className="mt-4"
-                  onClick={() => loadMaterials(false)}
+                  onClick={() => window.location.reload()}
                   variant="outline"
                 >
                   再試行
@@ -217,14 +108,14 @@ export function RelatedMaterialsGallery({
                   ))}
                 </div>
 
-                {hasMoreMaterials && (
+                {hasNextMaterials && (
                   <div className="text-center mt-6">
                     <Button
-                      disabled={loadingMoreMaterials}
-                      onClick={() => loadMaterials(true)}
+                      disabled={isFetchingNextMaterials}
+                      onClick={() => fetchNextMaterials()}
                       variant="outline"
                     >
-                      {loadingMoreMaterials ? (
+                      {isFetchingNextMaterials ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin mr-2" />
                           読み込み中...
@@ -247,10 +138,10 @@ export function RelatedMaterialsGallery({
             {errorImages ? (
               <div className="text-center py-8">
                 <AlertCircle className="w-8 h-8 text-destructive mx-auto mb-4" />
-                <p className="text-destructive">{errorImages}</p>
+                <p className="text-destructive">{errorImages.message}</p>
                 <Button
                   className="mt-4"
-                  onClick={() => loadImages(false)}
+                  onClick={() => window.location.reload()}
                   variant="outline"
                 >
                   再試行
@@ -268,14 +159,14 @@ export function RelatedMaterialsGallery({
                   ))}
                 </div>
 
-                {hasMoreImages && (
+                {hasNextImages && (
                   <div className="text-center mt-6">
                     <Button
-                      disabled={loadingMoreImages}
-                      onClick={() => loadImages(true)}
+                      disabled={isFetchingNextImages}
+                      onClick={() => fetchNextImages()}
                       variant="outline"
                     >
-                      {loadingMoreImages ? (
+                      {isFetchingNextImages ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin mr-2" />
                           読み込み中...

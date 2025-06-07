@@ -39,7 +39,18 @@ export function JapanSearchCard({
     thumbnailUrl.trim() !== '' &&
     thumbnailUrl.trim() !== 'null' &&
     thumbnailUrl.trim() !== 'undefined' &&
-    (thumbnailUrl.startsWith('https://') || thumbnailUrl.startsWith('/'));
+    (thumbnailUrl.startsWith('https://') ||
+      thumbnailUrl.startsWith('http://') ||
+      thumbnailUrl.startsWith('/'));
+
+  const shouldUnoptimizeImage = (url: string): boolean => {
+    if (!url) return false;
+    return (
+      !url.includes('localhost') &&
+      !url.includes('.go.jp') &&
+      !url.startsWith('/')
+    );
+  };
 
   const handleDetailClick = (e?: React.MouseEvent) => {
     if (e) {
@@ -94,6 +105,7 @@ export function JapanSearchCard({
             onError={handleImageError}
             sizes="300px"
             src={thumbnailUrl}
+            unoptimized={shouldUnoptimizeImage(thumbnailUrl)}
           />
         ) : (
           <div className="w-full h-full bg-muted flex items-center justify-center" />
@@ -147,6 +159,7 @@ export function JapanSearchCard({
             onError={handleImageError}
             sizes={isCompact ? '200px' : '300px'}
             src={thumbnailUrl}
+            unoptimized={shouldUnoptimizeImage(thumbnailUrl)}
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
         </div>
