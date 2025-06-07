@@ -2,13 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import {
-  searchByTheme,
-  searchBySeason,
-  searchByRegion,
-  searchByEra,
-  type JapanSearchItem,
-} from '@/lib/japansearch';
+import { type JapanSearchItem } from '@/lib/japansearch';
+import { useInfiniteThemeSearch } from '@/lib/japansearch-hooks';
 import { BackButton } from '@/components/BackButton';
 import { AlertCircle, Loader2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -73,23 +68,14 @@ const THEME_LABELS: Record<ThemeType, string> = {
 };
 
 export function ThemeGalleryClient({
-  initialResults,
+  initialResults: _initialResults,
   initialTheme,
   initialQuery,
-  initialPage,
-  error: initialError,
+  initialPage: _initialPage,
+  error: _initialError,
 }: ThemeGalleryClientProps) {
-  const uniqueInitialResults = initialResults.filter(
-    (item, index, self) => index === self.findIndex((t) => t.id === item.id)
-  );
-
-  const [results, setResults] =
-    useState<JapanSearchItem[]>(uniqueInitialResults);
   const [currentTheme, setCurrentTheme] = useState<ThemeType>(initialTheme);
   const [currentQuery, setCurrentQuery] = useState(initialQuery);
-  const [currentPage, setCurrentPage] = useState(initialPage);
-  const [error, setError] = useState<string | null>(initialError || null);
-  const [hasMoreResults, setHasMoreResults] = useState(true); // 追加結果があるかどうかの状態
   const [filters, setFilters] = useState({
     theme: initialTheme,
     query: initialQuery,
@@ -100,38 +86,16 @@ export function ThemeGalleryClient({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const ITEMS_PER_PAGE = 60;
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+  } = useInfiniteThemeSearch(currentTheme, currentQuery);
 
-  // 検索実行
-  const executeSearch = async (
-    theme: ThemeType,
-    query: string,
-    page: number = 1
-  ) => {
-    try {
-      let newResults: JapanSearchItem[] = [];
-
-      switch (theme) {
-        case 'season':
-          newResults = await searchBySeason(query, ITEMS_PER_PAGE, page);
-          break;
-        case 'region':
-          newResults = await searchByRegion(query, ITEMS_PER_PAGE, page);
-          break;
-        case 'poet':
-          newResults = await searchByTheme('poet', query, ITEMS_PER_PAGE, page);
-          break;
-        case 'era':
-          newResults = await searchByEra(query, ITEMS_PER_PAGE, page);
-          break;
-      }
-
-      return newResults;
-    } catch (err) {
-      console.error('検索エラー:', err);
-      throw new Error('検索に失敗しました');
-    }
-  };
+  const results = data?.pages.flatMap((page) => page) || [];
 
   // テーマ変更ハンドラー
   const handleThemeChange = (theme: ThemeType) => {
@@ -139,30 +103,16 @@ export function ThemeGalleryClient({
 
     const defaultQuery = themeOptions[theme].queries[0];
 
-    startTransition(async () => {
-      try {
-        setError(null);
-        const newResults = await executeSearch(theme, defaultQuery, 1);
+    startTransition(() => {
+      setCurrentTheme(theme);
+      setCurrentQuery(defaultQuery);
 
-        setCurrentTheme(theme);
-        setCurrentQuery(defaultQuery);
-        setCurrentPage(1);
-        setHasMoreResults(true);
-        const uniqueResults = newResults.filter(
-          (item, index, self) =>
-            index === self.findIndex((t) => t.id === item.id)
-        );
-        setResults(uniqueResults);
-
-        // URLを更新
-        const params = new URLSearchParams(searchParams);
-        params.set('theme', theme);
-        params.set('query', defaultQuery);
-        params.set('page', '1');
-        router.push(`?${params.toString()}`);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '検索に失敗しました');
-      }
+      // URLを更新
+      const params = new URLSearchParams(searchParams);
+      params.set('theme', theme);
+      params.set('query', defaultQuery);
+      params.set('page', '1');
+      router.push(`?${params.toString()}`);
     });
   };
 
@@ -170,68 +120,14 @@ export function ThemeGalleryClient({
   const handleQueryChange = (query: string) => {
     if (query === currentQuery) return;
 
-    startTransition(async () => {
-      try {
-        setError(null);
-        const newResults = await executeSearch(currentTheme, query, 1);
+    startTransition(() => {
+      setCurrentQuery(query);
 
-        setCurrentQuery(query);
-        setCurrentPage(1);
-        setHasMoreResults(true);
-        const uniqueResults = newResults.filter(
-          (item, index, self) =>
-            index === self.findIndex((t) => t.id === item.id)
-        );
-        setResults(uniqueResults);
-
-        // URLを更新
-        const params = new URLSearchParams(searchParams);
-        params.set('query', query);
-        params.set('page', '1');
-        router.push(`?${params.toString()}`);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '検索に失敗しました');
-      }
-    });
-  };
-
-  // ページ変更ハンドラー
-  const handlePageChange = (page: number) => {
-    if (page === currentPage || page < 1) return;
-
-    startTransition(async () => {
-      try {
-        setError(null);
-        const newResults = await executeSearch(
-          currentTheme,
-          currentQuery,
-          page
-        );
-
-        setCurrentPage(page);
-        if (page === 1) {
-          setResults(newResults);
-          setHasMoreResults(newResults.length >= ITEMS_PER_PAGE);
-        } else {
-          setResults((prev) => {
-            const existingIds = new Set(prev.map((item) => item.id));
-            const uniqueNewResults = newResults.filter(
-              (item) => !existingIds.has(item.id)
-            );
-
-            return [...prev, ...uniqueNewResults];
-          });
-
-          setHasMoreResults(newResults.length >= ITEMS_PER_PAGE);
-        }
-
-        // URLを更新
-        const params = new URLSearchParams(searchParams);
-        params.set('page', page.toString());
-        router.push(`?${params.toString()}`);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '検索に失敗しました');
-      }
+      // URLを更新
+      const params = new URLSearchParams(searchParams);
+      params.set('query', query);
+      params.set('page', '1');
+      router.push(`?${params.toString()}`);
     });
   };
 
@@ -239,33 +135,21 @@ export function ThemeGalleryClient({
   const handleCustomSearch = () => {
     if (!filters.customQuery.trim()) return;
 
-    startTransition(async () => {
-      try {
-        setError(null);
-        const newResults = await executeSearch(
-          currentTheme,
-          filters.customQuery.trim(),
-          1
-        );
+    startTransition(() => {
+      setCurrentQuery(filters.customQuery.trim());
 
-        setCurrentQuery(filters.customQuery.trim());
-        setCurrentPage(1);
-        setHasMoreResults(true);
-        const uniqueResults = newResults.filter(
-          (item, index, self) =>
-            index === self.findIndex((t) => t.id === item.id)
-        );
-        setResults(uniqueResults);
-
-        // URLを更新
-        const params = new URLSearchParams(searchParams);
-        params.set('query', filters.customQuery.trim());
-        params.set('page', '1');
-        router.push(`?${params.toString()}`);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '検索に失敗しました');
-      }
+      // URLを更新
+      const params = new URLSearchParams(searchParams);
+      params.set('query', filters.customQuery.trim());
+      params.set('page', '1');
+      router.push(`?${params.toString()}`);
     });
+  };
+
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
   };
 
   return (
@@ -327,7 +211,6 @@ export function ThemeGalleryClient({
           </div>
         </div>
 
-        {/* カスタム検索セクション */}
         <div className="mb-8">
           <h2 className="text-lg lg:text-xl font-semibold text-primary mb-4">
             カスタム検索
@@ -357,7 +240,7 @@ export function ThemeGalleryClient({
           </div>
         </div>
 
-        {isPending && (
+        {(isLoading || isPending) && (
           <div className="bg-background rounded-lg p-8 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
             <p className="text-muted-foreground">検索中...</p>
@@ -367,14 +250,14 @@ export function ThemeGalleryClient({
         {error && (
           <div className="bg-background rounded-lg p-8 text-center">
             <AlertCircle className="w-8 h-8 text-destructive mx-auto mb-4" />
-            <p className="text-destructive mb-4">{error}</p>
+            <p className="text-destructive mb-4">{error.message}</p>
             <Button onClick={() => router.push('/')} variant="outline">
               ホームに戻る
             </Button>
           </div>
         )}
 
-        {!isPending && results.length > 0 && (
+        {!isLoading && !isPending && results.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-primary mb-4">
               検索結果: {currentQuery} ({results.length}件)
@@ -384,7 +267,7 @@ export function ThemeGalleryClient({
                 return (
                   <JapanSearchCard
                     item={item}
-                    key={item.id || `item-${index}`}
+                    key={`${item.id}-${index}`}
                     variant="default"
                   />
                 );
@@ -393,8 +276,7 @@ export function ThemeGalleryClient({
           </div>
         )}
 
-        {/* 結果が0件の場合 */}
-        {!isPending && results.length === 0 && !error && (
+        {!isLoading && !isPending && results.length === 0 && !error && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">
               「{currentQuery}」に関する資料が見つかりませんでした
@@ -405,14 +287,21 @@ export function ThemeGalleryClient({
           </div>
         )}
 
-        {!isPending && results.length > 0 && hasMoreResults && (
+        {!isLoading && !isPending && results.length > 0 && hasNextPage && (
           <div className="text-center mt-8">
             <Button
               className="transition-colors disabled:opacity-50"
-              disabled={isPending}
-              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={isFetchingNextPage}
+              onClick={handleLoadMore}
             >
-              さらに読み込む
+              {isFetchingNextPage ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  読み込み中...
+                </>
+              ) : (
+                'さらに読み込む'
+              )}
             </Button>
           </div>
         )}

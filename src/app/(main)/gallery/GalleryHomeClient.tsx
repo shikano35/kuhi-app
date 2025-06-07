@@ -1,55 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Palette, Images, Search, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
 import { JapanSearchCard } from '@/components/shared/JapanSearchCard';
-import { searchImages, JapanSearchItem } from '@/lib/japansearch';
+import { useDefaultImages } from '@/lib/japansearch-hooks';
 
 export default function GalleryHomeClient() {
-  const [popularItems, setPopularItems] = useState<JapanSearchItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadPopularItems = async () => {
-      try {
-        const keywords = ['桜', '富士山', '芭蕉', '京都'];
-        const allResults: JapanSearchItem[] = [];
-
-        for (const keyword of keywords) {
-          try {
-            const results = await searchImages(keyword, 2, 1);
-            allResults.push(...results);
-          } catch (err) {
-            console.warn(`${keyword}の検索でエラー:`, err);
-          }
-        }
-
-        const uniqueResults = allResults
-          .filter(
-            (item, index, self) =>
-              index === self.findIndex((t) => t.id === item.id)
-          )
-          .slice(0, 6);
-
-        setPopularItems(uniqueResults);
-      } catch (err) {
-        console.error('人気アイテムの読み込みエラー:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadPopularItems();
-  }, []);
+  const { data: popularItems, isLoading: loading, error } = useDefaultImages();
   return (
     <div className="min-h-screen bg-muted/50">
       <div className="container mx-auto py-8 px-4">
@@ -147,7 +107,13 @@ export default function GalleryHomeClient() {
               <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
               <p className="text-muted-foreground">読み込み中...</p>
             </div>
-          ) : popularItems.length > 0 ? (
+          ) : error ? (
+            <div className="bg-background rounded-lg p-8 text-center">
+              <p className="text-muted-foreground">
+                コンテンツを読み込めませんでした
+              </p>
+            </div>
+          ) : popularItems && popularItems.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-6 gap-4">
               {popularItems.map((item) => (
                 <JapanSearchCard item={item} key={item.id} variant="compact" />
