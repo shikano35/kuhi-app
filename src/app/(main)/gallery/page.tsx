@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import GalleryHomeClient from './GalleryHomeClient';
+import { GalleryHomeContainer } from './GalleryHomeContainer';
 import { baseMetadata } from '@/lib/metadata';
 
 export const metadata: Metadata = {
@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function GalleryPage() {
-  return <GalleryHomeClient />;
+  return <GalleryHomeContainer />;
 }
