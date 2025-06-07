@@ -336,6 +336,65 @@ export const getItemDetail = cache(
   }
 );
 
+/**
+ * 俳人名で関連画像を検索
+ */
+export const searchRelatedImages = cache(
+  async (
+    poetName: string,
+    size: number = 60,
+    page: number = 1
+  ): Promise<JapanSearchItem[]> => {
+    try {
+      const from = (page - 1) * size;
+
+      const searchTerms = [
+        poetName,
+        `${poetName} 俳句`,
+        `${poetName} 句碑`,
+        `${poetName} 写真`,
+      ];
+
+      const allResults: JapanSearchItem[] = [];
+
+      const promises = searchTerms.map((term) =>
+        searchJapanSearchItems({
+          keyword: term,
+          size: Math.ceil(size / searchTerms.length),
+          from: Math.floor(from / searchTerms.length),
+          'f-contents': 'image',
+        })
+      );
+
+      const responses = await Promise.all(promises);
+      responses.forEach((response) => {
+        allResults.push(...response.list);
+      });
+
+      const imageResults = allResults.filter((item) => {
+        const thumbnailUrl = item.common.thumbnailUrl;
+        return (
+          thumbnailUrl &&
+          ((typeof thumbnailUrl === 'string' &&
+            thumbnailUrl.startsWith('http')) ||
+            (Array.isArray(thumbnailUrl) &&
+              thumbnailUrl.length > 0 &&
+              thumbnailUrl[0].startsWith('http')))
+        );
+      });
+
+      const uniqueResults = imageResults.filter(
+        (item, index, self) => index === self.findIndex((t) => t.id === item.id)
+      );
+
+      return uniqueResults.slice(0, size);
+    } catch (error) {
+      console.error('関連画像検索エラー:', error);
+      return [];
+    }
+  }
+);
+
 export type {
   JapanSearchItem,
   JapanSearchResponse,
