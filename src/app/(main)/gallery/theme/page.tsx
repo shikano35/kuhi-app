@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
-import ThemeGalleryClient from './ThemeGalleryClient';
+import { Suspense } from 'react';
 import { baseMetadata } from '@/lib/metadata';
+import ThemeGalleryContainer from './ThemeGalleryContainer';
+import { Loader2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   ...baseMetadata,
@@ -10,27 +12,19 @@ export const metadata: Metadata = {
   keywords: '俳句, テーマ別, ギャラリー, 季節, 地域, 俳人, 時代, 文化資料',
 };
 
-type ThemeType = 'season' | 'region' | 'poet' | 'era';
-
-type PageProps = {
-  searchParams: Promise<{
-    theme?: ThemeType;
-    query?: string;
-    page?: string;
-  }>;
-};
-
-export default async function ThemeGalleryPage({ searchParams }: PageProps) {
-  const params = await searchParams;
-  const theme = params.theme || 'season';
-  const query = params.query || '春';
-  const page = parseInt(params.page || '1');
-
+function LoadingFallback() {
   return (
-    <ThemeGalleryClient
-      initialPage={page}
-      initialQuery={query}
-      initialTheme={theme}
-    />
+    <div className="flex flex-col justify-center items-center h-96">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <p className="mt-4">読み込み中...</p>
+    </div>
+  );
+}
+
+export default function ThemeGalleryPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ThemeGalleryContainer />
+    </Suspense>
   );
 }
