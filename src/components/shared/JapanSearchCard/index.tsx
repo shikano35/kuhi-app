@@ -6,9 +6,13 @@ import type { JapanSearchItem } from '@/lib/japansearch-types';
 
 type JapanSearchCardProps = {
   item: JapanSearchItem;
+  variant?: 'default' | 'compact';
 };
 
-export function JapanSearchCard({ item }: JapanSearchCardProps) {
+export function JapanSearchCard({
+  item,
+  variant = 'default',
+}: JapanSearchCardProps) {
   // アイテムの表示用データを整理
   const title = item.common?.title || item.common?.description || '無題';
   const description = item.common?.description || '';
@@ -40,7 +44,9 @@ export function JapanSearchCard({ item }: JapanSearchCardProps) {
     >
       <div className="relative">
         {thumbnailUrl ? (
-          <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
+          <div
+            className={`w-full overflow-hidden rounded-t-lg bg-muted ${variant === 'compact' ? 'aspect-square' : 'aspect-video'}`}
+          >
             <Image
               alt={Array.isArray(title) ? title[0] : title}
               className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200"
@@ -50,7 +56,9 @@ export function JapanSearchCard({ item }: JapanSearchCardProps) {
             />
           </div>
         ) : (
-          <div className="aspect-video w-full flex items-center justify-center bg-muted rounded-t-lg">
+          <div
+            className={`w-full flex items-center justify-center bg-muted rounded-t-lg ${variant === 'compact' ? 'aspect-square' : 'aspect-video'}`}
+          >
             <div className="text-center">
               {getTypeIcon()}
               <p className="text-xs text-muted-foreground mt-2">画像なし</p>
@@ -67,38 +75,42 @@ export function JapanSearchCard({ item }: JapanSearchCardProps) {
         )}
       </div>
 
-      <CardContent className="p-4 flex-1">
+      <CardContent className={variant === 'compact' ? 'p-3' : 'p-4'}>
         <div className="space-y-2">
-          <h3 className="font-semibold text-sm line-clamp-2 leading-tight">
+          <h3
+            className={`font-semibold line-clamp-2 leading-tight ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}
+          >
             {title}
           </h3>
 
-          {creator && (
+          {variant !== 'compact' && creator && (
             <p className="text-xs text-muted-foreground">作成者: {creator}</p>
           )}
 
-          {temporal && (
+          {variant !== 'compact' && temporal && (
             <p className="text-xs text-muted-foreground">年代: {temporal}</p>
           )}
 
-          {description && description !== title && (
+          {variant !== 'compact' && description && description !== title && (
             <p className="text-xs text-muted-foreground line-clamp-2">
               {description}
             </p>
           )}
 
-          <div className="flex flex-wrap gap-1 pt-2">
-            {type && (
-              <Badge className="text-xs" variant="outline">
-                {type}
-              </Badge>
-            )}
-            {subject && (
-              <Badge className="text-xs" variant="secondary">
-                {subject}
-              </Badge>
-            )}
-          </div>
+          {variant !== 'compact' && (
+            <div className="flex flex-wrap gap-1 pt-2">
+              {type && (
+                <Badge className="text-xs" variant="outline">
+                  {type}
+                </Badge>
+              )}
+              {subject && (
+                <Badge className="text-xs" variant="secondary">
+                  {subject}
+                </Badge>
+              )}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
