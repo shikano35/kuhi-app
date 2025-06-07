@@ -161,6 +161,25 @@ export async function getAllPoets(): Promise<Poet[]> {
   }
 }
 
+export async function getPoetById(id: number): Promise<Poet | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/poets/${id}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error('俳人データの取得に失敗しました');
+    }
+
+    const data = (await response.json()) as Poet;
+    return data;
+  } catch (error) {
+    console.error(`俳人ID:${id}の取得中にエラーが発生しました:`, error);
+    return null;
+  }
+}
+
 export async function getAllLocations(): Promise<Location[]> {
   try {
     const response = await fetch(`${API_BASE_URL}/locations`);

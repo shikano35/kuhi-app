@@ -11,10 +11,11 @@ const hinaMincho = Hina_Mincho({
   subsets: ['latin'],
 });
 
-const menuLinks = [
+export const menuLinks = [
   { href: '/', label: 'ホーム' },
   { href: '/map', label: '句碑マップ' },
   { href: '/list', label: '句碑リスト' },
+  { href: '/gallery', label: 'ギャラリー' },
   { href: '/about', label: '句碑とは' },
 ];
 
