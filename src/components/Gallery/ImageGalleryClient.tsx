@@ -27,7 +27,7 @@ export default function ImageGalleryClient({
   onSearchChange,
   currentQuery,
 }: ImageGalleryClientProps) {
-  const [query, setQuery] = useState(currentQuery);
+  const [inputValue, setInputValue] = useState('');
 
   const {
     data,
@@ -48,8 +48,8 @@ export default function ImageGalleryClient({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) {
-      onSearchChange(query.trim());
+    if (inputValue.trim()) {
+      onSearchChange(inputValue.trim());
     }
   };
 
@@ -72,12 +72,12 @@ export default function ImageGalleryClient({
           <form className="flex gap-2" onSubmit={handleSubmit}>
             <div className="flex-1">
               <Input
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => setInputValue(e.target.value)}
                 placeholder="画像を検索（例：桜、富士山、京都など）"
-                value={query}
+                value={inputValue}
               />
             </div>
-            <Button disabled={!query.trim() || isLoading} type="submit">
+            <Button disabled={!inputValue.trim() || isLoading} type="submit">
               <Search className="w-4 h-4 mr-2" />
               検索
             </Button>
