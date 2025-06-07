@@ -5,6 +5,7 @@ import { JapanSearchCard } from '@/components/shared/JapanSearchCard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRelatedMaterials, useRelatedImages } from '@/lib/japansearch-hooks';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 
 type RelatedMaterialsGalleryProps = {
   poetName: string;
@@ -38,6 +39,18 @@ export function RelatedMaterialsGallery({
 
   const hasResults = materials.length > 0 || images.length > 0;
   const isLoading = isLoadingMaterials || isLoadingImages;
+
+  const { loadMoreRef: materialsLoadMoreRef } = useInfiniteScroll({
+    fetchNextPage: fetchNextMaterials,
+    hasNextPage: hasNextMaterials || false,
+    isFetchingNextPage: isFetchingNextMaterials,
+  });
+
+  const { loadMoreRef: imagesLoadMoreRef } = useInfiniteScroll({
+    fetchNextPage: fetchNextImages,
+    hasNextPage: hasNextImages || false,
+    isFetchingNextPage: isFetchingNextImages,
+  });
 
   if (isLoading && !hasResults) {
     return (
@@ -108,24 +121,17 @@ export function RelatedMaterialsGallery({
                   ))}
                 </div>
 
-                {hasNextMaterials && (
-                  <div className="text-center mt-6">
-                    <Button
-                      disabled={isFetchingNextMaterials}
-                      onClick={() => fetchNextMaterials()}
-                      variant="outline"
-                    >
-                      {isFetchingNextMaterials ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                          読み込み中...
-                        </>
-                      ) : (
-                        'さらに表示'
-                      )}
-                    </Button>
-                  </div>
-                )}
+                <div
+                  className="h-10 flex items-center justify-center"
+                  ref={materialsLoadMoreRef}
+                >
+                  {isFetchingNextMaterials && (
+                    <div className="flex items-center text-muted-foreground">
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      <span>読み込み中...</span>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
@@ -159,24 +165,17 @@ export function RelatedMaterialsGallery({
                   ))}
                 </div>
 
-                {hasNextImages && (
-                  <div className="text-center mt-6">
-                    <Button
-                      disabled={isFetchingNextImages}
-                      onClick={() => fetchNextImages()}
-                      variant="outline"
-                    >
-                      {isFetchingNextImages ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                          読み込み中...
-                        </>
-                      ) : (
-                        'さらに表示'
-                      )}
-                    </Button>
-                  </div>
-                )}
+                <div
+                  className="h-10 flex items-center justify-center"
+                  ref={imagesLoadMoreRef}
+                >
+                  {isFetchingNextImages && (
+                    <div className="flex items-center text-muted-foreground">
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      <span>読み込み中...</span>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
