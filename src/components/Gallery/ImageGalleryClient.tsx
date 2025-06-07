@@ -6,12 +6,28 @@ import { JapanSearchCard } from '@/components/shared/JapanSearchCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
-import { useInfiniteImageSearch } from '@/lib/japansearch-hooks';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import type {
+  UseInfiniteQueryResult,
+  InfiniteData,
+} from '@tanstack/react-query';
+import type { JapanSearchItem } from '@/lib/japansearch-types';
 
-export default function ImageGalleryClient() {
-  const [query, setQuery] = useState('桜'); // デフォルト検索キーワード
-  const [searchQuery, setSearchQuery] = useState('桜'); // 実際の検索に使用するキーワード
+type ImageGalleryClientProps = {
+  imageSearchQuery: UseInfiniteQueryResult<
+    InfiniteData<JapanSearchItem[], unknown>,
+    Error
+  >;
+  onSearchChange: (query: string) => void;
+  currentQuery: string;
+};
+
+export default function ImageGalleryClient({
+  imageSearchQuery,
+  onSearchChange,
+  currentQuery,
+}: ImageGalleryClientProps) {
+  const [query, setQuery] = useState(currentQuery);
 
   const {
     data,
@@ -20,7 +36,7 @@ export default function ImageGalleryClient() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteImageSearch(searchQuery);
+  } = imageSearchQuery;
 
   const results = data?.pages.flat() || [];
 
@@ -33,7 +49,7 @@ export default function ImageGalleryClient() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      setSearchQuery(query.trim());
+      onSearchChange(query.trim());
     }
   };
 
@@ -87,14 +103,14 @@ export default function ImageGalleryClient() {
           </div>
         )}
 
-        {!isLoading && !error && results.length === 0 && searchQuery && (
+        {!isLoading && !error && results.length === 0 && currentQuery && (
           <div className="bg-background rounded-lg p-8 text-center">
             <Search className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-lg font-medium mb-2">
               検索結果が見つかりません
             </h3>
             <p className="text-muted-foreground">
-              「{searchQuery}」に関連する画像は見つかりませんでした。
+              「{currentQuery}」に関連する画像は見つかりませんでした。
               <br />
               別のキーワードでお試しください。
             </p>
@@ -108,7 +124,7 @@ export default function ImageGalleryClient() {
                 検索結果 ({results.length}件)
               </h2>
               <div className="text-sm text-muted-foreground">
-                検索キーワード: {searchQuery}
+                検索キーワード: {currentQuery}
               </div>
             </div>
 

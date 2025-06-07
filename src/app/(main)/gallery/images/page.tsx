@@ -1,4 +1,4 @@
-import ImageGalleryClient from '@/components/Gallery/ImageGalleryClient';
+import ImageGalleryContainer from '@/components/Gallery/ImageGalleryContainer';
 import { baseMetadata } from '@/lib/metadata';
 import { Metadata } from 'next';
 
@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function ImageGalleryPage() {
-  return <ImageGalleryClient />;
+  return <ImageGalleryContainer />;
 }
