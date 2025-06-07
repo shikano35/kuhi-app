@@ -92,6 +92,31 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: '*.tokyo',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.museum',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.net',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.org',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
         hostname: '*.jp',
         pathname: '**',
       },
