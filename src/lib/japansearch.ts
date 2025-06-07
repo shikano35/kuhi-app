@@ -124,16 +124,39 @@ export const searchByTheme = cache(
 
       switch (theme) {
         case 'season':
-          searchKeywords = [`${query} 俳句`, `${query} 季語`, `${query} 詩歌`];
+          searchKeywords = [
+            `${query}`,
+            `${query} 俳句`,
+            `${query} 季語`,
+            `${query} 詩歌`,
+            `${query} 書画`,
+          ];
           break;
         case 'region':
-          searchKeywords = [`${query} 俳句`, `${query} 文学`, `${query} 郷土`];
+          searchKeywords = [
+            `${query}`,
+            `${query} 俳句`,
+            `${query} 文学`,
+            `${query} 郷土`,
+            `${query} 風景`,
+          ];
           break;
         case 'poet':
-          searchKeywords = [`${query}`, `${query} 俳句`, `${query} 文学`];
+          searchKeywords = [
+            `${query}`,
+            `${query} 俳句`,
+            `${query} 文学`,
+            `${query} 作品`,
+          ];
           break;
         case 'era':
-          searchKeywords = [`${query} 俳句`, `${query} 文学`, `${query} 時代`];
+          searchKeywords = [
+            `${query}`,
+            `${query} 俳句`,
+            `${query} 文学`,
+            `${query} 時代`,
+            `${query} 文化`,
+          ];
           break;
       }
 
@@ -142,7 +165,6 @@ export const searchByTheme = cache(
           keyword,
           size: Math.ceil(size / searchKeywords.length),
           from: Math.floor(from / searchKeywords.length),
-          'f-type': 'book',
         });
       });
 
@@ -229,6 +251,87 @@ export const searchImages = cache(
     } catch (error) {
       console.error('画像検索エラー:', error);
       return [];
+    }
+  }
+);
+
+/**
+ * 個別アイテムの詳細を取得
+ */
+export const getItemDetail = cache(
+  async (itemId: string): Promise<JapanSearchItem | null> => {
+    try {
+      const decodedId = decodeURIComponent(itemId);
+
+      try {
+        const directUrl = `${JAPANSEARCH_BASE_URL}/item/${decodedId}`;
+        const directResponse = await fetch(directUrl, {
+          headers: {
+            Accept: 'application/json',
+            'User-Agent': 'Kuhi-App/1.0',
+          },
+          next: {
+            revalidate: 3600,
+          },
+        });
+
+        if (directResponse.ok) {
+          const directData = await directResponse.json();
+          if (directData && directData.id === decodedId) {
+            return normalizeJapanSearchItem(
+              directData as JapanSearchItem & Record<string, unknown>
+            );
+          }
+        }
+      } catch (error) {
+        console.error('直接API取得エラー:', error);
+      }
+
+      try {
+        const response = await searchJapanSearchItems({
+          keyword: `id:"${decodedId}"`,
+          size: 50,
+          from: 0,
+        });
+
+        if (response.list && response.list.length > 0) {
+          const exactMatch = response.list.find(
+            (item: JapanSearchItem) => item.id === decodedId
+          );
+          if (exactMatch) {
+            return exactMatch;
+          }
+        }
+      } catch (error) {
+        console.error('ID完全一致検索エラー:', error);
+      }
+
+      if (decodedId.includes('-')) {
+        try {
+          const prefix = decodedId.split('-')[0];
+          const response = await searchJapanSearchItems({
+            keyword: prefix,
+            size: 200,
+            from: 0,
+          });
+
+          if (response.list && response.list.length > 0) {
+            const exactMatch = response.list.find(
+              (item: JapanSearchItem) => item.id === decodedId
+            );
+            if (exactMatch) {
+              return exactMatch;
+            }
+          }
+        } catch (error) {
+          console.error('プレフィックス検索エラー:', error);
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.error('詳細取得エラー:', error);
+      return null;
     }
   }
 );

@@ -18,109 +18,75 @@ export async function GET(
       );
     }
 
-    // デコードされたIDを使用
     const decodedId = decodeURIComponent(id);
-
     let foundItem: JapanSearchItem | null = null;
 
-    const searchStrategies = [
-      {
-        url: 'https://jpsearch.go.jp/api/item/search/jps-cross',
-        params: { q: `id:"${decodedId}"`, size: '50' },
-        strategy: 'ID完全一致',
-      },
-      {
-        url: 'https://jpsearch.go.jp/api/item/search/jps-cross',
-        params: { q: `id:${decodedId}`, size: '50' },
-        strategy: 'ID部分一致',
-      },
-      {
-        url: 'https://jpsearch.go.jp/api/item/search/jps-cross',
-        params: { q: decodedId, size: '100' },
-        strategy: 'キーワード検索',
-      },
-      {
-        url: 'https://jpsearch.go.jp/api/item/search/jps-cross',
-        params: { q: `title:"${decodedId}"`, size: '20' },
-        strategy: 'タイトル完全一致',
-      },
-    ];
-
-    for (const { url, params, strategy } of searchStrategies) {
-      const searchUrl = new URL(url);
-      Object.entries(params).forEach(([key, value]) => {
-        searchUrl.searchParams.set(key, value);
+    try {
+      const directUrl = `https://jpsearch.go.jp/api/item/${decodedId}`;
+      const directResponse = await fetch(directUrl, {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': 'Kuhi-App/1.0',
+        },
       });
 
+      if (directResponse.ok) {
+        const directData = await directResponse.json();
+        if (directData && directData.id === decodedId) {
+          foundItem = directData;
+        }
+      }
+    } catch (error) {
+      console.error('直接API取得エラー:', error);
+    }
+
+    if (!foundItem) {
       try {
-        const response = await fetch(searchUrl.toString(), {
-          headers: { Accept: 'application/json' },
+        const searchUrl = new URL(
+          'https://jpsearch.go.jp/api/item/search/jps-cross'
+        );
+        searchUrl.searchParams.set('q', `id:"${decodedId}"`);
+        searchUrl.searchParams.set('size', '50');
+
+        const searchResponse = await fetch(searchUrl.toString(), {
+          headers: {
+            Accept: 'application/json',
+            'User-Agent': 'Kuhi-App/1.0',
+          },
         });
 
-        if (response.ok) {
-          const searchData = await response.json();
-
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
           if (searchData.list && searchData.list.length > 0) {
-            // 検索戦略に応じたマッチング
-            if (strategy.includes('ID')) {
-              foundItem = searchData.list.find(
-                (item: JapanSearchItem) => item.id === decodedId
-              );
-
-              // 完全一致がない場合、部分一致も試行
-              if (!foundItem) {
-                foundItem = searchData.list.find(
-                  (item: JapanSearchItem) =>
-                    item.id &&
-                    (item.id.includes(decodedId) ||
-                      decodedId.includes(item.id) ||
-                      item.id.endsWith(decodedId.split('-').pop() || '') ||
-                      item.id.split('-').pop() === decodedId.split('-').pop())
-                );
-              }
-            } else if (strategy.includes('タイトル')) {
-              // タイトル完全一致
-              foundItem = searchData.list.find(
-                (item: JapanSearchItem) => item.common?.title === decodedId
-              );
-            } else {
-              // 柔軟なマッチング
-              foundItem = searchData.list.find(
-                (item: JapanSearchItem) =>
-                  item.id === decodedId ||
-                  item.common?.title === decodedId ||
-                  (item.id && item.id.includes(decodedId))
-              );
-            }
-
-            if (foundItem) {
-              break;
-            }
+            foundItem = searchData.list.find(
+              (item: JapanSearchItem) => item.id === decodedId
+            );
           }
         }
       } catch (error) {
-        console.error(`${strategy}検索エラー:`, error);
+        console.error('ID完全一致検索エラー:', error);
       }
     }
 
     if (!foundItem && decodedId.includes('-')) {
-      const prefix = decodedId.split('-')[0];
-      const prefixSearchUrl = new URL(
-        'https://jpsearch.go.jp/api/item/search/jps-cross'
-      );
-      prefixSearchUrl.searchParams.set('q', prefix);
-      prefixSearchUrl.searchParams.set('size', '200');
-
       try {
-        const prefixResponse = await fetch(prefixSearchUrl.toString(), {
-          headers: { Accept: 'application/json' },
+        const prefix = decodedId.split('-')[0];
+        const prefixUrl = new URL(
+          'https://jpsearch.go.jp/api/item/search/jps-cross'
+        );
+        prefixUrl.searchParams.set('q', prefix);
+        prefixUrl.searchParams.set('size', '200');
+
+        const prefixResponse = await fetch(prefixUrl.toString(), {
+          headers: {
+            Accept: 'application/json',
+            'User-Agent': 'Kuhi-App/1.0',
+          },
         });
 
         if (prefixResponse.ok) {
           const prefixData = await prefixResponse.json();
-
           if (prefixData.list && prefixData.list.length > 0) {
-            // 詳細な検索結果の中から探す
             foundItem = prefixData.list.find(
               (item: JapanSearchItem) => item.id === decodedId
             );
@@ -128,71 +94,6 @@ export async function GET(
         }
       } catch (error) {
         console.error('プレフィックス検索エラー:', error);
-      }
-    }
-
-    if (!foundItem) {
-      // 直接アイテムIDでアクセスを試行
-      try {
-        const directApiUrl = `https://jpsearch.go.jp/api/item/${decodedId}`;
-        const directResponse = await fetch(directApiUrl, {
-          headers: { Accept: 'application/json' },
-        });
-
-        if (directResponse.ok) {
-          const directData = await directResponse.json();
-
-          if (directData && directData.id) {
-            foundItem = directData;
-          }
-        }
-      } catch (error) {
-        console.error('直接APIアクセスエラー:', error);
-      }
-    }
-
-    if (!foundItem) {
-      try {
-        const broadSearchUrl = new URL(
-          'https://jpsearch.go.jp/api/item/search/jps-cross'
-        );
-
-        const searchTerms = [
-          decodedId.split('-').pop() || decodedId,
-          decodedId.split('_').pop() || decodedId,
-          decodedId.replace(/[^a-zA-Z0-9]/g, ' '),
-        ];
-
-        for (const term of searchTerms) {
-          if (term && term.length > 2) {
-            broadSearchUrl.searchParams.set('q', term);
-            broadSearchUrl.searchParams.set('size', '100');
-
-            const broadResponse = await fetch(broadSearchUrl.toString(), {
-              headers: { Accept: 'application/json' },
-            });
-
-            if (broadResponse.ok) {
-              const broadData = await broadResponse.json();
-
-              if (broadData.list && broadData.list.length > 0) {
-                foundItem = broadData.list.find(
-                  (item: JapanSearchItem) =>
-                    item.id === decodedId ||
-                    item.id?.includes(decodedId) ||
-                    decodedId.includes(item.id || '') ||
-                    item.common?.title?.includes(term)
-                );
-
-                if (foundItem) {
-                  break;
-                }
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error('広範囲検索エラー:', error);
       }
     }
 
