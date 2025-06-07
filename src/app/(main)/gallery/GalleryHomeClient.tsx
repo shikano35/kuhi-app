@@ -6,11 +6,40 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
 import { JapanSearchCard } from '@/components/shared/JapanSearchCard';
-import { useDefaultImages } from '@/lib/japansearch-hooks';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import type {
+  UseInfiniteQueryResult,
+  InfiniteData,
+} from '@tanstack/react-query';
+import type { JapanSearchItem } from '@/lib/japansearch-types';
 
-export default function GalleryHomeClient() {
-  const { data: popularItems, isLoading: loading, error } = useDefaultImages();
+type GalleryHomeClientProps = {
+  defaultImagesQuery: UseInfiniteQueryResult<
+    InfiniteData<JapanSearchItem[], unknown>,
+    Error
+  >;
+};
+
+export function GalleryHomeClient({
+  defaultImagesQuery,
+}: GalleryHomeClientProps) {
+  const {
+    data: popularItems,
+    isLoading: loading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = defaultImagesQuery;
+
   const allItems = popularItems?.pages.flat() || [];
+
+  const { loadMoreRef } = useInfiniteScroll({
+    fetchNextPage,
+    hasNextPage: !!hasNextPage,
+    isFetchingNextPage,
+  });
+
   return (
     <div className="min-h-screen bg-muted/50">
       <div className="container mx-auto py-8 px-4">
@@ -80,14 +109,25 @@ export default function GalleryHomeClient() {
           )}
 
           {!loading && !error && allItems.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {allItems.slice(0, 8).map((item, index) => (
-                <JapanSearchCard
-                  item={item}
-                  key={`${item.id || 'item'}-${index}`}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {allItems.map((item, index) => (
+                  <JapanSearchCard
+                    item={item}
+                    key={`${item.id || 'item'}-${index}`}
+                  />
+                ))}
+              </div>
+
+              <div className="text-center py-8" ref={loadMoreRef}>
+                {isFetchingNextPage && (
+                  <div className="flex items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                    <span>さらに読み込み中...</span>
+                  </div>
+                )}
+              </div>
+            </>
           )}
 
           {!loading && !error && allItems.length === 0 && (
@@ -97,14 +137,6 @@ export default function GalleryHomeClient() {
               </p>
             </div>
           )}
-        </div>
-        <div className="text-center">
-          <Link href="/gallery/theme">
-            <Button className="px-8" size="lg">
-              <Search className="h-5 w-5 mr-2" />
-              詳細検索を開始
-            </Button>
-          </Link>
         </div>
       </div>
     </div>

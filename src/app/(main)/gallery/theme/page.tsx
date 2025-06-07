@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { ThemeGalleryContainer } from './ThemeGalleryContainer';
+import ThemeGalleryClient from './ThemeGalleryClient';
 import { baseMetadata } from '@/lib/metadata';
 
 export const metadata: Metadata = {
@@ -25,5 +25,12 @@ export default async function ThemeGalleryPage({ searchParams }: PageProps) {
   const theme = params.theme || 'season';
   const query = params.query || '春';
   const page = parseInt(params.page || '1');
-  return <ThemeGalleryContainer page={page} query={query} theme={theme} />;
+
+  return (
+    <ThemeGalleryClient
+      initialPage={page}
+      initialQuery={query}
+      initialTheme={theme}
+    />
+  );
 }

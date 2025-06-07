@@ -3,22 +3,20 @@
 import { useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { type JapanSearchItem } from '@/lib/japansearch';
-import { useInfiniteThemeSearch } from '@/lib/japansearch-hooks';
 import { BackButton } from '@/components/BackButton';
 import { AlertCircle, Loader2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { JapanSearchCard } from '@/components/shared/JapanSearchCard';
 import { Input } from '@/components/ui/input';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { useInfiniteThemeSearch } from '@/lib/japansearch-hooks';
 
 type ThemeType = 'season' | 'region' | 'poet' | 'era';
 
 type ThemeGalleryClientProps = {
-  initialResults: JapanSearchItem[];
   initialTheme: ThemeType;
   initialQuery: string;
   initialPage: number;
-  error?: string | null;
 };
 
 const themeOptions = {
@@ -68,12 +66,10 @@ const THEME_LABELS: Record<ThemeType, string> = {
   era: '時代',
 };
 
-export function ThemeGalleryClient({
-  initialResults: _initialResults,
+export default function ThemeGalleryClient({
   initialTheme,
   initialQuery,
   initialPage: _initialPage,
-  error: _initialError,
 }: ThemeGalleryClientProps) {
   const [currentTheme, setCurrentTheme] = useState<ThemeType>(initialTheme);
   const [currentQuery, setCurrentQuery] = useState(initialQuery);
@@ -87,6 +83,8 @@ export function ThemeGalleryClient({
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const searchQuery = useInfiniteThemeSearch(currentTheme, currentQuery);
+
   const {
     data,
     fetchNextPage,
@@ -94,11 +92,10 @@ export function ThemeGalleryClient({
     isFetchingNextPage,
     isLoading,
     error,
-  } = useInfiniteThemeSearch(currentTheme, currentQuery);
+  } = searchQuery;
 
   const results = data?.pages.flatMap((page: JapanSearchItem[]) => page) || [];
 
-  // 無限スクロール用のref
   const { loadMoreRef } = useInfiniteScroll({
     fetchNextPage,
     hasNextPage: hasNextPage || false,
