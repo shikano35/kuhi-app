@@ -9,6 +9,7 @@ import { AlertCircle, Loader2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { JapanSearchCard } from '@/components/shared/JapanSearchCard';
 import { Input } from '@/components/ui/input';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 
 type ThemeType = 'season' | 'region' | 'poet' | 'era';
 
@@ -95,7 +96,14 @@ export function ThemeGalleryClient({
     error,
   } = useInfiniteThemeSearch(currentTheme, currentQuery);
 
-  const results = data?.pages.flatMap((page) => page) || [];
+  const results = data?.pages.flatMap((page: JapanSearchItem[]) => page) || [];
+
+  // 無限スクロール用のref
+  const { loadMoreRef } = useInfiniteScroll({
+    fetchNextPage,
+    hasNextPage: hasNextPage || false,
+    isFetchingNextPage,
+  });
 
   // テーマ変更ハンドラー
   const handleThemeChange = (theme: ThemeType) => {
@@ -144,12 +152,6 @@ export function ThemeGalleryClient({
       params.set('page', '1');
       router.push(`?${params.toString()}`);
     });
-  };
-
-  const handleLoadMore = () => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
   };
 
   return (
@@ -263,7 +265,7 @@ export function ThemeGalleryClient({
               検索結果: {currentQuery} ({results.length}件)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {results.map((item, index) => {
+              {results.map((item: JapanSearchItem, index: number) => {
                 return (
                   <JapanSearchCard
                     item={item}
@@ -273,6 +275,21 @@ export function ThemeGalleryClient({
                 );
               })}
             </div>
+
+            {hasNextPage && (
+              <div className="text-center py-8" ref={loadMoreRef}>
+                {isFetchingNextPage ? (
+                  <div className="flex items-center justify-center">
+                    <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                    <span className="text-muted-foreground">読み込み中...</span>
+                  </div>
+                ) : (
+                  <div className="text-muted-foreground">
+                    下にスクロールして、さらに読み込む
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -284,25 +301,6 @@ export function ThemeGalleryClient({
             <p className="text-gray-400 mt-2">
               別のキーワードで検索してみてください
             </p>
-          </div>
-        )}
-
-        {!isLoading && !isPending && results.length > 0 && hasNextPage && (
-          <div className="text-center mt-8">
-            <Button
-              className="transition-colors disabled:opacity-50"
-              disabled={isFetchingNextPage}
-              onClick={handleLoadMore}
-            >
-              {isFetchingNextPage ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  読み込み中...
-                </>
-              ) : (
-                'さらに読み込む'
-              )}
-            </Button>
           </div>
         )}
       </div>

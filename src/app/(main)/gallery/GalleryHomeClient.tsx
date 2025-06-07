@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Palette, Images, Search, Loader2 } from 'lucide-react';
+import { Images, Search, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
@@ -10,6 +10,7 @@ import { useDefaultImages } from '@/lib/japansearch-hooks';
 
 export default function GalleryHomeClient() {
   const { data: popularItems, isLoading: loading, error } = useDefaultImages();
+  const allItems = popularItems?.pages.flat() || [];
   return (
     <div className="min-h-screen bg-muted/50">
       <div className="container mx-auto py-8 px-4">
@@ -26,112 +27,83 @@ export default function GalleryHomeClient() {
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="border border-border">
-            <CardHeader className="pb-2">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-muted rounded-lg">
-                  <Palette className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-xl">テーマ別ギャラリー</CardTitle>
-                </div>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <Card>
+            <CardHeader className="text-center text-xl">
+              <Search className="h-12 w-12 mx-auto mb-4 text-blue-600" />
+              <CardTitle>テーマ別検索</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col h-full space-y-2">
-              <p className="flex-1 text-sm text-muted-foreground mb-4">
-                季節、地域、俳人、時代別に関連資料を検索できます。
+            <CardContent>
+              <p className="text-center text-sm text-muted-foreground mb-6 -mt-4">
+                季節、地域、俳人、年代で文化資料を検索
               </p>
-              <div className="flex flex-wrap gap-2">
-                <div className="px-2 py-1 bg-muted text-xs rounded-full">
-                  季節
-                </div>
-                <div className="px-2 py-1 bg-muted text-xs rounded-full">
-                  地域
-                </div>
-                <div className="px-2 py-1 bg-muted text-xs rounded-full">
-                  俳人
-                </div>
-                <div className="px-2 py-1 bg-muted text-xs rounded-full">
-                  時代
-                </div>
-              </div>
-              <Link className="mt-10" href="/gallery/theme">
-                <Button className="w-full" size="lg">
-                  <Search className="w-4 h-4 mr-2" />
-                  テーマ別検索
-                </Button>
+              <Link href="/gallery/theme">
+                <Button className="w-full">検索する</Button>
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="border border-border">
-            <CardHeader className="pb-2">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <Images className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-xl">画像ギャラリー</CardTitle>
-                </div>
-              </div>
+          <Card>
+            <CardHeader className="text-center text-xl">
+              <Images className="h-12 w-12 mx-auto mb-4 text-green-600" />
+              <CardTitle>画像ギャラリー</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col h-full space-y-2">
-              <p className="flex-1 text-sm text-muted-foreground mb-4">
-                画像を中心とした検索結果を、美しいギャラリー形式で表示します。
+            <CardContent>
+              <p className="text-center text-sm text-muted-foreground mb-6 -mt-4">
+                古地図、写真集、浮世絵などの画像資料を閲覧
               </p>
-              <div className="flex flex-wrap gap-2">
-                <div className="px-2 py-1 bg-muted text-xs rounded-full">
-                  歴史
-                </div>
-                <div className="px-2 py-1 bg-muted text-xs rounded-full">
-                  文化
-                </div>
-                <div className="px-2 py-1 bg-muted text-xs rounded-full">
-                  絵画
-                </div>
-              </div>
-              <Link className="mt-10" href="/gallery/images">
-                <Button className="w-full" size="lg">
-                  <Images className="w-4 h-4 mr-2" />
-                  画像ギャラリー
-                </Button>
+              <Link href="/gallery/images">
+                <Button className="w-full">画像を見る</Button>
               </Link>
             </CardContent>
           </Card>
         </div>
 
-        <div className="max-w-6xl mx-auto mt-24">
-          {loading ? (
-            <div className="bg-background rounded-lg p-8 text-center">
-              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
-              <p className="text-muted-foreground">読み込み中...</p>
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-6 text-center">
+            コンテンツ一覧
+          </h2>
+
+          {loading && (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <span className="ml-2">読み込み中...</span>
             </div>
-          ) : error ? (
-            <div className="bg-background rounded-lg p-8 text-center">
+          )}
+
+          {error && (
+            <div className="text-center py-12">
               <p className="text-muted-foreground">
-                コンテンツを読み込めませんでした
+                コンテンツの読み込みに失敗しました。
               </p>
             </div>
-          ) : popularItems && popularItems.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-6 gap-4">
-              {popularItems.map((item) => (
-                <JapanSearchCard item={item} key={item.id} variant="compact" />
+          )}
+
+          {!loading && !error && allItems.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {allItems.slice(0, 8).map((item, index) => (
+                <JapanSearchCard
+                  item={item}
+                  key={`${item.id || 'item'}-${index}`}
+                />
               ))}
             </div>
-          ) : (
-            <div className="bg-background rounded-lg p-8 text-center">
+          )}
+
+          {!loading && !error && allItems.length === 0 && (
+            <div className="text-center py-12">
               <p className="text-muted-foreground">
-                コンテンツを読み込めませんでした
+                表示できるコンテンツがありません。
               </p>
             </div>
           )}
         </div>
-      </div>
-      <div className="flex items-center justify-center mb-6">
-        <div className="space-x-2">
+        <div className="text-center">
           <Link href="/gallery/theme">
-            <Button>もっと見る</Button>
+            <Button className="px-8" size="lg">
+              <Search className="h-5 w-5 mr-2" />
+              詳細検索を開始
+            </Button>
           </Link>
         </div>
       </div>
