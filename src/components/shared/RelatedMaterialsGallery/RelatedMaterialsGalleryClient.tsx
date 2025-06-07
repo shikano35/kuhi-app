@@ -4,18 +4,32 @@ import { Loader2, Images, BookOpen, AlertCircle } from 'lucide-react';
 import { JapanSearchCard } from '@/components/shared/JapanSearchCard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useRelatedMaterials, useRelatedImages } from '@/lib/japansearch-hooks';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import type {
+  UseInfiniteQueryResult,
+  InfiniteData,
+} from '@tanstack/react-query';
+import type { JapanSearchItem } from '@/lib/japansearch-types';
 
-type RelatedMaterialsGalleryProps = {
+type RelatedMaterialsGalleryClientProps = {
   poetName: string;
   className?: string;
+  materialsQuery: UseInfiniteQueryResult<
+    InfiniteData<JapanSearchItem[], unknown>,
+    Error
+  >;
+  imagesQuery: UseInfiniteQueryResult<
+    InfiniteData<JapanSearchItem[], unknown>,
+    Error
+  >;
 };
 
-export function RelatedMaterialsGallery({
+export function RelatedMaterialsGalleryClient({
   poetName,
   className,
-}: RelatedMaterialsGalleryProps) {
+  materialsQuery,
+  imagesQuery,
+}: RelatedMaterialsGalleryClientProps) {
   const {
     data: materialsData,
     fetchNextPage: fetchNextMaterials,
@@ -23,7 +37,7 @@ export function RelatedMaterialsGallery({
     isFetchingNextPage: isFetchingNextMaterials,
     isLoading: isLoadingMaterials,
     error: errorMaterials,
-  } = useRelatedMaterials(poetName);
+  } = materialsQuery;
 
   const {
     data: imagesData,
@@ -32,7 +46,7 @@ export function RelatedMaterialsGallery({
     isFetchingNextPage: isFetchingNextImages,
     isLoading: isLoadingImages,
     error: errorImages,
-  } = useRelatedImages(poetName);
+  } = imagesQuery;
 
   const materials = materialsData?.pages.flatMap((page) => page) || [];
   const images = imagesData?.pages.flatMap((page) => page) || [];
@@ -56,7 +70,7 @@ export function RelatedMaterialsGallery({
     return (
       <div className={`bg-background rounded-lg p-8 ${className}`}>
         <div className="flex items-center justify-center">
-          <Loader2 className="w-6 h-6 animate-spin mr-2" />
+          <Loader2 className="h-6 w-6 animate-spin mr-2" />
           <span className="text-muted-foreground">関連資料を検索中...</span>
         </div>
       </div>
@@ -66,7 +80,7 @@ export function RelatedMaterialsGallery({
   if (!hasResults && !isLoading) {
     return (
       <div className={`bg-background rounded-lg p-8 text-center ${className}`}>
-        <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-4" />
+        <AlertCircle className="h-8 w-8 text-muted-foreground mx-auto mb-4" />
         <p className="text-muted-foreground">
           {poetName}に関連する資料が見つかりませんでした。
         </p>
@@ -80,18 +94,18 @@ export function RelatedMaterialsGallery({
     >
       <div className="p-6">
         <h2 className="text-2xl font-bold mb-6 flex items-center">
-          <BookOpen className="w-6 h-6 mr-2" />
+          <BookOpen className="h-6 w-6 mr-2" />
           関連文献・画像ギャラリー
         </h2>
 
         <Tabs className="w-full" defaultValue="materials">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger className="flex items-center" value="materials">
-              <BookOpen className="w-4 h-4 mr-2" />
+              <BookOpen className="h-4 w-4 mr-2" />
               文献・資料 ({materials.length})
             </TabsTrigger>
             <TabsTrigger className="flex items-center" value="images">
-              <Images className="w-4 h-4 mr-2" />
+              <Images className="h-4 w-4 mr-2" />
               画像 ({images.length})
             </TabsTrigger>
           </TabsList>
@@ -99,7 +113,7 @@ export function RelatedMaterialsGallery({
           <TabsContent className="mt-6" value="materials">
             {errorMaterials ? (
               <div className="text-center py-8">
-                <AlertCircle className="w-8 h-8 text-destructive mx-auto mb-4" />
+                <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-4" />
                 <p className="text-destructive">{errorMaterials.message}</p>
                 <Button
                   className="mt-4"
@@ -127,7 +141,7 @@ export function RelatedMaterialsGallery({
                 >
                   {isFetchingNextMaterials && (
                     <div className="flex items-center text-muted-foreground">
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       <span>読み込み中...</span>
                     </div>
                   )}
@@ -143,7 +157,7 @@ export function RelatedMaterialsGallery({
           <TabsContent className="mt-6" value="images">
             {errorImages ? (
               <div className="text-center py-8">
-                <AlertCircle className="w-8 h-8 text-destructive mx-auto mb-4" />
+                <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-4" />
                 <p className="text-destructive">{errorImages.message}</p>
                 <Button
                   className="mt-4"
@@ -171,7 +185,7 @@ export function RelatedMaterialsGallery({
                 >
                   {isFetchingNextImages && (
                     <div className="flex items-center text-muted-foreground">
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       <span>読み込み中...</span>
                     </div>
                   )}
