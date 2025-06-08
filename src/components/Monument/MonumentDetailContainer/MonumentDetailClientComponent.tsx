@@ -163,7 +163,7 @@ export function MonumentDetailClientComponent({
                     </div>
                   )}
 
-                  <div>
+                  <div className="w-full">
                     <h3 className="text-lg font-medium mb-2">{poet.name}</h3>
                     {poet.biography && (
                       <p className="text-muted-foreground">{poet.biography}</p>
