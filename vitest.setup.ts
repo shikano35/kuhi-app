@@ -22,13 +22,17 @@ if (typeof global !== 'undefined') {
     disconnect() {}
   };
 } else if (typeof globalThis !== 'undefined') {
-  (globalThis as any).ResizeObserver = class ResizeObserver {
+  (
+    globalThis as typeof globalThis & { ResizeObserver: typeof ResizeObserver }
+  ).ResizeObserver = class ResizeObserver {
     observe() {}
     unobserve() {}
     disconnect() {}
   };
 } else if (typeof window !== 'undefined') {
-  (window as any).ResizeObserver = class ResizeObserver {
+  (
+    window as typeof window & { ResizeObserver: typeof ResizeObserver }
+  ).ResizeObserver = class ResizeObserver {
     observe() {}
     unobserve() {}
     disconnect() {}
