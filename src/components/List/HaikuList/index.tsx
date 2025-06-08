@@ -1,14 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { ListFilter } from '@/components/List/ListFilter';
 import { useHaikuList } from '@/lib/api-hooks';
-import { useInView } from 'react-intersection-observer';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { useFilterStore } from '@/store/useFilterStore';
 
 export function HaikuList() {
-  const { ref, inView } = useInView();
   const { listSearchText, listSelectedRegion, listPoetId } = useFilterStore();
 
   const searchQuery = listSearchText;
@@ -33,11 +31,11 @@ export function HaikuList() {
   const monuments = data?.pages.flatMap((page) => page.monuments) || [];
   const totalCount = data?.pages[0]?.totalCount || 0;
 
-  useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const { loadMoreRef } = useInfiniteScroll({
+    fetchNextPage,
+    hasNextPage: !!hasNextPage,
+    isFetchingNextPage,
+  });
 
   return (
     <div>
@@ -98,7 +96,7 @@ export function HaikuList() {
           )}
 
           {hasNextPage && (
-            <div className="flex justify-center mt-12" ref={ref}>
+            <div className="flex justify-center mt-12" ref={loadMoreRef}>
               {isFetchingNextPage && (
                 <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
               )}

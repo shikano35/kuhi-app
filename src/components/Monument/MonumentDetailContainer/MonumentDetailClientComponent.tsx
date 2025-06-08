@@ -163,21 +163,23 @@ export function MonumentDetailClientComponent({
                     </div>
                   )}
 
-                  <div>
+                  <div className="w-full">
                     <h3 className="text-lg font-medium mb-2">{poet.name}</h3>
                     {poet.biography && (
                       <p className="text-muted-foreground">{poet.biography}</p>
                     )}
                     {poet.link_url && (
-                      <a
-                        className=" mt-2 text-muted-foreground underline text-sm flex items-center justify-end hover:text-primary underline-offset-2"
-                        href={poet.link_url}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                      >
-                        詳細を見る
-                        <ExternalLink className="ml-1 size-4" />
-                      </a>
+                      <div className="flex items-center justify-end">
+                        <a
+                          className=" mt-2 text-muted-foreground underline text-sm flex items-center hover:text-primary underline-offset-2"
+                          href={poet.link_url}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          詳細を見る
+                          <ExternalLink className="ml-1 size-4" />
+                        </a>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -206,15 +208,17 @@ export function MonumentDetailClientComponent({
                   )}
                 </p>
                 {source.url && (
-                  <a
-                    className="mt-2 text-muted-foreground underline text-sm mt-6 flex items-center justify-end hover:text-primary underline-offset-2"
-                    href={source.url}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    リンク
-                    <ExternalLink className="ml-1 size-4" />
-                  </a>
+                  <div className="flex items-center justify-end">
+                    <a
+                      className="mt-2 text-muted-foreground underline text-sm mt-6 flex items-center hover:text-primary underline-offset-2"
+                      href={source.url}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      リンク
+                      <ExternalLink className="ml-1 size-4" />
+                    </a>
+                  </div>
                 )}
               </div>
             )}
@@ -232,15 +236,17 @@ export function MonumentDetailClientComponent({
                 </p>
 
                 {location.latitude && location.longitude && (
-                  <Link
-                    className="mt-2 text-muted-foreground underline underline-offset-2 hover:text-primary text-sm flex items-center justify-end"
-                    href={`https://maps.google.com/maps?q=${location.latitude},${location.longitude}`}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    <MapPin className="mr-1 mt-0.5 size-4" />
-                    Googleマップで見る
-                  </Link>
+                  <div className="flex items-center justify-end">
+                    <Link
+                      className="mt-2 text-muted-foreground underline underline-offset-2 hover:text-primary text-sm flex items-center"
+                      href={`https://maps.google.com/maps?q=${location.latitude},${location.longitude}`}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <MapPin className="mr-1 mt-0.5 size-4" />
+                      Googleマップで見る
+                    </Link>
+                  </div>
                 )}
               </div>
             )}

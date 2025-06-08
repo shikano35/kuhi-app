@@ -8,9 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Poet } from '@/types/haiku';
 import { Search, User } from 'lucide-react';
 
-interface PoetListProps {
+type PoetListProps = {
   poets: Poet[];
-}
+};
 
 export function PoetList({ poets }: PoetListProps) {
   const [search, setSearch] = useState('');

@@ -7,8 +7,11 @@ import React from 'react';
 // Next.js Imageコンポーネントのモック
 vi.mock('next/image', () => ({
   __esModule: true,
-  default: ({ src, alt, ...props }: any) => {
-     
+  default: ({
+    src,
+    alt,
+    ...props
+  }: React.ImgHTMLAttributes<HTMLImageElement>) => {
     return React.createElement('img', { src, alt, ...props });
   },
 }));

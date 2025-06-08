@@ -5,8 +5,40 @@ const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 
+const isProd = process.env.NODE_ENV === "production";
+
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
+  ...(isProd && {
+    async headers() {
+      return [
+        {
+          source: "/(.*)",
+          headers: [
+            {
+              key: "Content-Security-Policy",
+              value: [
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline' *.googletagmanager.com *.google-analytics.com",
+                "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
+                "font-src 'self' fonts.gstatic.com",
+                "img-src 'self' data: blob: https: http://localhost:3000",
+                "connect-src 'self' *.kuhiapi.com *.googleapis.com *.google-analytics.com",
+                "frame-src 'self' *.google.com",
+                "object-src 'none'",
+                "upgrade-insecure-requests"
+              ].join("; "),
+            },
+            { key: "X-XSS-Protection", value: "1; mode=block" },
+            { key: "X-Frame-Options", value: "DENY" },
+            { key: "X-Content-Type-Options", value: "nosniff" },
+            { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+            { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self)" },
+          ],
+        },
+      ];
+    },
+  }),
   images: {
     remotePatterns: [
       {

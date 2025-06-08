@@ -7,22 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
 import { JapanSearchCard } from '@/components/shared/JapanSearchCard';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import type {
-  UseInfiniteQueryResult,
-  InfiniteData,
-} from '@tanstack/react-query';
-import type { JapanSearchItem } from '@/lib/japansearch-types';
+import { useDefaultImages } from '@/lib/japansearch-hooks';
 
-type GalleryHomeClientProps = {
-  defaultImagesQuery: UseInfiniteQueryResult<
-    InfiniteData<JapanSearchItem[], unknown>,
-    Error
-  >;
-};
-
-export function GalleryHomeClient({
-  defaultImagesQuery,
-}: GalleryHomeClientProps) {
+export function GalleryHomeClient() {
   const {
     data: popularItems,
     isLoading: loading,
@@ -30,7 +17,7 @@ export function GalleryHomeClient({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = defaultImagesQuery;
+  } = useDefaultImages();
 
   const allItems = popularItems?.pages.flat() || [];
 

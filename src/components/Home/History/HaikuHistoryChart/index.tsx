@@ -1,33 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { ClientHistoryChart } from './ClientHistoryChart';
+import { useQuery } from '@tanstack/react-query';
 import { getAllHaikuMonuments } from '@/lib/api';
-import { processHistoryData, type HistoryDataPoint } from './utils';
+import { processHistoryData } from './utils';
 
 export function HaikuHistoryChart() {
-  const [historyData, setHistoryData] = useState<HistoryDataPoint[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: monuments = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['haiku-monuments'],
+    queryFn: () => getAllHaikuMonuments(),
+    staleTime: 5 * 60 * 1000,
+  });
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setIsLoading(true);
-        const monuments = await getAllHaikuMonuments();
-        const processedData = processHistoryData(monuments);
-        setHistoryData(processedData);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'データの取得に失敗しました'
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
+  const historyData = processHistoryData(monuments);
 
   if (isLoading) {
     return (
@@ -42,7 +31,11 @@ export function HaikuHistoryChart() {
     return (
       <div className="w-full max-w-4xl mx-auto p-8 text-center">
         <p className="text-red-500 mb-2">エラーが発生しました</p>
-        <p className="text-muted-foreground text-sm">{error}</p>
+        <p className="text-muted-foreground text-sm">
+          {error instanceof Error
+            ? error.message
+            : 'データの取得に失敗しました'}
+        </p>
       </div>
     );
   }
