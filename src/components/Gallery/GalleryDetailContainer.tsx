@@ -219,12 +219,14 @@ export function GalleryDetailContainer({
                         <FileText className="w-4 h-4 mr-2" />
                         説明
                       </h3>
-                      <div
-                        className="text-muted-foreground prose prose-sm max-w-none [&_p]:mb-2 [&_br]:block [&_br]:content-[''] [&_br]:mt-1"
-                        dangerouslySetInnerHTML={{
-                          __html: description.replace(/\n/g, '<br />'),
-                        }}
-                      />
+                      <div className="text-muted-foreground prose prose-sm max-w-none">
+                        {description.split('\n').map((line, index, array) => (
+                          <span key={index}>
+                            {line}
+                            {index < array.length - 1 && <br />}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </CardContent>

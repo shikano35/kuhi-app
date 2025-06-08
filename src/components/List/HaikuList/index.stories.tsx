@@ -99,7 +99,10 @@ const createMockFilterStore = (customValues = {}) => {
 };
 
 function MockedHaikuList() {
-  if (typeof window !== 'undefined') {
+  if (
+    typeof globalThis !== 'undefined' &&
+    typeof globalThis.window !== 'undefined'
+  ) {
     const storeValues: Record<string, string | number | undefined> = {
       listSearchText: '',
       listSelectedRegion: 'すべて',
@@ -115,7 +118,10 @@ function MockedHaikuList() {
   return <HaikuList />;
 }
 
-if (typeof window !== 'undefined') {
+if (
+  typeof globalThis !== 'undefined' &&
+  typeof globalThis.window !== 'undefined'
+) {
   Object.defineProperty(apiHooks, 'useHaikuList', {
     value: () => mockHaikuListData,
     configurable: true,
