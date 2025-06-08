@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { type JapanSearchItem } from '@/lib/japansearch';
 import { BackButton } from '@/components/BackButton';
@@ -79,7 +79,6 @@ export default function ThemeGalleryClient({
     customQuery: '',
   });
 
-  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -108,47 +107,41 @@ export default function ThemeGalleryClient({
 
     const defaultQuery = themeOptions[theme].queries[0];
 
-    startTransition(() => {
-      setCurrentTheme(theme);
-      setCurrentQuery(defaultQuery);
+    setCurrentTheme(theme);
+    setCurrentQuery(defaultQuery);
 
-      // URLを更新
-      const params = new URLSearchParams(searchParams);
-      params.set('theme', theme);
-      params.set('query', defaultQuery);
-      params.set('page', '1');
-      router.push(`?${params.toString()}`);
-    });
+    // URLを更新
+    const params = new URLSearchParams(searchParams);
+    params.set('theme', theme);
+    params.set('query', defaultQuery);
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
   };
 
   // クエリ変更ハンドラー
   const handleQueryChange = (query: string) => {
     if (query === currentQuery) return;
 
-    startTransition(() => {
-      setCurrentQuery(query);
+    setCurrentQuery(query);
 
-      // URLを更新
-      const params = new URLSearchParams(searchParams);
-      params.set('query', query);
-      params.set('page', '1');
-      router.push(`?${params.toString()}`);
-    });
+    // URLを更新
+    const params = new URLSearchParams(searchParams);
+    params.set('query', query);
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
   };
 
   // カスタム検索ハンドラー
   const handleCustomSearch = () => {
     if (!filters.customQuery.trim()) return;
 
-    startTransition(() => {
-      setCurrentQuery(filters.customQuery.trim());
+    setCurrentQuery(filters.customQuery.trim());
 
-      // URLを更新
-      const params = new URLSearchParams(searchParams);
-      params.set('query', filters.customQuery.trim());
-      params.set('page', '1');
-      router.push(`?${params.toString()}`);
-    });
+    // URLを更新
+    const params = new URLSearchParams(searchParams);
+    params.set('query', filters.customQuery.trim());
+    params.set('page', '1');
+    router.push(`?${params.toString()}`);
   };
 
   return (
@@ -176,8 +169,8 @@ export default function ThemeGalleryClient({
                     currentTheme === key
                       ? 'bg-primary text-background shadow-lg'
                       : 'bg-background text-primary border border-border hover:bg-muted'
-                  } ${isPending ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'}`}
-                  disabled={isPending}
+                  } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'}`}
+                  disabled={isLoading}
                   key={key}
                   onClick={() => handleThemeChange(key as ThemeType)}
                 >
@@ -199,8 +192,8 @@ export default function ThemeGalleryClient({
                   currentQuery === query
                     ? 'bg-primary text-background shadow-md'
                     : 'bg-input text-primary hover:bg-muted-foreground/25'
-                } ${isPending ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-sm'}`}
-                disabled={isPending}
+                } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-sm'}`}
+                disabled={isLoading}
                 key={query}
                 onClick={() => handleQueryChange(query)}
               >
@@ -230,7 +223,7 @@ export default function ThemeGalleryClient({
             </div>
             <Button
               className="flex items-center justify-center bg-primary text-background rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!filters.customQuery.trim() || isPending}
+              disabled={!filters.customQuery.trim() || isLoading}
               onClick={handleCustomSearch}
             >
               <Search className="w-4 h-4 mt-0.5" />
@@ -239,7 +232,7 @@ export default function ThemeGalleryClient({
           </div>
         </div>
 
-        {(isLoading || isPending) && (
+        {isLoading && (
           <div className="bg-background rounded-lg p-8 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
             <p className="text-muted-foreground">検索中...</p>
@@ -256,7 +249,7 @@ export default function ThemeGalleryClient({
           </div>
         )}
 
-        {!isLoading && !isPending && results.length > 0 && (
+        {!isLoading && results.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-primary mb-4">
               検索結果: {currentQuery} ({results.length}件)
@@ -290,7 +283,7 @@ export default function ThemeGalleryClient({
           </div>
         )}
 
-        {!isLoading && !isPending && results.length === 0 && !error && (
+        {!isLoading && results.length === 0 && !error && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">
               「{currentQuery}」に関する資料が見つかりませんでした
