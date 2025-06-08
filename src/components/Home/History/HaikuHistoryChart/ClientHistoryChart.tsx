@@ -15,9 +15,9 @@ import { type HistoryDataPoint } from './utils';
 
 type ChartMode = 'monuments' | 'poets';
 
-export interface ClientHistoryChartProps {
+export type ClientHistoryChartProps = {
   historyData: HistoryDataPoint[];
-}
+};
 
 export function ClientHistoryChart({ historyData }: ClientHistoryChartProps) {
   const [mode, setMode] = useState<ChartMode>('monuments');

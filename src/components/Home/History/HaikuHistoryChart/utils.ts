@@ -1,11 +1,11 @@
 import { HaikuMonument } from '@/types/haiku';
 
-export interface HistoryDataPoint {
+export type HistoryDataPoint = {
   year: number;
   events: string;
   monuments: number;
   poets: number;
-}
+};
 
 const START_YEAR = 1600;
 const END_YEAR = 2025;
