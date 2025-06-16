@@ -49,7 +49,7 @@ export function GalleryDetailContainer({
   if (error) {
     return (
       <div className="min-h-screen bg-muted/50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
+        <div className="text-center max-w-2xl mx-auto p-6">
           <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
           <h2 className="text-xl font-semibold mb-2">エラー</h2>
           <p className="text-muted-foreground mb-6">
@@ -147,10 +147,10 @@ export function GalleryDetailContainer({
       <div className="container mx-auto py-8 px-4">
         <BackButton fallbackUrl="/gallery">ギャラリーに戻る</BackButton>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl 2xl:max-w-5xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <Card>
+              <Card className="py-0">
                 <CardContent className="p-0">
                   {hasValidImage ? (
                     <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
@@ -257,7 +257,7 @@ export function GalleryDetailContainer({
                     <div>
                       <h4 className="font-medium mb-2 flex items-center">
                         <Calendar className="w-4 h-4 mr-2" />
-                        日付
+                        時代世紀
                       </h4>
                       <p className="text-muted-foreground">{date}</p>
                     </div>
