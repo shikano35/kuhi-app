@@ -37,9 +37,12 @@ export function HomeHeader() {
                   items={dropdownItems}
                   key={index}
                   trigger={
-                    <span className="text-white hover:text-gray-300 transition-colors md:text-base lg:text-lg font-medium text-shadow-lg cursor-pointer">
+                    <Link
+                      className="text-white hover:text-gray-300 transition-colors md:text-base lg:text-lg font-medium text-shadow-lg"
+                      href={link.href}
+                    >
                       {link.label}
-                    </span>
+                    </Link>
                   }
                 />
               );
@@ -84,9 +87,12 @@ export function MapHeader() {
                     items={dropdownItems}
                     key={index}
                     trigger={
-                      <span className="text-primary hover:text-muted-foreground transition-colors font-medium cursor-pointer">
+                      <Link
+                        className="text-primary hover:text-muted-foreground transition-colors font-medium"
+                        href={link.href}
+                      >
                         {link.label}
-                      </span>
+                      </Link>
                     }
                   />
                 );
@@ -132,9 +138,12 @@ export function Header() {
                     items={dropdownItems}
                     key={index}
                     trigger={
-                      <span className="text-primary hover:text-muted-foreground transition-colors font-medium cursor-pointer">
+                      <Link
+                        className="text-primary hover:text-muted-foreground transition-colors font-medium"
+                        href={link.href}
+                      >
                         {link.label}
-                      </span>
+                      </Link>
                     }
                   />
                 );
