@@ -35,8 +35,8 @@ export function HaikuInfoPanel({ monument, onClose }: HaikuInfoPanelProps) {
     established_date,
     photo_url,
   } = monument;
-  const poet = poets[0];
-  const location = locations[0];
+  const poet = poets?.[0];
+  const location = locations?.[0];
 
   return (
     <ScrollArea className="h-full">
@@ -75,20 +75,24 @@ export function HaikuInfoPanel({ monument, onClose }: HaikuInfoPanelProps) {
               {inscription}
             </h3>
 
-            <div className="flex items-center space-x-2">
-              <User className="size-4 text-muted-foreground" />
-              <span className="font-medium text-sm text-primary">
-                {poet.name}
-              </span>
-            </div>
+            {poet?.name && (
+              <div className="flex items-center space-x-2">
+                <User className="size-4 text-muted-foreground" />
+                <span className="font-medium text-sm text-primary">
+                  {poet.name}
+                </span>
+              </div>
+            )}
 
-            <div className="flex items-start space-x-2">
-              <MapPin className="size-4 text-muted-foreground mt-0.5" />
-              <span className="text-sm text-primary">
-                {location.prefecture} {location.municipality}{' '}
-                {location.place_name}
-              </span>
-            </div>
+            {location && (
+              <div className="flex items-start space-x-2">
+                <MapPin className="size-4 text-muted-foreground mt-0.5" />
+                <span className="text-sm text-primary">
+                  {location.prefecture} {location.municipality}{' '}
+                  {location.place_name}
+                </span>
+              </div>
+            )}
           </div>
 
           <Separator className="my-6" />
@@ -134,19 +138,21 @@ export function HaikuInfoPanel({ monument, onClose }: HaikuInfoPanelProps) {
             <Link href={`/monument/${monument.id}`}>詳細を見る</Link>
           </Button>
 
-          <Button
-            className="flex items-center"
-            onClick={() =>
-              window.open(
-                `https://www.google.com/maps?q=${location.latitude},${location.longitude}`,
-                '_blank'
-              )
-            }
-            variant="outline"
-          >
-            <ExternalLink className="size-4 mr-1" />
-            地図で開く
-          </Button>
+          {location && (
+            <Button
+              className="flex items-center"
+              onClick={() =>
+                window.open(
+                  `https://www.google.com/maps?q=${location.latitude},${location.longitude}`,
+                  '_blank'
+                )
+              }
+              variant="outline"
+            >
+              <ExternalLink className="size-4 mr-1" />
+              地図で開く
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </ScrollArea>
