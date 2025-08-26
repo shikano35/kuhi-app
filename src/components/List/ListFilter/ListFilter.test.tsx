@@ -31,7 +31,7 @@ vi.mock('@/store/useFilterStore', () => ({
 
 const server = setupServer(
   // 俳人一覧のエンドポイントをモック
-  http.get('https://api.kuhiapi.com/poets', () => {
+  http.get('https://api.kuhi.jp/poets', () => {
     const poets = mockHaikuMonuments
       .flatMap((monument) => monument.poets)
       .filter(
@@ -42,7 +42,7 @@ const server = setupServer(
   }),
 
   // 場所一覧のエンドポイントをモック
-  http.get('https://api.kuhiapi.com/locations', () => {
+  http.get('https://api.kuhi.jp/locations', () => {
     const locations = mockHaikuMonuments
       .flatMap((monument) => monument.locations)
       .filter(

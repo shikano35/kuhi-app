@@ -33,7 +33,7 @@ const server = setupServer(
   }),
 
   // 俳人一覧のエンドポイントをモック
-  http.get('https://api.kuhiapi.com/poets', () => {
+  http.get('https://api.kuhi.jp/poets', () => {
     const poets = mockHaikuMonuments
       .flatMap((monument) => monument.poets)
       .filter(

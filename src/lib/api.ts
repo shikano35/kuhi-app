@@ -1,6 +1,6 @@
 import { HaikuMonument, Location, Poet, Source, News } from '@/types/haiku';
 
-const API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhiapi.com';
+const API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhi.jp';
 
 type HaikuMonumentsResponse = {
   haiku_monuments: HaikuMonument[];
