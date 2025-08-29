@@ -25,6 +25,7 @@ import {
 
 export const getAllHaikuMonuments = unstable_cache(
   async (params?: {
+    limit?: number;
     search?: string;
     region?: string;
     prefecture?: string;

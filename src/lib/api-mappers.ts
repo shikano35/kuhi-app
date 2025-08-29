@@ -30,7 +30,7 @@ export function mapMonumentToHaikuMonument(
     (event) => event.event_type === 'erected'
   );
 
-  return {
+  const result = {
     id: monument.id,
     inscription: firstInscription?.original_text || '',
     commentary: firstInscription?.notes || null,
@@ -69,6 +69,8 @@ export function mapMonumentToHaikuMonument(
     sources: monument.sources?.map(mapNewSourceToSource) || [],
     locations: monument.locations?.map(mapNewLocationToLocation) || [],
   };
+
+  return result;
 }
 
 /**

@@ -24,6 +24,7 @@ export async function HaikuListServerComponent({
 
   const [monuments, poets, locations] = await Promise.all([
     getAllHaikuMonuments({
+      limit: 30,
       search: searchParams?.q,
       region:
         searchParams?.region === 'すべて' ? undefined : searchParams?.region,
