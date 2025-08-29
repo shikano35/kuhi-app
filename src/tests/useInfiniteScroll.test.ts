@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { useInfiniteScroll } from './useInfiniteScroll';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
 
 const mockObserver = {

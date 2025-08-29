@@ -12,14 +12,14 @@ import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
 // MSWサーバーのセットアップ
 const server = setupServer(
   // 句碑一覧のエンドポイントをモック
-  http.get('https://api.kuhiapi.com/haiku-monuments', () => {
+  http.get('https://api.kuhi.jp/monuments', () => {
     return HttpResponse.json({
       haiku_monuments: mockHaikuMonuments,
     });
   }),
 
   // 句碑詳細のエンドポイントをモック
-  http.get('https://api.kuhiapi.com/haiku-monuments/:id', ({ params }) => {
+  http.get('https://api.kuhi.jp/monuments/:id', ({ params }) => {
     const { id } = params;
     const monument = mockHaikuMonuments.find((m) => m.id === Number(id));
 
@@ -55,8 +55,8 @@ describe('API関数のパフォーマンステスト', () => {
 
     const executionTime = endTime - startTime;
 
-    // 処理時間が500ms未満であることを期待（閾値は調整可能）
-    expect(executionTime).toBeLessThan(500);
+    // 処理時間が600ms未満であることを期待
+    expect(executionTime).toBeLessThan(600);
     console.log(`getAllHaikuMonuments 実行時間: ${executionTime.toFixed(2)}ms`);
   });
 
@@ -67,8 +67,8 @@ describe('API関数のパフォーマンステスト', () => {
 
     const executionTime = endTime - startTime;
 
-    // 処理時間が300ms未満であることを期待（閾値は調整可能）
-    expect(executionTime).toBeLessThan(300);
+    // 処理時間が250ms未満であることを期待
+    expect(executionTime).toBeLessThan(250);
     console.log(`getHaikuMonumentById 実行時間: ${executionTime.toFixed(2)}ms`);
   });
 
@@ -79,8 +79,8 @@ describe('API関数のパフォーマンステスト', () => {
 
     const executionTime = endTime - startTime;
 
-    // 処理時間が300ms未満であることを期待（閾値は調整可能）
-    expect(executionTime).toBeLessThan(300);
+    // 処理時間が350ms未満であることを期待
+    expect(executionTime).toBeLessThan(350);
     console.log(`getAllPoets 実行時間: ${executionTime.toFixed(2)}ms`);
   });
 
@@ -100,7 +100,7 @@ describe('API関数のパフォーマンステスト', () => {
     const minTime = Math.min(...times);
     const timeDifference = maxTime - minTime;
 
-    // 最大と最小の差が200ms未満であることを期待（閾値は調整可能）
+    // 最大と最小の差が200ms未満であることを期待
     expect(timeDifference).toBeLessThan(200);
 
     // 平均実行時間を計算

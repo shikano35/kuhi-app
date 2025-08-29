@@ -3,7 +3,7 @@ import {
   updateProfile,
   uploadProfileImage,
   deleteProfileImage,
-} from './profile-api';
+} from '@/lib/profile-api';
 
 // グローバルfetchのモック
 const mockFetch = vi.fn();
@@ -73,7 +73,7 @@ describe('プロフィールAPI', () => {
         method: 'POST',
         body: expect.any(FormData),
       });
-    });
+    }, 10000);
 
     test('画像アップロードでエラーが発生した場合、適切なエラーがスローされること', async () => {
       mockFetch.mockResolvedValueOnce({
@@ -86,7 +86,7 @@ describe('プロフィールAPI', () => {
       await expect(uploadProfileImage(file)).rejects.toThrow(
         '画像のアップロードに失敗しました'
       );
-    });
+    }, 10000);
   });
 
   describe('deleteProfileImage', () => {

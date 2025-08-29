@@ -3,7 +3,7 @@ import {
   formatEstablishedDate,
   truncateInscription,
   createUrlWithParams,
-} from './utils';
+} from '@/lib/utils';
 
 describe('ユーティリティ関数のテスト', () => {
   describe('formatEstablishedDate', () => {
