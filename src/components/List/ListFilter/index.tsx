@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FilterIcon } from 'lucide-react';
 import { useFilterStore } from '@/store/useFilterStore';
-import { Poet, Location } from '@/types/haiku';
+import { Poet, Location } from '@/types/definitions/haiku';
 
 const REGIONS = [
   '北海道',

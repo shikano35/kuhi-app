@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Poet } from '@/types/haiku';
+import { Poet } from '@/types/definitions/haiku';
 
 type PoetClientComponentProps = {
   poets: Poet[];

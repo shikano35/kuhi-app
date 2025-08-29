@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Source } from '@/types/haiku';
+import { Source } from '@/types/definitions/haiku';
 import { Search } from 'lucide-react';
 
 interface SourcesListProps {

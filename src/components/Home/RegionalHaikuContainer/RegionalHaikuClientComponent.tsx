@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { Button } from '@/components/ui/button';
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 
 type RegionalHaikuClientComponentProps = {
   regionMonumentsMap: Record<string, HaikuMonument[]>;

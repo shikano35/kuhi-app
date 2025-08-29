@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { Loader2, X, Heart } from 'lucide-react';
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 
 interface FavoritesTabContentProps {
   favorites: HaikuMonument[];

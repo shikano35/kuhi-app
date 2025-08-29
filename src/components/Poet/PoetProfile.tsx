@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
-import { Poet } from '@/types/haiku';
+import { Poet } from '@/types/definitions/haiku';
 
 type PoetProfileProps = {
   poet: Poet;

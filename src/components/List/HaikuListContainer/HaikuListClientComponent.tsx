@@ -6,7 +6,7 @@ import { useInView } from 'react-intersection-observer';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { ListFilter } from '@/components/List/ListFilter';
 import { MenuDropdown } from '@/components/shared/MenuDropdown';
-import { HaikuMonument, Poet, Location } from '@/types/haiku';
+import { HaikuMonument, Poet, Location } from '@/types/definitions/haiku';
 
 type HaikuListClientComponentProps = {
   initialMonuments: HaikuMonument[];

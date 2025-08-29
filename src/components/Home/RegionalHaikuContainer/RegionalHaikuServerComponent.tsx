@@ -1,6 +1,6 @@
 import { getAllHaikuMonuments } from '@/lib/server-api';
 import { RegionalHaikuClientComponent } from './RegionalHaikuClientComponent';
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 
 const REGIONS = [
   '北海道',

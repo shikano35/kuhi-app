@@ -1,4 +1,4 @@
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 
 type PoetMonumentsProps = {

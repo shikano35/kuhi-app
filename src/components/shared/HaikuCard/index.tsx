@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 import { truncateInscription } from '@/lib/utils';
 import { MapPinIcon, UserIcon, Heart, Loader2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { MapFilter } from '../MapFilter';
 import { HaikuInfoPanel } from '../HaikuInfoPanel/index';
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 import { useQuery } from '@tanstack/react-query';
 import { getAllHaikuMonuments } from '@/lib/api';
 import { ChevronRight, X } from 'lucide-react';

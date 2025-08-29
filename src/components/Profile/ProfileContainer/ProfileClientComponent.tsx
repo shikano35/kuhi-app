@@ -4,7 +4,11 @@ import { useState, useMemo, useCallback } from 'react';
 import { Session } from 'next-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MapPin, Heart } from 'lucide-react';
-import { UserFavorite, UserVisit, UserHaikuMonument } from '@/types/haiku';
+import {
+  UserFavorite,
+  UserVisit,
+  UserHaikuMonument,
+} from '@/types/definitions/haiku';
 import { convertUserHaikuMonumentToHaikuMonument } from '@/lib/user-monument-converter';
 import { logError, getUserFriendlyErrorMessage } from '@/lib/error-utils';
 import {
