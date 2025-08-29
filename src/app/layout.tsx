@@ -5,6 +5,7 @@ import { baseMetadata } from '@/lib/metadata';
 import { TanstackProvider } from '@/components/Providers/TanstackProvider';
 import AuthProvider from '@/components/Providers/AuthProvider';
 import { MswScript } from '@/components/Providers/MswScript';
+import '@/lib/msw-init';
 
 const shipporiMincho = Shippori_Mincho({
   variable: '--font-shippori-mincho',
