@@ -9,7 +9,7 @@ import {
 } from '@/lib/api-hooks';
 import { convertUserHaikuMonumentToHaikuMonument } from '@/lib/user-monument-converter';
 import { logError, getUserFriendlyErrorMessage } from '@/lib/error-utils';
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 
 interface ToastState {
   message: string;
