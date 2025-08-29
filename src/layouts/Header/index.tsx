@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Hina_Mincho } from 'next/font/google';
-import { AuthButton } from '@/components/AuthButton';
 import { cn } from '@/lib/cn';
 import { MobileMenu } from '@/components/shared/MobileMenu';
 import { HeaderDropdown } from '@/components/shared/HeaderDropdown';
@@ -60,7 +59,7 @@ export function HomeHeader() {
         </nav>
 
         <div className="flex items-center space-x-4">
-          <AuthButton isFlag={true} />
+          {/* <AuthButton isFlag={true} /> */}
           <MobileMenu variant="home" />
         </div>
       </div>
@@ -111,7 +110,7 @@ export function MapHeader() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <AuthButton />
+          {/* <AuthButton /> */}
           <MobileMenu />
         </div>
       </div>
@@ -162,7 +161,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <AuthButton />
+          {/* <AuthButton /> */}
           <MobileMenu />
         </div>
       </div>
