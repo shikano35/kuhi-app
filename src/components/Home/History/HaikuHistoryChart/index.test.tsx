@@ -2,7 +2,7 @@ import { describe, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ClientHistoryChart } from './ClientHistoryChart';
 import { processHistoryData } from './utils';
-import { type HaikuMonument } from '@/types/haiku';
+import { type HaikuMonument } from '@/types/definitions/haiku';
 
 // モックデータ
 const mockMonuments: HaikuMonument[] = [

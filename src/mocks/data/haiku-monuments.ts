@@ -1,4 +1,4 @@
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 
 export const mockHaikuMonuments: HaikuMonument[] = [
   {

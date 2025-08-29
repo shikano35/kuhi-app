@@ -1,4 +1,4 @@
-import { HaikuMonument, UserHaikuMonument } from '@/types/haiku';
+import { HaikuMonument, UserHaikuMonument } from '@/types/definitions/haiku';
 
 /**
  * UserHaikuMonumentをHaikuMonumentに変換するユーティリティ関数

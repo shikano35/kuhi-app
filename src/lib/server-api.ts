@@ -2,7 +2,7 @@ import { unstable_cache } from 'next/cache';
 import {
   getAllHaikuMonuments as _getAllHaikuMonuments,
   getAllPoets as _getAllPoets,
-  getPoetById as _getPoetById,
+  getPoetByIdOld as _getPoetById,
   getAllLocations as _getAllLocations,
   getHaikuMonumentById as _getHaikuMonumentById,
   getHaikuMonumentsByPoet as _getHaikuMonumentsByPoet,
@@ -21,7 +21,7 @@ import {
   GetUserVisitsResponse,
   News,
   Source,
-} from '@/types/haiku';
+} from '@/types/definitions/haiku';
 
 export const getAllHaikuMonuments = unstable_cache(
   async (params?: {

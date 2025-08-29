@@ -2,20 +2,7 @@
  * プロフィール関連のAPI呼び出し関数
  */
 
-export interface ProfileData {
-  name: string;
-  bio?: string;
-  emailNotifications: boolean;
-}
-
-export interface UserProfile {
-  id: string;
-  name: string | null;
-  email: string | null;
-  image: string | null;
-  bio: string | null;
-  emailNotifications: boolean | null;
-}
+import { ProfileData, UserProfile } from '@/types/definitions/profile';
 
 /**
  * プロフィール情報を更新する

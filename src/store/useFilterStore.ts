@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 
 export interface FilterState {
   // マップフィルター用状態
