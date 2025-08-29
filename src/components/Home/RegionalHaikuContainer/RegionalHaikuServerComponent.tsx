@@ -1,4 +1,4 @@
-import { getAllHaikuMonuments } from '@/lib/server-api';
+import { getAllHaikuMonuments } from '@/lib/api';
 import { RegionalHaikuClientComponent } from './RegionalHaikuClientComponent';
 import { HaikuMonument } from '@/types/definitions/haiku';
 
@@ -16,29 +16,53 @@ const REGIONS = [
 ];
 
 export async function RegionalHaikuServerComponent() {
-  const monumentsByRegion = await Promise.all(
-    REGIONS.map(async (region) => {
-      const monuments = await getAllHaikuMonuments({ region });
-      return { region, monuments: monuments.slice(0, 6) };
-    })
-  );
+  try {
+    // 各地域の句碑データを並行取得
+    const monumentsByRegion = await Promise.all(
+      REGIONS.map(async (region) => {
+        const monuments = await getAllHaikuMonuments({
+          region,
+          limit: 6,
+        });
+        return { region, monuments };
+      })
+    );
 
-  const regionMonumentsMap = monumentsByRegion.reduce(
-    (acc, { region, monuments }) => {
-      acc[region] = monuments;
-      return acc;
-    },
-    {} as Record<string, HaikuMonument[]>
-  );
+    const regionMonumentsMap = monumentsByRegion.reduce(
+      (acc, { region, monuments }) => {
+        acc[region] = monuments;
+        return acc;
+      },
+      {} as Record<string, HaikuMonument[]>
+    );
 
-  const allMonuments = await getAllHaikuMonuments({});
-  const initialMonuments = allMonuments.slice(0, 6);
+    // 初期表示用の全体データ
+    const initialMonuments = await getAllHaikuMonuments({ limit: 6 });
 
-  return (
-    <RegionalHaikuClientComponent
-      initialMonuments={initialMonuments}
-      regionMonumentsMap={regionMonumentsMap}
-      regions={REGIONS}
-    />
-  );
+    return (
+      <RegionalHaikuClientComponent
+        initialMonuments={initialMonuments}
+        regionMonumentsMap={regionMonumentsMap}
+        regions={REGIONS}
+      />
+    );
+  } catch (error) {
+    console.error('地域別句碑データの取得に失敗:', error);
+
+    const emptyRegionMonumentsMap = REGIONS.reduce(
+      (acc, region) => {
+        acc[region] = [];
+        return acc;
+      },
+      {} as Record<string, HaikuMonument[]>
+    );
+
+    return (
+      <RegionalHaikuClientComponent
+        initialMonuments={[]}
+        regionMonumentsMap={emptyRegionMonumentsMap}
+        regions={REGIONS}
+      />
+    );
+  }
 }

@@ -34,6 +34,55 @@ import {
 const API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhi.jp';
 
 /**
+ * リトライ機能付きのfetch関数
+ */
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit = {},
+  maxRetries: number = 2,
+  delay: number = 1000
+): Promise<Response> {
+  let lastError: Error | null = null;
+
+  for (let i = 0; i <= maxRetries; i++) {
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+      });
+
+      if (response.ok || (response.status >= 400 && response.status < 500)) {
+        return response;
+      }
+
+      if (i < maxRetries) {
+        console.warn(
+          `API request failed with status ${response.status}, retrying in ${delay}ms... (attempt ${i + 1}/${maxRetries + 1})`
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        delay *= 2;
+      } else {
+        return response;
+      }
+    } catch (error) {
+      lastError = error as Error;
+      if (i < maxRetries) {
+        console.warn(
+          `API request failed with error: ${lastError.message}, retrying in ${delay}ms... (attempt ${i + 1}/${maxRetries + 1})`
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        delay *= 2;
+      }
+    }
+  }
+
+  throw lastError || new Error('API request failed after retries');
+}
+
+/**
  * URLパラメータを構築するヘルパー関数
  */
 function buildQueryString(params: Record<string, unknown>): string {
@@ -62,18 +111,18 @@ export async function getMonuments(
     const queryString = buildQueryString(params as Record<string, unknown>);
     const url = `${API_BASE_URL}/monuments${queryString ? `?${queryString}` : ''}`;
 
-    const response = await fetch(url);
+    const response = await fetchWithRetry(url);
 
     if (!response.ok) {
-      throw new Error(`句碑データの取得に失敗しました: ${response.status}`);
+      console.warn(`API request failed with status: ${response.status}`);
+      return [];
     }
 
     const data = await response.json();
-
     return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.error('句碑データの取得中にエラーが発生しました:', error);
-    throw error;
+    console.warn('句碑データの取得中にエラーが発生しました:', error);
+    return [];
   }
 }
 
@@ -84,7 +133,7 @@ export async function getMonumentById(
   id: number
 ): Promise<MonumentWithRelations | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/monuments/${id}`);
+    const response = await fetchWithRetry(`${API_BASE_URL}/monuments/${id}`);
 
     if (!response.ok) {
       return null;
@@ -93,7 +142,7 @@ export async function getMonumentById(
     const data = await response.json();
     return data || null;
   } catch (error) {
-    console.error(`句碑ID:${id}の取得中にエラーが発生しました:`, error);
+    console.warn(`句碑ID:${id}の取得中にエラーが発生しました:`, error);
     return null;
   }
 }
@@ -105,18 +154,18 @@ export async function getPoetMonuments(
   id: number
 ): Promise<MonumentWithRelations[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/poets/${id}/monuments`);
+    const response = await fetchWithRetry(
+      `${API_BASE_URL}/poets/${id}/monuments`
+    );
 
     if (!response.ok) {
-      throw new Error(
-        `俳人の句碑データの取得に失敗しました: ${response.status}`
-      );
+      return [];
     }
 
     const data = await response.json();
     return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.error(`俳人ID:${id}の句碑取得中にエラーが発生しました:`, error);
+    console.warn(`俳人ID:${id}の句碑取得中にエラーが発生しました:`, error);
     return [];
   }
 }
@@ -131,17 +180,17 @@ export async function getPoets(
     const queryString = buildQueryString(params as Record<string, unknown>);
     const url = `${API_BASE_URL}/poets${queryString ? `?${queryString}` : ''}`;
 
-    const response = await fetch(url);
+    const response = await fetchWithRetry(url);
 
     if (!response.ok) {
-      throw new Error(`俳人データの取得に失敗しました: ${response.status}`);
+      return [];
     }
 
     const data = await response.json();
     return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.error('俳人データの取得中にエラーが発生しました:', error);
-    throw error;
+    console.warn('俳人データの取得中にエラーが発生しました:', error);
+    return [];
   }
 }
 
@@ -150,7 +199,7 @@ export async function getPoets(
  */
 export async function getPoetById(id: number): Promise<ApiPoet | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/poets/${id}`);
+    const response = await fetchWithRetry(`${API_BASE_URL}/poets/${id}`);
 
     if (!response.ok) {
       return null;
@@ -159,7 +208,7 @@ export async function getPoetById(id: number): Promise<ApiPoet | null> {
     const data = await response.json();
     return data || null;
   } catch (error) {
-    console.error(`俳人ID:${id}の取得中にエラーが発生しました:`, error);
+    console.warn(`俳人ID:${id}の取得中にエラーが発生しました:`, error);
     return null;
   }
 }
@@ -174,17 +223,17 @@ export async function getLocations(
     const queryString = buildQueryString(params as Record<string, unknown>);
     const url = `${API_BASE_URL}/locations${queryString ? `?${queryString}` : ''}`;
 
-    const response = await fetch(url);
+    const response = await fetchWithRetry(url);
 
     if (!response.ok) {
-      throw new Error(`設置場所データの取得に失敗しました: ${response.status}`);
+      return [];
     }
 
     const data = await response.json();
     return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.error('設置場所データの取得中にエラーが発生しました:', error);
-    throw error;
+    console.warn('設置場所データの取得中にエラーが発生しました:', error);
+    return [];
   }
 }
 
@@ -198,16 +247,16 @@ export async function getSources(
     const queryString = buildQueryString(params as Record<string, unknown>);
     const url = `${API_BASE_URL}/sources${queryString ? `?${queryString}` : ''}`;
 
-    const response = await fetch(url);
+    const response = await fetchWithRetry(url);
 
     if (!response.ok) {
-      throw new Error(`出典データの取得に失敗しました: ${response.status}`);
+      return [];
     }
 
     const data = await response.json();
     return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.error('出典データの取得中にエラーが発生しました:', error);
+    console.warn('出典データの取得中にエラーが発生しました:', error);
     return [];
   }
 }
@@ -497,8 +546,9 @@ export async function getAllHaikuMonuments(
 ): Promise<HaikuMonument[]> {
   try {
     const params = {
-      limit: options?.limit,
-      offset: options?.offset,
+      // デフォルトのlimitを20に設定してリソース制限を回避
+      limit: options?.limit || 20,
+      offset: options?.offset || 0,
       q: options?.search,
       region: options?.region,
       prefecture: options?.prefecture,
@@ -509,10 +559,59 @@ export async function getAllHaikuMonuments(
     };
 
     const monuments = await getMonuments(params);
-    return mapMonumentsToHaikuMonuments(monuments);
+    const mapped = mapMonumentsToHaikuMonuments(monuments);
+    return mapped;
   } catch (error) {
     console.error('句碑データの取得中にエラーが発生しました:', error);
     return [];
+  }
+}
+
+/**
+ * 無限スクロール用のページネーション対応関数
+ */
+export async function getHaikuMonumentsPage(
+  options: GetHaikuMonumentsOptions & { pageParam?: number }
+): Promise<{
+  data: HaikuMonument[];
+  nextPage: number | undefined;
+  hasMore: boolean;
+}> {
+  try {
+    const limit = options?.limit || 20;
+    const offset = (options.pageParam || 0) * limit;
+
+    const params = {
+      limit: limit + 1,
+      offset,
+      q: options?.search,
+      region: options?.region,
+      prefecture: options?.prefecture,
+      poet_id: options?.poet_id,
+      inscription_contains: options?.title_contains,
+      poet_name_contains: options?.name_contains,
+      ordering: options?.ordering?.join(','),
+    };
+
+    const monuments = await getMonuments(params);
+    const mapped = mapMonumentsToHaikuMonuments(monuments);
+
+    const hasMore = mapped.length > limit;
+    const data = hasMore ? mapped.slice(0, limit) : mapped;
+    const nextPage = hasMore ? (options.pageParam || 0) + 1 : undefined;
+
+    return {
+      data,
+      nextPage,
+      hasMore,
+    };
+  } catch (error) {
+    console.error('句碑データの取得中にエラーが発生しました:', error);
+    return {
+      data: [],
+      nextPage: undefined,
+      hasMore: false,
+    };
   }
 }
 
