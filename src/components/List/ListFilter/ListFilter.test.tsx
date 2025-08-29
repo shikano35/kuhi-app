@@ -4,8 +4,23 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, vi, beforeEach } from 'vitest';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
-import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
 import { SessionProvider } from 'next-auth/react';
+
+interface MockMonument {
+  id: number;
+  canonical_name: string;
+  poets: Array<{ id: number; name: string }>;
+  locations: Array<{ id?: number; region: string; prefecture: string }>;
+}
+
+const mockHaikuMonuments: MockMonument[] = [
+  {
+    id: 1,
+    canonical_name: '本統寺 句碑（松尾芭蕉）',
+    poets: [{ id: 1, name: '松尾芭蕉' }],
+    locations: [{ region: '東海', prefecture: '三重県' }],
+  },
+];
 
 // FilterStoreのモック
 const mockSetListSearchText = vi.fn();

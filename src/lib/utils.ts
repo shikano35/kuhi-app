@@ -20,8 +20,8 @@ export function truncateInscription(
   inscription: string,
   maxLength = 30
 ): string {
-  if (inscription.length <= maxLength) {
-    return inscription;
+  if (!inscription || inscription.length <= maxLength) {
+    return inscription || '';
   }
   return `${inscription.slice(0, maxLength)}...`;
 }

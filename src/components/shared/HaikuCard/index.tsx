@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { HaikuMonument } from '@/types/definitions/haiku';
+import { MonumentWithRelations } from '@/types/definitions/api';
 import { truncateInscription } from '@/lib/utils';
 import { MapPinIcon, UserIcon, Heart, Loader2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -14,7 +14,7 @@ import {
 } from '@/lib/api-hooks';
 
 type HaikuCardProps = {
-  monument: HaikuMonument;
+  monument: MonumentWithRelations;
   showFavoriteButton?: boolean;
 };
 
@@ -27,9 +27,11 @@ export function HaikuCard({
   const addFavoriteMutation = useAddFavorite();
   const removeFavoriteMutation = useRemoveFavorite();
 
-  const { id, inscription, poets, locations, photo_url } = monument;
-  const poet = poets[0];
-  const location = locations[0];
+  const { id, inscriptions, poets, locations, media } = monument;
+  const poet = poets?.[0];
+  const location = locations?.[0];
+  const inscription = inscriptions?.[0]?.original_text || '';
+  const photo_url = media?.[0]?.url || null;
 
   const isFavorited = useMemo(() => {
     if (!favoritesData?.favorites || !session?.user) return false;

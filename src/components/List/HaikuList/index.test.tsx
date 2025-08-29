@@ -24,7 +24,7 @@ vi.mock('@/lib/api-hooks', () => ({
 const allMockMonuments = [
   {
     id: 1,
-    inscription: '冬牡丹千鳥よ雪のほととぎす',
+    inscriptions: [{ original_text: '冬牡丹千鳥よ雪のほととぎす' }],
     poets: [{ id: 1, name: '松尾芭蕉' }],
     locations: [{ region: '東海', prefecture: '三重県' }],
     sources: [],
@@ -32,7 +32,7 @@ const allMockMonuments = [
   },
   {
     id: 2,
-    inscription: '閑さや岩にしみ入る蝉の声',
+    inscriptions: [{ original_text: '閑さや岩にしみ入る蝉の声' }],
     poets: [{ id: 1, name: '松尾芭蕉' }],
     locations: [{ region: '東北', prefecture: '山形県' }],
     sources: [],
@@ -40,7 +40,7 @@ const allMockMonuments = [
   },
   {
     id: 3,
-    inscription: '菜の花や月は東に日は西に',
+    inscriptions: [{ original_text: '菜の花や月は東に日は西に' }],
     poets: [{ id: 2, name: '与謝蕪村' }],
     locations: [{ region: '近畿', prefecture: '京都府' }],
     sources: [],
@@ -48,7 +48,7 @@ const allMockMonuments = [
   },
   {
     id: 4,
-    inscription: '古池や蛙飛び込む水の音',
+    inscriptions: [{ original_text: '古池や蛙飛び込む水の音' }],
     poets: [{ id: 1, name: '松尾芭蕉' }],
     locations: [{ region: '近畿', prefecture: '滋賀県' }],
     sources: [],
