@@ -9,7 +9,8 @@ import {
   UserVisit,
   UserHaikuMonument,
 } from '@/types/definitions/haiku';
-import { convertUserHaikuMonumentToHaikuMonument } from '@/lib/user-monument-converter';
+import { MonumentWithRelations } from '@/types/definitions/api';
+import { convertUserHaikuMonumentToMonumentWithRelations } from '@/lib/user-monument-converter';
 import { logError, getUserFriendlyErrorMessage } from '@/lib/error-utils';
 import {
   useUserFavorites,
@@ -60,17 +61,17 @@ export function ProfileClientComponent({
   const removeVisitMutation = useRemoveVisit();
 
   // メモ化された変換済みデータ
-  const favorites = useMemo(() => {
+  const favorites: MonumentWithRelations[] = useMemo(() => {
     if (!favoritesData?.favorites) return [];
     return favoritesData.favorites.map((fav) =>
-      convertUserHaikuMonumentToHaikuMonument(fav.monument)
+      convertUserHaikuMonumentToMonumentWithRelations(fav.monument)
     );
   }, [favoritesData?.favorites]);
 
-  const visited = useMemo(() => {
+  const visited: MonumentWithRelations[] = useMemo(() => {
     if (!visitsData?.visits) return [];
     return visitsData.visits.map((visit) =>
-      convertUserHaikuMonumentToHaikuMonument(visit.monument)
+      convertUserHaikuMonumentToMonumentWithRelations(visit.monument)
     );
   }, [visitsData?.visits]);
 
