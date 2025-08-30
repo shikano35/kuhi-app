@@ -216,8 +216,8 @@ export default function ThemeGalleryClient({
                     customQuery: e.target.value,
                   }))
                 }
-                onKeyPress={(e) => e.key === 'Enter' && handleCustomSearch()}
-                placeholder={`${THEME_LABELS[filters.theme]}名を入力してください`}
+                onKeyDown={(e) => e.key === 'Enter' && handleCustomSearch()}
+                placeholder={`${THEME_LABELS[currentTheme]}名を入力してください`}
                 value={filters.customQuery}
               />
             </div>
