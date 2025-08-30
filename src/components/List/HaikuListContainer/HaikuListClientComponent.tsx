@@ -52,7 +52,7 @@ export function HaikuListClientComponent({
     q: searchQuery,
     region: regionFilter === 'すべて' ? undefined : regionFilter,
     poet_id: poetIdFilter || undefined,
-    limit: 20,
+    limit: 30,
   });
 
   const loadMoreRef = useIntersectionObserver(
