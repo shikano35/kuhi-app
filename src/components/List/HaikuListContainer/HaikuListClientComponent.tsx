@@ -5,15 +5,15 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { ListFilter } from '@/components/List/ListFilter';
 import { MenuDropdown } from '@/components/shared/MenuDropdown';
-import { HaikuMonument, Poet, Location } from '@/types/definitions/haiku';
+import { MonumentWithRelations, Poet, Location } from '@/types/definitions/api';
 import {
-  useInfiniteHaikuMonuments,
-  flattenInfiniteHaikuMonuments,
-} from '@/hooks/useInfiniteHaikuMonuments';
+  useInfiniteMonuments,
+  useFlattenedInfiniteMonuments,
+} from '@/hooks/useKuhiApi';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 interface HaikuListClientComponentProps {
-  initialMonuments: HaikuMonument[];
+  initialMonuments: MonumentWithRelations[];
   poets: Poet[];
   locations: Location[];
   _initialSearchParams?: {
@@ -35,7 +35,7 @@ export function HaikuListClientComponent({
 
   const searchQuery = searchParams.get('q') || '';
   const regionFilter = searchParams.get('region') || 'すべて';
-  const prefectureFilter = searchParams.get('prefecture') || 'すべて';
+  const _prefectureFilter = searchParams.get('prefecture') || 'すべて';
   const poetIdFilter = searchParams.get('poet_id')
     ? Number(searchParams.get('poet_id'))
     : null;
@@ -48,11 +48,11 @@ export function HaikuListClientComponent({
     isLoading,
     isError,
     error,
-  } = useInfiniteHaikuMonuments({
-    search: searchQuery || undefined,
-    region: regionFilter !== 'すべて' ? regionFilter : undefined,
-    prefecture: prefectureFilter !== 'すべて' ? prefectureFilter : undefined,
+  } = useInfiniteMonuments({
+    q: searchQuery,
+    region: regionFilter === 'すべて' ? undefined : regionFilter,
     poet_id: poetIdFilter || undefined,
+    limit: 20,
   });
 
   const loadMoreRef = useIntersectionObserver(
@@ -64,10 +64,11 @@ export function HaikuListClientComponent({
     { enabled: hasNextPage && !isFetchingNextPage }
   );
 
+  const infiniteData = useFlattenedInfiniteMonuments(data?.pages);
+
   const monuments = useMemo(() => {
-    const infiniteData = flattenInfiniteHaikuMonuments(data?.pages);
     return infiniteData.length > 0 ? infiniteData : initialMonuments;
-  }, [data?.pages, initialMonuments]);
+  }, [infiniteData, initialMonuments]);
 
   if (isError) {
     console.error('句碑データ取得エラー:', error);
@@ -96,7 +97,7 @@ export function HaikuListClientComponent({
 
       <div className="text-sm text-muted-foreground">
         {monuments.length}件の句碑が見つかりました
-        {hasNextPage && !isFetchingNextPage && ' (さらに読み込み可能)'}
+        {hasNextPage && !isFetchingNextPage}
       </div>
 
       {isLoading ? (
@@ -113,7 +114,7 @@ export function HaikuListClientComponent({
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {monuments.map((monument) => (
+            {monuments.map((monument: MonumentWithRelations) => (
               <HaikuCard key={monument.id} monument={monument} />
             ))}
           </div>
