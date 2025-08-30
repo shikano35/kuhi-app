@@ -1,6 +1,6 @@
-import { getAllHaikuMonuments } from '@/lib/api';
+import { getMonuments } from '@/lib/kuhi-api';
 import { RegionalHaikuClientComponent } from './RegionalHaikuClientComponent';
-import { HaikuMonument } from '@/types/definitions/haiku';
+import { MonumentWithRelations } from '@/types/definitions/api';
 
 const REGIONS = [
   '北海道',
@@ -20,7 +20,7 @@ export async function RegionalHaikuServerComponent() {
     // 各地域の句碑データを並行取得
     const monumentsByRegion = await Promise.all(
       REGIONS.map(async (region) => {
-        const monuments = await getAllHaikuMonuments({
+        const monuments = await getMonuments({
           region,
           limit: 6,
         });
@@ -33,11 +33,11 @@ export async function RegionalHaikuServerComponent() {
         acc[region] = monuments;
         return acc;
       },
-      {} as Record<string, HaikuMonument[]>
+      {} as Record<string, MonumentWithRelations[]>
     );
 
     // 初期表示用の全体データ
-    const initialMonuments = await getAllHaikuMonuments({ limit: 6 });
+    const initialMonuments = await getMonuments({ limit: 6 });
 
     return (
       <RegionalHaikuClientComponent
@@ -54,7 +54,7 @@ export async function RegionalHaikuServerComponent() {
         acc[region] = [];
         return acc;
       },
-      {} as Record<string, HaikuMonument[]>
+      {} as Record<string, MonumentWithRelations[]>
     );
 
     return (

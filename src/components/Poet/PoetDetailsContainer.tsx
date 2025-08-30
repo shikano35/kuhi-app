@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import { getPoetById, getHaikuMonumentsByPoet } from '@/lib/server-api';
+import { getPoetById, getMonumentsByPoet } from '@/lib/kuhi-api';
 import { PoetProfile } from './PoetProfile';
 import { PoetMonuments } from './PoetMonuments';
 import { RelatedMaterialsGallery } from '@/components/shared/RelatedMaterialsGallery';
@@ -12,7 +12,7 @@ type PoetDetailsContainerProps = {
 async function PoetData({ poetId }: { poetId: number }) {
   const [poet, monuments] = await Promise.all([
     getPoetById(poetId),
-    getHaikuMonumentsByPoet(poetId),
+    getMonumentsByPoet(poetId),
   ]);
 
   if (!poet) {

@@ -1,11 +1,6 @@
-import {
-  getAllHaikuMonuments,
-  getAllPoets,
-  getAllLocations,
-  preloadPoets,
-  preloadLocations,
-} from '@/lib/server-api';
+import { getMonuments, getPoets, getLocations } from '@/lib/kuhi-api';
 import { HaikuListClientComponent } from './HaikuListClientComponent';
+import { MonumentWithRelations, Poet } from '@/types/definitions/api';
 
 type HaikuListServerComponentProps = {
   searchParams?: {
@@ -19,13 +14,10 @@ type HaikuListServerComponentProps = {
 export async function HaikuListServerComponent({
   searchParams,
 }: HaikuListServerComponentProps) {
-  preloadPoets();
-  preloadLocations();
-
   const [monuments, poets, locations] = await Promise.all([
-    getAllHaikuMonuments({
+    getMonuments({
       limit: 30,
-      search: searchParams?.q,
+      q: searchParams?.q,
       region:
         searchParams?.region === 'すべて' ? undefined : searchParams?.region,
       prefecture:
@@ -33,13 +25,13 @@ export async function HaikuListServerComponent({
           ? undefined
           : searchParams?.prefecture,
     }),
-    getAllPoets(),
-    getAllLocations(),
+    getPoets(),
+    getLocations(),
   ]);
 
   const filteredMonuments = searchParams?.poet_id
-    ? monuments.filter((m) =>
-        m.poets.some((p) => p.id === Number(searchParams.poet_id))
+    ? monuments.filter((m: MonumentWithRelations) =>
+        m.poets.some((p: Poet) => p.id === Number(searchParams.poet_id))
       )
     : monuments;
 
