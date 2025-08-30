@@ -1,8 +1,8 @@
-import { HaikuMonument } from '@/types/definitions/haiku';
+import { MonumentWithRelations } from '@/types/definitions/api';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 
 type PoetMonumentsProps = {
-  monuments: HaikuMonument[];
+  monuments: MonumentWithRelations[];
   poetName: string;
 };
 

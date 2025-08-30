@@ -4,12 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { Button } from '@/components/ui/button';
-import { HaikuMonument } from '@/types/definitions/haiku';
+import { MonumentWithRelations } from '@/types/definitions/api';
 
 type RegionalHaikuClientComponentProps = {
-  regionMonumentsMap: Record<string, HaikuMonument[]>;
+  regionMonumentsMap: Record<string, MonumentWithRelations[]>;
   regions: string[];
-  initialMonuments: HaikuMonument[];
+  initialMonuments: MonumentWithRelations[];
 };
 
 export function RegionalHaikuClientComponent({

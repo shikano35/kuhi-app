@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { Loader2, X, Heart } from 'lucide-react';
-import { HaikuMonument } from '@/types/definitions/haiku';
+import { MonumentWithRelations } from '@/types/definitions/api';
 
 interface FavoritesTabContentProps {
-  favorites: HaikuMonument[];
+  favorites: MonumentWithRelations[];
   loading: boolean;
   isRemoving: boolean;
   onRemoveFavorite: (monumentId: number) => void;
@@ -53,7 +53,7 @@ export const FavoritesTabContent = memo<FavoritesTabContentProps>(
           <div className="relative" key={monument.id}>
             <HaikuCard monument={monument} showFavoriteButton={false} />
             <button
-              aria-label={`${monument.inscription}をお気に入りから削除`}
+              aria-label={`${monument.inscriptions[0]?.original_text || '句碑'}をお気に入りから削除`}
               className="absolute top-4 right-4 p-1 rounded-full bg-background/80 hover:bg-background transition-colors"
               disabled={isRemoving}
               onClick={() => onRemoveFavorite(monument.id)}
