@@ -9,7 +9,10 @@ import {
   locations,
 } from '@/../drizzle/schema';
 import { eq, and } from 'drizzle-orm';
-import { AddFavoriteRequest, RemoveFavoriteRequest } from '@/types/haiku';
+import {
+  AddFavoriteRequest,
+  RemoveFavoriteRequest,
+} from '@/types/definitions/haiku';
 import { getHaikuMonumentById } from '@/lib/api';
 
 // GET /api/user/favorites - Get user's favorite monuments

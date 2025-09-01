@@ -9,7 +9,7 @@ import {
   locations,
 } from '@/../drizzle/schema';
 import { eq, and } from 'drizzle-orm';
-import { AddVisitRequest, UpdateVisitRequest } from '@/types/haiku';
+import { AddVisitRequest, UpdateVisitRequest } from '@/types/definitions/haiku';
 import { getHaikuMonumentById } from '@/lib/api';
 
 // GET /api/user/visits - Get user's visited monuments

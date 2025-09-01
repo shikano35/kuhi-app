@@ -1,11 +1,6 @@
-import {
-  getAllHaikuMonuments,
-  getAllPoets,
-  getAllLocations,
-  preloadPoets,
-  preloadLocations,
-} from '@/lib/server-api';
+import { getMonuments, getPoets, getLocations } from '@/lib/kuhi-api';
 import { HaikuListClientComponent } from './HaikuListClientComponent';
+import { MonumentWithRelations, Poet } from '@/types/definitions/api';
 
 type HaikuListServerComponentProps = {
   searchParams?: {
@@ -19,35 +14,64 @@ type HaikuListServerComponentProps = {
 export async function HaikuListServerComponent({
   searchParams,
 }: HaikuListServerComponentProps) {
-  preloadPoets();
-  preloadLocations();
+  try {
+    const [monuments, poets, locations] = await Promise.all([
+      getMonuments({
+        limit: 30,
+        q: searchParams?.q,
+        region:
+          searchParams?.region === 'すべて' ? undefined : searchParams?.region,
+        prefecture:
+          searchParams?.prefecture === 'すべて'
+            ? undefined
+            : searchParams?.prefecture,
+      }),
+      getPoets({ limit: 100 }),
+      getLocations({ limit: 100 }),
+    ]);
 
-  const [monuments, poets, locations] = await Promise.all([
-    getAllHaikuMonuments({
-      search: searchParams?.q,
-      region:
-        searchParams?.region === 'すべて' ? undefined : searchParams?.region,
-      prefecture:
-        searchParams?.prefecture === 'すべて'
-          ? undefined
-          : searchParams?.prefecture,
-    }),
-    getAllPoets(),
-    getAllLocations(),
-  ]);
+    const filteredMonuments = searchParams?.poet_id
+      ? monuments.filter((m: MonumentWithRelations) =>
+          m.poets.some((p: Poet) => p.id === Number(searchParams.poet_id))
+        )
+      : monuments;
 
-  const filteredMonuments = searchParams?.poet_id
-    ? monuments.filter((m) =>
-        m.poets.some((p) => p.id === Number(searchParams.poet_id))
-      )
-    : monuments;
+    return (
+      <HaikuListClientComponent
+        _initialSearchParams={searchParams}
+        initialMonuments={filteredMonuments}
+        locations={locations}
+        poets={poets}
+      />
+    );
+  } catch (error) {
+    console.error('句碑リスト初期データ取得エラー:', error);
 
-  return (
-    <HaikuListClientComponent
-      _initialSearchParams={searchParams}
-      initialMonuments={filteredMonuments}
-      locations={locations}
-      poets={poets}
-    />
-  );
+    try {
+      const [poets, locations] = await Promise.all([
+        getPoets({ limit: 100 }),
+        getLocations({ limit: 100 }),
+      ]);
+
+      return (
+        <HaikuListClientComponent
+          _initialSearchParams={searchParams}
+          initialMonuments={[]}
+          locations={locations}
+          poets={poets}
+        />
+      );
+    } catch (fallbackError) {
+      console.error('フォールバックデータ取得エラー:', fallbackError);
+
+      return (
+        <HaikuListClientComponent
+          _initialSearchParams={searchParams}
+          initialMonuments={[]}
+          locations={[]}
+          poets={[]}
+        />
+      );
+    }
+  }
 }

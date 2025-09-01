@@ -64,7 +64,7 @@ export default function ImageGalleryClient({
             画像ギャラリー
           </h1>
           <p className="text-muted-foreground">
-            Japan Search APIから画像を検索し、美しいギャラリー形式で表示します
+            画像を検索し、ギャラリー形式で表示します。
           </p>
         </div>
 

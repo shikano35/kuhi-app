@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 

@@ -38,8 +38,6 @@ export function GalleryHomeClient() {
           </h1>
           <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
             Japan Search APIを活用して、文化資料や歴史的文書を探索できます。
-            <br />
-            テーマ別検索や美しい画像ギャラリーをお楽しみください。
           </p>
         </div>
 

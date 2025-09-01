@@ -33,7 +33,7 @@ export function HeroSection() {
           <p className="text-sm md:text-base lg:text-lg">
             くひめぐりは、日本全国の句碑についてまとめたサイトです。
             <br />
-            句碑のに刻まれた俳句、所在地、句碑の写真などをまとめています。
+            句碑に刻まれた俳句、所在地、句碑の写真などをまとめています。
           </p>
         </div>
       </div>

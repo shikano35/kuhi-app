@@ -2,18 +2,31 @@
 
 import { ClientHistoryChart } from './ClientHistoryChart';
 import { useQuery } from '@tanstack/react-query';
-import { getAllHaikuMonuments } from '@/lib/api';
+import {
+  getAllMonuments,
+  getAllMonumentsFromInscriptions,
+} from '@/lib/kuhi-api';
 import { processHistoryData } from './utils';
+import { MonumentWithRelations } from '@/types/definitions/api';
 
 export function HaikuHistoryChart() {
   const {
     data: monuments = [],
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ['haiku-monuments'],
-    queryFn: () => getAllHaikuMonuments(),
-    staleTime: 5 * 60 * 1000,
+  } = useQuery<MonumentWithRelations[]>({
+    queryKey: ['kuhi-monuments-history-all'],
+    queryFn: async () => {
+      try {
+        const monuments = await getAllMonuments();
+        return monuments;
+      } catch {
+        const monuments = await getAllMonumentsFromInscriptions();
+        return monuments;
+      }
+    },
+    staleTime: 10 * 60 * 1000,
+    retry: 1,
   });
 
   const historyData = processHistoryData(monuments);

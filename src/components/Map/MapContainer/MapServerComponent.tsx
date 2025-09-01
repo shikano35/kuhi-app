@@ -1,8 +1,29 @@
-import { getAllHaikuMonuments } from '@/lib/server-api';
+import {
+  getAllMonuments,
+  getAllMonumentsFromInscriptions,
+} from '@/lib/kuhi-api';
 import { MapClientComponent } from './MapClientComponent';
+import { mapMonumentsToHaikuMonuments } from '@/lib/api-mappers';
+import type { MonumentWithRelations } from '@/types/definitions/api';
 
 export async function MapServerComponent() {
-  const monuments = await getAllHaikuMonuments();
+  try {
+    let monuments: MonumentWithRelations[] = [];
 
-  return <MapClientComponent initialMonuments={monuments} />;
+    try {
+      monuments = await getAllMonuments();
+    } catch {
+      try {
+        monuments = await getAllMonumentsFromInscriptions();
+      } catch {
+        monuments = [];
+      }
+    }
+
+    const haikuMonuments = mapMonumentsToHaikuMonuments(monuments);
+
+    return <MapClientComponent initialMonuments={haikuMonuments} />;
+  } catch {
+    return <MapClientComponent initialMonuments={[]} />;
+  }
 }

@@ -4,9 +4,14 @@ import { useState, useMemo, useCallback } from 'react';
 import { Session } from 'next-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MapPin, Heart } from 'lucide-react';
-import { UserFavorite, UserVisit, UserHaikuMonument } from '@/types/haiku';
-import { convertUserHaikuMonumentToHaikuMonument } from '@/lib/user-monument-converter';
-import { logError, getUserFriendlyErrorMessage } from '@/lib/error-utils';
+import {
+  UserFavorite,
+  UserVisit,
+  UserHaikuMonument,
+} from '@/types/definitions/haiku';
+import { MonumentWithRelations } from '@/types/definitions/api';
+import { convertUserHaikuMonumentToMonumentWithRelations } from '@/lib/user-monument-converter';
+import { getUserFriendlyErrorMessage } from '@/lib/error-utils';
 import {
   useUserFavorites,
   useUserVisits,
@@ -56,17 +61,17 @@ export function ProfileClientComponent({
   const removeVisitMutation = useRemoveVisit();
 
   // メモ化された変換済みデータ
-  const favorites = useMemo(() => {
+  const favorites: MonumentWithRelations[] = useMemo(() => {
     if (!favoritesData?.favorites) return [];
     return favoritesData.favorites.map((fav) =>
-      convertUserHaikuMonumentToHaikuMonument(fav.monument)
+      convertUserHaikuMonumentToMonumentWithRelations(fav.monument)
     );
   }, [favoritesData?.favorites]);
 
-  const visited = useMemo(() => {
+  const visited: MonumentWithRelations[] = useMemo(() => {
     if (!visitsData?.visits) return [];
     return visitsData.visits.map((visit) =>
-      convertUserHaikuMonumentToHaikuMonument(visit.monument)
+      convertUserHaikuMonumentToMonumentWithRelations(visit.monument)
     );
   }, [visitsData?.visits]);
 
@@ -87,10 +92,6 @@ export function ProfileClientComponent({
         await removeFavoriteMutation.mutateAsync({ monumentId });
         showToast('お気に入りから削除しました', 'success');
       } catch (error) {
-        logError(error, 'error', {
-          context: 'ProfileView.handleRemoveFavorite',
-          action: 'remove_favorite',
-        });
         const userMessage = getUserFriendlyErrorMessage(error);
         showToast(userMessage, 'error');
       }
@@ -104,10 +105,6 @@ export function ProfileClientComponent({
         await removeVisitMutation.mutateAsync(monumentId);
         showToast('訪問記録から削除しました', 'success');
       } catch (error) {
-        logError(error, 'error', {
-          context: 'ProfileView.handleRemoveVisit',
-          action: 'remove_visit',
-        });
         const userMessage = getUserFriendlyErrorMessage(error);
         showToast(userMessage, 'error');
       }

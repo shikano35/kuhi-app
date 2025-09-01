@@ -24,6 +24,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   secret: process.env.AUTH_SECRET,
+  trustHost: true,
   session: {
     strategy: 'jwt',
   },
@@ -37,21 +38,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       if (!token.role && token.userId) {
-        try {
-          const dbUser = await db
-            .select()
-            .from(users)
-            .where(eq(users.id, token.userId as string))
-            .limit(1)
-            .then((rows) => rows[0]);
+        const dbUser = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, token.userId as string))
+          .limit(1)
+          .then((rows) => rows[0]);
 
-          if (dbUser) {
-            token.role = dbUser.role;
-            token.bio = dbUser.bio ?? undefined;
-            token.emailNotifications = dbUser.emailNotifications;
-          }
-        } catch (error) {
-          console.error('Error fetching user role:', error);
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.bio = dbUser.bio ?? undefined;
+          token.emailNotifications = dbUser.emailNotifications;
         }
       }
 

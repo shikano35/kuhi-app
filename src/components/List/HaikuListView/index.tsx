@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 import { Search } from 'lucide-react';
 import { MenuDropdown } from '@/components/shared/MenuDropdown';
 

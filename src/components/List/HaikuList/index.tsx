@@ -2,7 +2,10 @@
 
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { ListFilter } from '@/components/List/ListFilter';
-import { useHaikuList } from '@/lib/api-hooks';
+import {
+  useInfiniteMonuments,
+  useFlattenedInfiniteMonuments,
+} from '@/hooks/useKuhiApi';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { useFilterStore } from '@/store/useFilterStore';
 
@@ -16,20 +19,21 @@ export function HaikuList() {
 
   const {
     data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
     isLoading,
     isError,
     error,
-  } = useHaikuList({
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteMonuments({
+    q: searchQuery,
     region: regionFilter,
     poet_id: poetIdFilter,
-    search: searchQuery,
+    limit: 20,
   });
 
-  const monuments = data?.pages.flatMap((page) => page.monuments) || [];
-  const totalCount = data?.pages[0]?.totalCount || 0;
+  const monuments = useFlattenedInfiniteMonuments(data?.pages);
+  const totalCount = monuments.length;
 
   const { loadMoreRef } = useInfiniteScroll({
     fetchNextPage,

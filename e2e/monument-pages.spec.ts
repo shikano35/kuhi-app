@@ -3,42 +3,120 @@ import { test, expect, type Page } from '@playwright/test';
 test.describe('句碑ページの統合テスト', () => {
   test.beforeEach(async ({ page }) => {
     // 句碑データのモック
-    await page.route('**/api/haiku-monuments**', route => {
+    await page.route('**/monuments**', route => {
       const url = route.request().url();
       
       // 句碑詳細（特定ID）の場合
-      if (/\/haiku-monuments\/\d+$/.test(url)) {
+      if (/\/monuments\/\d+$/.test(url)) {
         route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({
-            haiku_monument: {
+            id: 1,
+            canonical_name: '本統寺 句碑（松尾芭蕉）',
+            canonical_uri: 'https://api.kuhi.jp/monuments/1',
+            monument_type: '句碑',
+            monument_type_uri: null,
+            material: null,
+            material_uri: null,
+            created_at: '2025-05-11T16:02:33.000Z',
+            updated_at: '2025-05-11T16:02:33.000Z',
+            original_established_date: null,
+            hu_time_normalized: null,
+            interval_start: null,
+            interval_end: null,
+            uncertainty_note: null,
+            inscriptions: [{
               id: 1,
-              inscription: '冬牡丹千鳥よ雪のほととぎす',
-              commentary: '芭蕉の代表作の一つ',
-              kigo: '冬牡丹,千鳥,雪,ほととぎす',
-              season: '冬',
-              is_reliable: true,
-              has_reverse_inscription: true,
-              material: null,
-              total_height: null,
-              width: null,
-              depth: null,
-              established_date: '昭和12年4月',
-              established_year: '1937-4',
-              founder: '小林雨月',
-              monument_type: '句碑',
-              designation_status: null,
-              photo_url: '/images/monuments/sample1.jpg',
-              photo_date: null,
+              side: 'front',
+              original_text: '冬牡丹千鳥よ雪のほととぎす',
+              transliteration: null,
+              reading: null,
+              language: 'ja',
+              notes: '芭蕉の代表作の一つ',
+              poems: [{
+                id: 1,
+                text: '冬牡丹千鳥よ雪のほととぎす',
+                normalized_text: '冬牡丹千鳥よ雪のほととぎす',
+                text_hash: '4c5f9260',
+                kigo: '冬牡丹,千鳥,雪,ほととぎす',
+                season: '冬',
+                created_at: '2025-05-11T16:02:33.000Z',
+                updated_at: '2025-05-11T16:02:33.000Z'
+              }],
+              source: { id: 1, title: 'テスト句集' }
+            }],
+            events: [{
+              id: 111,
+              event_type: 'erected',
+              hu_time_normalized: 'HT:interval/1937-04-01/1937-04-30',
+              interval_start: '1937-04-01',
+              interval_end: '1937-04-30',
+              uncertainty_note: '月は特定だが日不明',
+              actor: '小林雨月',
+              source: { id: 1, title: 'テスト句集' }
+            }],
+            media: [{
+              id: 125,
+              media_type: 'photo',
+              url: '/images/monuments/sample1.jpg',
+              iiif_manifest_url: null,
+              captured_at: null,
               photographer: null,
-              model_3d_url: null,
-              remarks: null,
-              created_at: '2025-05-11 16:02:33',
-              updated_at: '2025-05-11 16:02:33',
-              poet_id: 1,
-              source_id: 1,
-              location_id: 1,
+              license: null
+            }],
+            poets: [{ id: 1, name: '松尾芭蕉' }],
+            sources: [{ id: 1, title: 'テスト句集' }],
+            locations: [{ 
+              id: 1, 
+              prefecture: '三重県', 
+              municipality: '桑名市',
+              place_name: '本統寺'
+            }]
+          }),
+        });
+      } else {
+        // 句碑一覧の場合
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify([
+            {
+              id: 1,
+              canonical_name: '本統寺 句碑（松尾芭蕉）',
+              canonical_uri: 'https://api.kuhi.jp/monuments/1',
+              monument_type: '句碑',
+              monument_type_uri: null,
+              material: null,
+              material_uri: null,
+              created_at: '2025-05-11T16:02:33.000Z',
+              updated_at: '2025-05-11T16:02:33.000Z',
+              original_established_date: null,
+              hu_time_normalized: null,
+              interval_start: null,
+              interval_end: null,
+              uncertainty_note: null,
+              inscriptions: [{
+                id: 1,
+                side: 'front',
+                original_text: 'テスト俳句一',
+                transliteration: null,
+                reading: null,
+                language: 'ja',
+                notes: null,
+                poems: [],
+                source: { id: 1, title: 'テスト句集' }
+              }],
+              events: [],
+              media: [{
+                id: 125,
+                media_type: 'photo',
+                url: '/images/monuments/sample1.jpg',
+                iiif_manifest_url: null,
+                captured_at: null,
+                photographer: null,
+                license: null
+              }],
               poets: [{ id: 1, name: '松尾芭蕉' }],
               sources: [{ id: 1, title: 'テスト句集' }],
               locations: [{ 
@@ -48,36 +126,13 @@ test.describe('句碑ページの統合テスト', () => {
                 place_name: '本統寺'
               }]
             }
-          }),
-        });
-      } else {
-        // 句碑一覧の場合
-        route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            haiku_monuments: [
-              {
-                id: 1,
-                inscription: 'テスト俳句一',
-                poets: [{ id: 1, name: '松尾芭蕉' }],
-                locations: [{ 
-                  id: 1, 
-                  prefecture: '三重県', 
-                  municipality: '桑名市',
-                  place_name: '本統寺'
-                }],
-                photo_url: '/images/monuments/sample1.jpg'
-              }
-            ],
-            totalCount: 1
-          }),
+          ]),
         });
       }
     });
 
     // 俳人データのモック
-    await page.route('**/api/poets**', route => {
+    await page.route('**/poets**', route => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',

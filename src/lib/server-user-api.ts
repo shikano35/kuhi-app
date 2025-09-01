@@ -9,7 +9,10 @@ import {
   locations,
 } from '@/../drizzle/schema';
 import { eq } from 'drizzle-orm';
-import { GetUserFavoritesResponse, GetUserVisitsResponse } from '@/types/haiku';
+import {
+  GetUserFavoritesResponse,
+  GetUserVisitsResponse,
+} from '@/types/definitions/haiku';
 
 /**
  * サーバーサイドでユーザーのお気に入り句碑を取得する

@@ -18,7 +18,7 @@ import { formatEstablishedDate } from '@/lib/utils';
 import { FavoriteButton } from '@/components/Monument/FavoriteButton';
 import { VisitButton } from '@/components/Monument/VisitButton';
 import { BackButton } from '@/components/BackButton';
-import { HaikuMonument } from '@/types/haiku';
+import { HaikuMonument } from '@/types/definitions/haiku';
 
 type MonumentDetailClientComponentProps = {
   monument: HaikuMonument;

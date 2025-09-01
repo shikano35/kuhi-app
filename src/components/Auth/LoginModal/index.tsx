@@ -38,12 +38,18 @@ export function LoginModal({ children }: LoginModalProps) {
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="bg-background w-7/8 pb-8 pt-4 shadow rounded-md sm:rounded-lg sm:px-10">
+      <DialogContent
+        aria-describedby="login-modal-description"
+        className="bg-background w-7/8 pb-8 pt-4 shadow rounded-md sm:rounded-lg sm:px-10"
+      >
         <DialogHeader className="flex flex-col items-center">
           <DialogTitle className="mt-6 text-3xl md:text-4xl font-extrabold text-primary">
             ログイン
           </DialogTitle>
-          <DialogDescription className="mt-2 text-sm md:text-base text-muted-foreground">
+          <DialogDescription
+            className="mt-2 text-sm md:text-base text-muted-foreground"
+            id="login-modal-description"
+          >
             句碑情報の投稿やお気に入り登録ができます。
           </DialogDescription>
         </DialogHeader>

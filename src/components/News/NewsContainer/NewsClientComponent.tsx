@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { News } from '@/types/haiku';
+import { News } from '@/types/definitions/haiku';
 import { Search, AlertCircle } from 'lucide-react';
 
 type NewsClientComponentProps = {

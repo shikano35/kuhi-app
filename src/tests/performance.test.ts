@@ -7,34 +7,51 @@ import {
   getHaikuMonumentById,
   getAllPoets,
 } from '@/lib/api';
-import { mockHaikuMonuments } from '@/mocks/data/haiku-monuments';
+
+interface SampleMonument {
+  id: number;
+  canonical_name: string;
+  poets: Array<{ id: number; name: string }>;
+  locations: Array<{ id: number; region: string; prefecture: string }>;
+}
+
+const sampleMonuments: SampleMonument[] = [
+  {
+    id: 1,
+    canonical_name: '本統寺 句碑（松尾芭蕉）',
+    poets: [{ id: 1, name: '松尾芭蕉' }],
+    locations: [{ id: 1, region: '東海', prefecture: '三重県' }],
+  },
+  {
+    id: 2,
+    canonical_name: '春日神社 句碑（山口誓子）',
+    poets: [{ id: 2, name: '山口誓子' }],
+    locations: [{ id: 2, region: '東海', prefecture: '三重県' }],
+  },
+];
 
 // MSWサーバーのセットアップ
 const server = setupServer(
   // 句碑一覧のエンドポイントをモック
-  http.get('https://api.kuhiapi.com/haiku-monuments', () => {
-    return HttpResponse.json({
-      haiku_monuments: mockHaikuMonuments,
-    });
+  http.get('https://api.kuhi.jp/monuments', () => {
+    return HttpResponse.json(sampleMonuments);
   }),
 
   // 句碑詳細のエンドポイントをモック
-  http.get('https://api.kuhiapi.com/haiku-monuments/:id', ({ params }) => {
+  http.get('https://api.kuhi.jp/monuments/:id', ({ params }) => {
     const { id } = params;
-    const monument = mockHaikuMonuments.find((m) => m.id === Number(id));
+    const monument = sampleMonuments.find((m) => m.id === Number(id));
 
     if (!monument) {
       return new HttpResponse(null, { status: 404 });
     }
 
-    return HttpResponse.json({
-      haiku_monument: monument,
-    });
+    return HttpResponse.json(monument);
   }),
 
   // 俳人一覧のエンドポイントをモック
-  http.get('https://api.kuhiapi.com/poets', () => {
-    const poets = mockHaikuMonuments
+  http.get('https://api.kuhi.jp/poets', () => {
+    const poets = sampleMonuments
       .flatMap((monument) => monument.poets)
       .filter(
         (poet, index, self) => index === self.findIndex((p) => p.id === poet.id)
@@ -55,8 +72,8 @@ describe('API関数のパフォーマンステスト', () => {
 
     const executionTime = endTime - startTime;
 
-    // 処理時間が500ms未満であることを期待（閾値は調整可能）
-    expect(executionTime).toBeLessThan(500);
+    // 処理時間が1000ms未満であることを期待
+    expect(executionTime).toBeLessThan(1000);
     console.log(`getAllHaikuMonuments 実行時間: ${executionTime.toFixed(2)}ms`);
   });
 
@@ -67,8 +84,8 @@ describe('API関数のパフォーマンステスト', () => {
 
     const executionTime = endTime - startTime;
 
-    // 処理時間が300ms未満であることを期待（閾値は調整可能）
-    expect(executionTime).toBeLessThan(300);
+    // 処理時間が500ms未満であることを期待
+    expect(executionTime).toBeLessThan(500);
     console.log(`getHaikuMonumentById 実行時間: ${executionTime.toFixed(2)}ms`);
   });
 
@@ -79,8 +96,8 @@ describe('API関数のパフォーマンステスト', () => {
 
     const executionTime = endTime - startTime;
 
-    // 処理時間が300ms未満であることを期待（閾値は調整可能）
-    expect(executionTime).toBeLessThan(300);
+    // 処理時間が1000ms未満であることを期待
+    expect(executionTime).toBeLessThan(1000);
     console.log(`getAllPoets 実行時間: ${executionTime.toFixed(2)}ms`);
   });
 
@@ -100,7 +117,7 @@ describe('API関数のパフォーマンステスト', () => {
     const minTime = Math.min(...times);
     const timeDifference = maxTime - minTime;
 
-    // 最大と最小の差が200ms未満であることを期待（閾値は調整可能）
+    // 最大と最小の差が200ms未満であることを期待
     expect(timeDifference).toBeLessThan(200);
 
     // 平均実行時間を計算

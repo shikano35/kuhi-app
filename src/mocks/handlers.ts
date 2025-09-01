@@ -1,167 +1,135 @@
 import { http, HttpResponse, delay } from 'msw';
-import {
-  mockHaikuMonuments,
-  mockPoets,
-  mockLocations,
-} from './data/haiku-monuments';
+import { apiHandlers } from './api-handlers';
+import { mockMonuments, mockPoets } from './data/api-data';
 
-const API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhiapi.com';
+const API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhi.jp';
 
 export const handlers = [
-  // 句碑一覧の取得
-  http.get(`${API_BASE_URL}/haiku-monuments`, async ({ request }) => {
+  ...apiHandlers,
+
+  http.get(`${API_BASE_URL}/monuments/all`, async () => {
     await delay(500);
-    const url = new URL(request.url);
-
-    // クエリパラメータの取得
-    const region = url.searchParams.get('region');
-    const prefecture = url.searchParams.get('prefecture');
-    const poet_id = url.searchParams.get('poet_id');
-    const search = url.searchParams.get('search');
-
-    let filteredMonuments = [...mockHaikuMonuments];
-
-    // 地域でフィルタリング
-    if (region) {
-      filteredMonuments = filteredMonuments.filter(
-        (monument) => monument.locations[0]?.region === region
-      );
+    const extendedMonuments = [];
+    for (let i = 0; i < 50; i++) {
+      const monument = {
+        ...mockMonuments[0],
+        id: i + 1,
+        canonical_name: `テスト句碑${i + 1}（松尾芭蕉）`,
+        canonical_uri: `https://api.kuhi.jp/monuments/${i + 1}`,
+        events: [
+          {
+            id: i + 1,
+            event_type: 'erected',
+            hu_time_normalized: `HT:interval/${1900 + i * 2}-01-01/${1900 + i * 2}-12-31`,
+            interval_start: `${1900 + i * 2}-01-01`,
+            interval_end: `${1900 + i * 2}-12-31`,
+            uncertainty_note: null,
+            actor: `建立者${i + 1}`,
+            source: mockMonuments[0].sources[0],
+          },
+        ],
+      };
+      extendedMonuments.push(monument);
     }
-
-    // 都道府県でフィルタリング
-    if (prefecture) {
-      filteredMonuments = filteredMonuments.filter(
-        (monument) => monument.locations[0]?.prefecture === prefecture
-      );
-    }
-
-    // 俳人IDでフィルタリング
-    if (poet_id && !isNaN(Number(poet_id))) {
-      filteredMonuments = filteredMonuments.filter((monument) =>
-        monument.poets.some((poet) => poet.id === Number(poet_id))
-      );
-    }
-
-    // 検索ワードでフィルタリング
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filteredMonuments = filteredMonuments.filter(
-        (monument) =>
-          monument.inscription.toLowerCase().includes(searchLower) ||
-          (monument.commentary &&
-            monument.commentary.toLowerCase().includes(searchLower)) ||
-          monument.poets.some((poet) =>
-            poet.name.toLowerCase().includes(searchLower)
-          ) ||
-          monument.locations.some((location) => {
-            if (!location.place_name) return false;
-
-            return (
-              location.place_name.toLowerCase().includes(searchLower) ||
-              (location.prefecture &&
-                location.prefecture.toLowerCase().includes(searchLower)) ||
-              (location.municipality &&
-                location.municipality.toLowerCase().includes(searchLower))
-            );
-          })
-      );
-    }
-
-    return HttpResponse.json({
-      haiku_monuments: filteredMonuments,
-    });
+    return HttpResponse.json(extendedMonuments);
   }),
 
-  // 句碑詳細の取得
-  http.get(`${API_BASE_URL}/haiku-monuments/:id`, async ({ params }) => {
+  http.get(`${API_BASE_URL}/poets/all`, async () => {
     await delay(300);
-    const { id } = params;
-    const monument = mockHaikuMonuments.find(
-      (monument) => monument.id === Number(id)
-    );
-
-    if (!monument) {
-      return new HttpResponse(
-        JSON.stringify({ error: '句碑が見つかりません' }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    return HttpResponse.json({
-      haiku_monument: monument,
-    });
+    return HttpResponse.json(mockPoets);
   }),
 
-  // 俳人一覧の取得
-  http.get(`${API_BASE_URL}/poets`, async () => {
+  // ニュース一覧の取得
+  http.get(`${API_BASE_URL}/news`, async () => {
     await delay(300);
-    const poets = Object.values(mockPoets);
-    return HttpResponse.json(poets);
+    const news = [
+      {
+        id: 1,
+        title: 'プラットフォームの大幅アップデートが完了しました',
+        content: '句碑データベースを大幅に拡充し、新しい機能を追加しました。',
+        date: '2025-01-15',
+        author: 'システム管理者',
+      },
+      {
+        id: 2,
+        title: '新規句碑情報を100件追加',
+        content: '今月は全国各地から100件の新しい句碑情報を追加しました。',
+        date: '2025-01-10',
+        author: 'データ管理チーム',
+      },
+    ];
+    return HttpResponse.json(news);
   }),
 
-  // 俳人詳細の取得
-  http.get(`${API_BASE_URL}/poets/:id`, async ({ params }) => {
+  // 全句碑取得エンドポイント
+  http.get('/api/kuhi/monuments/all', async () => {
+    await delay(500);
+    const extendedMonuments = [];
+    for (let i = 0; i < 50; i++) {
+      const monument = {
+        ...mockMonuments[0],
+        id: i + 1,
+        canonical_name: `テスト句碑${i + 1}（松尾芭蕉）`,
+        canonical_uri: `https://api.kuhi.jp/monuments/${i + 1}`,
+        events: [
+          {
+            id: i + 1,
+            event_type: 'erected',
+            hu_time_normalized: `HT:interval/${1900 + i * 2}-01-01/${1900 + i * 2}-12-31`,
+            interval_start: `${1900 + i * 2}-01-01`,
+            interval_end: `${1900 + i * 2}-12-31`,
+            uncertainty_note: null,
+            actor: `建立者${i + 1}`,
+            source: mockMonuments[0].sources[0],
+          },
+        ],
+      };
+      extendedMonuments.push(monument);
+    }
+    return HttpResponse.json(extendedMonuments);
+  }),
+
+  // 全俳人取得エンドポイント
+  http.get('/api/kuhi/poets/all', async () => {
+    await delay(300);
+    return HttpResponse.json(mockPoets);
+  }),
+
+  // プロフィール関連のAPIハンドラー
+  http.put('/api/profile', async ({ request }) => {
     await delay(200);
-    const { id } = params;
-    const poet = mockPoets[id as string];
-
-    if (!poet) {
-      return new HttpResponse(
-        JSON.stringify({ error: '俳人が見つかりません' }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
-      );
+    try {
+      await request.json();
+      return new Response();
+    } catch {
+      return new Response('プロフィールの更新に失敗しました', { status: 500 });
     }
-
-    return HttpResponse.json(poet);
   }),
 
-  // 俳人が詠んだ句碑一覧の取得
-  http.get(`${API_BASE_URL}/poets/:id/haiku-monuments`, async ({ params }) => {
-    await delay(400);
-    const { id } = params;
-    const poetId = Number(id);
-    const monuments = mockHaikuMonuments.filter((monument) =>
-      monument.poets.some((poet) => poet.id === poetId)
-    );
-
-    return HttpResponse.json(monuments);
+  http.post('/api/profile/avatar', async ({ request }) => {
+    await delay(1000);
+    try {
+      await request.formData();
+      const imageUrl = '/uploads/avatars/test.jpg';
+      return HttpResponse.json({ imageUrl });
+    } catch {
+      return new Response('画像のアップロードに失敗しました', { status: 500 });
+    }
   }),
 
-  // 場所一覧の取得
-  http.get(`${API_BASE_URL}/locations`, async () => {
-    await delay(300);
-    const locations = Object.values(mockLocations);
-    return HttpResponse.json(locations);
-  }),
-
-  // 場所詳細の取得
-  http.get(`${API_BASE_URL}/locations/:id`, async ({ params }) => {
+  http.delete('/api/profile/avatar', async () => {
     await delay(200);
-    const { id } = params;
-    const location = mockLocations[id as string];
-
-    if (!location) {
-      return new HttpResponse(
-        JSON.stringify({ error: '場所が見つかりません' }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    return HttpResponse.json(location);
+    return new Response();
   }),
 
-  // 場所に関連する句碑一覧の取得
-  http.get(
-    `${API_BASE_URL}/locations/:id/haiku-monuments`,
-    async ({ params }) => {
-      await delay(400);
-      const { id } = params;
-      const locationId = Number(id);
-      const monuments = mockHaikuMonuments.filter((monument) =>
-        monument.locations.some((location) => location.id === locationId)
-      );
+  // ユーザー関連のAPIハンドラー
+  http.get('/api/user/favorites', async () => {
+    await delay(200);
+    return HttpResponse.json([]);
+  }),
 
-      return HttpResponse.json(monuments);
-    }
-  ),
+  http.get('/api/user/visits', async () => {
+    await delay(200);
+    return HttpResponse.json([]);
+  }),
 ];
