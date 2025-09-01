@@ -69,4 +69,14 @@ export const apiHandlers = [
       ? HttpResponse.json(source)
       : new HttpResponse(null, { status: 404 });
   }),
+
+  // 俳人の句碑一覧API
+  http.get(`${API_BASE_URL}/poets/:id/monuments`, ({ params }) => {
+    const poetId = Number(params.id);
+    const poetMonuments = mockMonuments.filter(
+      (monument) =>
+        monument.poets && monument.poets.some((poet) => poet.id === poetId)
+    );
+    return HttpResponse.json(poetMonuments);
+  }),
 ];

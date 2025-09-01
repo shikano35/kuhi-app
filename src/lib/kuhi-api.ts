@@ -4,12 +4,16 @@ import {
   Poet,
   Location,
   Source,
+  Inscription,
   PoetsQueryParams,
   LocationsQueryParams,
   SourcesQueryParams,
 } from '@/types/definitions/api';
 
-const KUHI_API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhi.jp';
+const KUHI_API_BASE_URL =
+  typeof window !== 'undefined'
+    ? '/api/kuhi'
+    : process.env.KUHI_API_URL || 'https://api.kuhi.jp';
 
 class KuhiApiError extends Error {
   constructor(
@@ -66,6 +70,193 @@ export async function getMonuments(
   return response;
 }
 
+// inscriptionsから全ての句碑データを再構築する関数
+export async function getAllMonumentsFromInscriptions(): Promise<
+  MonumentWithRelations[]
+> {
+  const allInscriptions: Inscription[] = [];
+  let offset = 0;
+  const limit = 50;
+  let hasMore = true;
+
+  // 全ての碑文データを取得
+  while (hasMore) {
+    const url = `${KUHI_API_BASE_URL}/inscriptions?limit=${limit}&offset=${offset}`;
+    const response = (await fetcher(url)) as { inscriptions?: Inscription[] };
+
+    if (response.inscriptions && response.inscriptions.length > 0) {
+      allInscriptions.push(...response.inscriptions);
+      offset += limit;
+
+      if (response.inscriptions.length < limit) {
+        hasMore = false;
+      }
+    } else {
+      hasMore = false;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  const monumentsMap = new Map<number, MonumentWithRelations>();
+
+  for (const inscription of allInscriptions) {
+    const monumentId = inscription.monument_id;
+
+    if (typeof monumentId !== 'number') {
+      continue;
+    }
+
+    if (!monumentsMap.has(monumentId)) {
+      monumentsMap.set(monumentId, {
+        id: monumentId,
+        canonical_name: `句碑 ${monumentId}`,
+        canonical_uri: `https://api.kuhi.jp/monuments/${monumentId}`,
+        monument_type: '句碑',
+        monument_type_uri: null,
+        material: null,
+        material_uri: null,
+        created_at: inscription.created_at || new Date().toISOString(),
+        updated_at: inscription.updated_at || new Date().toISOString(),
+        inscriptions: [],
+        events: [],
+        media: [],
+        locations: [],
+        poets: [],
+        sources: [],
+        original_established_date: null,
+        hu_time_normalized: null,
+        interval_start: null,
+        interval_end: null,
+        uncertainty_note: null,
+      });
+    }
+
+    const monument = monumentsMap.get(monumentId);
+    if (monument && monument.inscriptions) {
+      monument.inscriptions.push(inscription);
+
+      if (inscription.poems) {
+        const lastIndex = monument.inscriptions.length - 1;
+        monument.inscriptions[lastIndex].poems = inscription.poems;
+      }
+    }
+  }
+
+  const monuments = Array.from(monumentsMap.values());
+  return monuments;
+}
+
+// 全ての句碑を取得する関数
+export async function getAllMonuments(): Promise<MonumentWithRelations[]> {
+  if (typeof window !== 'undefined') {
+    const response = await fetch('/api/kuhi/monuments/all', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new KuhiApiError(
+        `全句碑取得失敗: ${response.status} ${response.statusText}`,
+        response.status,
+        response
+      );
+    }
+
+    const result = await response.json();
+
+    if (result.monuments) {
+      return result.monuments;
+    }
+
+    return result;
+  }
+
+  const monuments = await getMonuments({ limit: 10 });
+  if (monuments.length > 0) {
+    return await getAllMonumentsFromPagination();
+  }
+
+  return await getAllMonumentsFromInscriptions();
+}
+
+// 通常のページネーション取得
+async function getAllMonumentsFromPagination(): Promise<
+  MonumentWithRelations[]
+> {
+  const allMonuments: MonumentWithRelations[] = [];
+  let offset = 0;
+  const limit = 30;
+  let hasMore = true;
+
+  while (hasMore) {
+    const monuments = await getMonuments({ limit, offset });
+
+    if (monuments.length === 0) {
+      hasMore = false;
+    } else {
+      allMonuments.push(...monuments);
+      offset += limit;
+
+      if (monuments.length < limit) {
+        hasMore = false;
+      }
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+
+  if (allMonuments.length === 0) {
+    return await getAllMonumentsFromInscriptions();
+  }
+
+  return allMonuments;
+}
+
+// 全ての俳人を取得する関数
+export async function getAllPoets(): Promise<Poet[]> {
+  if (typeof window !== 'undefined') {
+    const response = await fetch('/api/kuhi/poets/all', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new KuhiApiError(
+        `全俳人取得失敗: ${response.status} ${response.statusText}`,
+        response.status,
+        response
+      );
+    }
+
+    return response.json();
+  }
+
+  const allPoets: Poet[] = [];
+  let offset = 0;
+  const limit = 50;
+  let hasMore = true;
+
+  while (hasMore) {
+    const poets = await getPoets({ limit, offset });
+
+    if (poets.length === 0) {
+      hasMore = false;
+    } else {
+      allPoets.push(...poets);
+      offset += limit;
+
+      if (poets.length < limit) {
+        hasMore = false;
+      }
+    }
+  }
+
+  return allPoets;
+}
+
 export async function getMonumentById(
   id: number
 ): Promise<MonumentWithRelations> {
@@ -89,7 +280,14 @@ export async function getMonumentsByPoet(
   poetId: number
 ): Promise<MonumentWithRelations[]> {
   const url = `${KUHI_API_BASE_URL}/poets/${poetId}/monuments`;
-  return fetcher<MonumentWithRelations[]>(url);
+  const simpleMonuments = await fetcher<{ id: number }[]>(url);
+
+  const monumentPromises = simpleMonuments.map((monument) =>
+    getMonumentById(monument.id)
+  );
+
+  const monuments = await Promise.all(monumentPromises);
+  return monuments;
 }
 
 // Location API

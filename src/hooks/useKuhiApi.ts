@@ -1,7 +1,3 @@
-/**
- * 新しいKuhi API用のReact Queryフック
- */
-
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import {
   getMonuments,
@@ -16,17 +12,17 @@ import {
   MonumentWithRelations,
   MonumentsQueryParams,
   Location,
+  Inscription,
   PoetsQueryParams,
   LocationsQueryParams,
   SourcesQueryParams,
 } from '@/types/definitions/api';
 
-// Monument hooks
 export function useMonuments(params: MonumentsQueryParams = {}) {
   return useQuery({
     queryKey: ['monuments', params],
     queryFn: () => getMonuments(params),
-    staleTime: 5 * 60 * 1000, // 5分
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -35,18 +31,76 @@ export function useInfiniteMonuments(params: MonumentsQueryParams = {}) {
     queryKey: ['monuments', 'infinite', params],
     queryFn: async ({ pageParam = 0 }) => {
       const offset = pageParam as number;
-      const monuments = await getMonuments({
-        ...params,
-        offset,
-        limit: params.limit || 20,
-      });
-      return {
-        data: monuments,
-        nextOffset:
-          monuments.length === (params.limit || 20)
-            ? offset + (params.limit || 20)
-            : undefined,
-      };
+
+      try {
+        const monuments = await getMonuments({
+          ...params,
+          offset,
+          limit: params.limit || 20,
+        });
+
+        return {
+          data: monuments,
+          nextOffset:
+            monuments.length === (params.limit || 20)
+              ? offset + (params.limit || 20)
+              : undefined,
+        };
+      } catch {
+        try {
+          const inscriptionsUrl = `${process.env.KUHI_API_URL || 'https://api.kuhi.jp'}/inscriptions?limit=${params.limit || 20}&offset=${offset}`;
+          const response = await fetch(inscriptionsUrl);
+
+          if (!response.ok) {
+            throw new Error(`Inscriptions API failed: ${response.status}`);
+          }
+
+          const inscriptionsData = (await response.json()) as {
+            inscriptions?: Inscription[];
+          };
+
+          const monuments =
+            inscriptionsData.inscriptions?.map((inscription) => ({
+              id: inscription.monument_id || 0,
+              canonical_name: `句碑 ${inscription.monument_id}`,
+              canonical_uri: `https://api.kuhi.jp/monuments/${inscription.monument_id}`,
+              monument_type: '句碑',
+              monument_type_uri: null,
+              material: null,
+              material_uri: null,
+              created_at: inscription.created_at || new Date().toISOString(),
+              updated_at: inscription.updated_at || new Date().toISOString(),
+              inscriptions: [inscription],
+              events: [],
+              media: [],
+              locations: [],
+              poets: [],
+              sources: inscription.source ? [inscription.source] : [],
+              original_established_date: null,
+              hu_time_normalized: null,
+              interval_start: null,
+              interval_end: null,
+              uncertainty_note: null,
+            })) || [];
+
+          const uniqueMonuments = Array.from(
+            new Map(monuments.map((m) => [m.id, m])).values()
+          );
+
+          return {
+            data: uniqueMonuments,
+            nextOffset:
+              uniqueMonuments.length === (params.limit || 20)
+                ? offset + (params.limit || 20)
+                : undefined,
+          };
+        } catch {
+          return {
+            data: [],
+            nextOffset: undefined,
+          };
+        }
+      }
     },
     getNextPageParam: (lastPage) => lastPage.nextOffset,
     initialPageParam: 0,
@@ -58,11 +112,10 @@ export function useMonument(id: number) {
   return useQuery({
     queryKey: ['monument', id],
     queryFn: () => getMonumentById(id),
-    staleTime: 10 * 60 * 1000, // 10分
+    staleTime: 10 * 60 * 1000,
   });
 }
 
-// Poet hooks
 export function usePoets(params: PoetsQueryParams = {}) {
   return useQuery({
     queryKey: ['poets', params],
@@ -87,16 +140,14 @@ export function useMonumentsByPoet(poetId: number) {
   });
 }
 
-// Location hooks
 export function useLocations(params: LocationsQueryParams = {}) {
   return useQuery({
     queryKey: ['locations', params],
     queryFn: () => getLocations(params),
-    staleTime: 15 * 60 * 1000, // 15分
+    staleTime: 15 * 60 * 1000,
   });
 }
 
-// Source hooks
 export function useSources(params: SourcesQueryParams = {}) {
   return useQuery({
     queryKey: ['sources', params],
@@ -105,7 +156,6 @@ export function useSources(params: SourcesQueryParams = {}) {
   });
 }
 
-// ユーティリティフック
 export function useFlattenedInfiniteMonuments(
   data: { data: MonumentWithRelations[]; nextOffset?: number }[] | undefined
 ): MonumentWithRelations[] {
@@ -113,12 +163,11 @@ export function useFlattenedInfiniteMonuments(
   return data.flatMap((page) => page.data);
 }
 
-// 地域別句碑フック
 export function useMonumentsByRegion() {
   return useQuery({
     queryKey: ['monuments', 'by-region'],
     queryFn: async () => {
-      const monuments = await getMonuments({ limit: 500 }); // 大きめのlimitで全体を取得
+      const monuments = await getMonuments({ limit: 500 });
 
       const regionMap: Record<string, MonumentWithRelations[]> = {};
 
@@ -137,7 +186,6 @@ export function useMonumentsByRegion() {
   });
 }
 
-// 検索用フック
 export function useSearchMonuments(searchParams: {
   q?: string;
   poet_name_contains?: string;

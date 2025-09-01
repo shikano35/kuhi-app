@@ -26,65 +26,25 @@ import {
   mapMonumentsToHaikuMonuments,
   mapMonumentToHaikuMonument,
   mapNewPoetToPoet,
-  mapNewPoetsToPoets,
   mapNewLocationsToLocations,
   mapNewSourcesToSources,
 } from '@/lib/api-mappers';
 
 const API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhi.jp';
 
-/**
- * リトライ機能付きのfetch関数
- */
-async function fetchWithRetry(
+async function apiFetch(
   url: string,
-  options: RequestInit = {},
-  maxRetries: number = 2,
-  delay: number = 1000
+  options: RequestInit = {}
 ): Promise<Response> {
-  let lastError: Error | null = null;
-
-  for (let i = 0; i <= maxRetries; i++) {
-    try {
-      const response = await fetch(url, {
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
-      });
-
-      if (response.ok || (response.status >= 400 && response.status < 500)) {
-        return response;
-      }
-
-      if (i < maxRetries) {
-        console.warn(
-          `API request failed with status ${response.status}, retrying in ${delay}ms... (attempt ${i + 1}/${maxRetries + 1})`
-        );
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        delay *= 2;
-      } else {
-        return response;
-      }
-    } catch (error) {
-      lastError = error as Error;
-      if (i < maxRetries) {
-        console.warn(
-          `API request failed with error: ${lastError.message}, retrying in ${delay}ms... (attempt ${i + 1}/${maxRetries + 1})`
-        );
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        delay *= 2;
-      }
-    }
-  }
-
-  throw lastError || new Error('API request failed after retries');
+  return fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
 }
 
-/**
- * URLパラメータを構築するヘルパー関数
- */
 function buildQueryString(params: Record<string, unknown>): string {
   const searchParams = new URLSearchParams();
 
@@ -101,432 +61,334 @@ function buildQueryString(params: Record<string, unknown>): string {
   return searchParams.toString();
 }
 
-/**
- * 句碑一覧を取得
- */
 export async function getMonuments(
   params: MonumentsQueryParams = {}
 ): Promise<MonumentWithRelations[]> {
-  try {
-    const queryString = buildQueryString(params as Record<string, unknown>);
-    const url = `${API_BASE_URL}/monuments${queryString ? `?${queryString}` : ''}`;
+  const queryString = buildQueryString(params as Record<string, unknown>);
+  const url = `${API_BASE_URL}/monuments${queryString ? `?${queryString}` : ''}`;
 
-    const response = await fetchWithRetry(url);
+  const response = await apiFetch(url);
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
+}
+
+function getServerBaseUrl(): string {
+  if (typeof window !== 'undefined') {
+    return '';
+  }
+
+  if (process.env.KUHI_API_URL) {
+    return process.env.KUHI_API_URL;
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:3000';
+  }
+
+  console.warn(
+    '本番環境でベースURLが設定されていません。KUHI_API_URLを設定してください。'
+  );
+  return 'https://kuhi.jp';
+}
+
+export async function getAllMonuments(): Promise<HaikuMonument[]> {
+  try {
+    const baseUrl = getServerBaseUrl();
+    const url = `${baseUrl}/api/kuhi/monuments/all`;
+
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (!response.ok) {
-      console.warn(`API request failed with status: ${response.status}`);
-      return [];
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    return data.map(mapMonumentToHaikuMonument);
   } catch (error) {
-    console.warn('句碑データの取得中にエラーが発生しました:', error);
+    console.error('Error fetching all monuments:', error);
     return [];
   }
 }
 
-/**
- * 句碑詳細を取得
- */
 export async function getMonumentById(
   id: number
 ): Promise<MonumentWithRelations | null> {
-  try {
-    const response = await fetchWithRetry(`${API_BASE_URL}/monuments/${id}`);
+  const response = await apiFetch(`${API_BASE_URL}/monuments/${id}`);
 
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data || null;
-  } catch (error) {
-    console.warn(`句碑ID:${id}の取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return null;
   }
+
+  const data = await response.json();
+  return data || null;
 }
 
-/**
- * 俳人に関連する句碑一覧を取得
- */
 export async function getPoetMonuments(
   id: number
 ): Promise<MonumentWithRelations[]> {
-  try {
-    const response = await fetchWithRetry(
-      `${API_BASE_URL}/poets/${id}/monuments`
-    );
+  const response = await apiFetch(`${API_BASE_URL}/poets/${id}/monuments`);
 
-    if (!response.ok) {
-      return [];
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.warn(`俳人ID:${id}の句碑取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return [];
   }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
 }
 
-/**
- * 俳人一覧を取得
- */
 export async function getPoets(
   params: PoetsQueryParams = {}
 ): Promise<ApiPoet[]> {
-  try {
-    const queryString = buildQueryString(params as Record<string, unknown>);
-    const url = `${API_BASE_URL}/poets${queryString ? `?${queryString}` : ''}`;
+  const queryString = buildQueryString(params as Record<string, unknown>);
+  const url = `${API_BASE_URL}/poets${queryString ? `?${queryString}` : ''}`;
 
-    const response = await fetchWithRetry(url);
+  const response = await apiFetch(url);
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
+}
+
+export async function getAllPoetsFromApi(): Promise<ApiPoet[]> {
+  try {
+    const baseUrl = getServerBaseUrl();
+    const url = `${baseUrl}/api/kuhi/poets/all`;
+
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (!response.ok) {
-      return [];
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    return data;
   } catch (error) {
-    console.warn('俳人データの取得中にエラーが発生しました:', error);
+    console.error('Error fetching poets from API:', error);
     return [];
   }
 }
 
-/**
- * 俳人詳細を取得
- */
 export async function getPoetById(id: number): Promise<ApiPoet | null> {
-  try {
-    const response = await fetchWithRetry(`${API_BASE_URL}/poets/${id}`);
+  const response = await apiFetch(`${API_BASE_URL}/poets/${id}`);
 
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data || null;
-  } catch (error) {
-    console.warn(`俳人ID:${id}の取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return null;
   }
+
+  const data = await response.json();
+  return data || null;
 }
 
-/**
- * 設置場所一覧を取得
- */
 export async function getLocations(
   params: LocationsQueryParams = {}
 ): Promise<ApiLocation[]> {
-  try {
-    const queryString = buildQueryString(params as Record<string, unknown>);
-    const url = `${API_BASE_URL}/locations${queryString ? `?${queryString}` : ''}`;
+  const queryString = buildQueryString(params as Record<string, unknown>);
+  const url = `${API_BASE_URL}/locations${queryString ? `?${queryString}` : ''}`;
 
-    const response = await fetchWithRetry(url);
+  const response = await apiFetch(url);
 
-    if (!response.ok) {
-      return [];
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.warn('設置場所データの取得中にエラーが発生しました:', error);
+  if (!response.ok) {
     return [];
   }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
 }
 
-/**
- * 出典一覧を取得
- */
 export async function getSources(
   params: SourcesQueryParams = {}
 ): Promise<ApiSource[]> {
-  try {
-    const queryString = buildQueryString(params as Record<string, unknown>);
-    const url = `${API_BASE_URL}/sources${queryString ? `?${queryString}` : ''}`;
+  const queryString = buildQueryString(params as Record<string, unknown>);
+  const url = `${API_BASE_URL}/sources${queryString ? `?${queryString}` : ''}`;
 
-    const response = await fetchWithRetry(url);
+  const response = await apiFetch(url);
 
-    if (!response.ok) {
-      return [];
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.warn('出典データの取得中にエラーが発生しました:', error);
+  if (!response.ok) {
     return [];
   }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
 }
 
-/**
- * 座標範囲で句碑を取得
- */
 export async function getMonumentsByCoordinates(
   lat: number,
   lon: number,
   radius: number
 ): Promise<MonumentWithRelations[]> {
-  try {
-    const latDelta = radius / 111000;
-    const lonDelta = radius / (111000 * Math.cos((lat * Math.PI) / 180));
+  const latDelta = radius / 111000;
+  const lonDelta = radius / (111000 * Math.cos((lat * Math.PI) / 180));
 
-    const bbox = `${lon - lonDelta},${lat - latDelta},${lon + lonDelta},${lat + latDelta}`;
+  const bbox = `${lon - lonDelta},${lat - latDelta},${lon + lonDelta},${lat + latDelta}`;
 
-    const queryString = buildQueryString({ bbox });
-    const url = `${API_BASE_URL}/monuments?${queryString}`;
+  const queryString = buildQueryString({ bbox });
+  const url = `${API_BASE_URL}/monuments?${queryString}`;
 
-    const response = await fetch(url);
+  const response = await fetch(url);
 
-    if (!response.ok) {
-      throw new Error(
-        `座標周辺の句碑データの取得に失敗しました: ${response.status}`
-      );
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error('座標周辺の句碑データ取得中にエラーが発生しました:', error);
+  if (!response.ok) {
     return [];
   }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
 }
 
-/**
- * 句碑の碑文一覧を取得
- */
 export async function getMonumentInscriptions(
   id: number
 ): Promise<Inscription[]> {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/monuments/${id}/inscriptions`
-    );
+  const response = await fetch(`${API_BASE_URL}/monuments/${id}/inscriptions`);
 
-    if (!response.ok) {
-      throw new Error(`碑文データの取得に失敗しました: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error(`句碑ID:${id}の碑文取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return [];
   }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
 }
 
-/**
- * 句碑のイベント一覧を取得
- */
 export async function getMonumentEvents(id: number): Promise<Event[]> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/monuments/${id}/events`);
+  const response = await fetch(`${API_BASE_URL}/monuments/${id}/events`);
 
-    if (!response.ok) {
-      throw new Error(`イベントデータの取得に失敗しました: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error(`句碑ID:${id}のイベント取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return [];
   }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
 }
 
-/**
- * 句碑のメディア一覧を取得
- */
 export async function getMonumentMedia(id: number): Promise<Media[]> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/monuments/${id}/media`);
+  const response = await fetch(`${API_BASE_URL}/monuments/${id}/media`);
 
-    if (!response.ok) {
-      throw new Error(`メディアデータの取得に失敗しました: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error(`句碑ID:${id}のメディア取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return [];
   }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
 }
 
-/**
- * 碑文一覧を取得
- */
 export async function getInscriptions(
   params: InscriptionsQueryParams = {}
 ): Promise<InscriptionWithMonument[]> {
-  try {
-    const queryString = buildQueryString(params as Record<string, unknown>);
-    const url = `${API_BASE_URL}/inscriptions${queryString ? `?${queryString}` : ''}`;
+  const queryString = buildQueryString(params as Record<string, unknown>);
+  const url = `${API_BASE_URL}/inscriptions${queryString ? `?${queryString}` : ''}`;
 
-    const response = await fetch(url);
+  const response = await fetch(url);
 
-    if (!response.ok) {
-      throw new Error(`碑文データの取得に失敗しました: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.inscriptions || [];
-  } catch (error) {
-    console.error('碑文データの取得中にエラーが発生しました:', error);
+  if (!response.ok) {
     return [];
   }
+
+  const data = await response.json();
+  return data.inscriptions || [];
 }
 
-/**
- * 碑文詳細を取得
- */
 export async function getInscriptionById(
   id: number
 ): Promise<InscriptionWithMonument | null> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/inscriptions/${id}`);
+  const response = await fetch(`${API_BASE_URL}/inscriptions/${id}`);
 
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data || null;
-  } catch (error) {
-    console.error(`碑文ID:${id}の取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return null;
   }
+
+  const data = await response.json();
+  return data || null;
 }
 
-/**
- * 俳句一覧を取得
- */
 export async function getPoems(
   params: PoemsQueryParams = {}
 ): Promise<PoemWithRelations[]> {
-  try {
-    const queryString = buildQueryString(params as Record<string, unknown>);
-    const url = `${API_BASE_URL}/poems${queryString ? `?${queryString}` : ''}`;
+  const queryString = buildQueryString(params as Record<string, unknown>);
+  const url = `${API_BASE_URL}/poems${queryString ? `?${queryString}` : ''}`;
 
-    const response = await fetch(url);
+  const response = await fetch(url);
 
-    if (!response.ok) {
-      throw new Error(`俳句データの取得に失敗しました: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.poems || [];
-  } catch (error) {
-    console.error('俳句データの取得中にエラーが発生しました:', error);
+  if (!response.ok) {
     return [];
   }
+
+  const data = await response.json();
+  return data.poems || [];
 }
 
-/**
- * 俳句詳細を取得
- */
 export async function getPoemById(
   id: number
 ): Promise<PoemWithRelations | null> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/poems/${id}`);
+  const response = await fetch(`${API_BASE_URL}/poems/${id}`);
 
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data || null;
-  } catch (error) {
-    console.error(`俳句ID:${id}の取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return null;
   }
+
+  const data = await response.json();
+  return data || null;
 }
 
-/**
- * 設置場所詳細を取得
- */
 export async function getLocationById(id: number): Promise<ApiLocation | null> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/locations/${id}`);
+  const response = await fetch(`${API_BASE_URL}/locations/${id}`);
 
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data || null;
-  } catch (error) {
-    console.error(`設置場所ID:${id}の取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return null;
   }
+
+  const data = await response.json();
+  return data || null;
 }
 
-/**
- * 設置場所に関連する句碑一覧を取得
- */
 export async function getLocationMonuments(
   id: number
 ): Promise<MonumentWithRelations[]> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/locations/${id}/monuments`);
+  const response = await fetch(`${API_BASE_URL}/locations/${id}/monuments`);
 
-    if (!response.ok) {
-      throw new Error(
-        `設置場所の句碑データの取得に失敗しました: ${response.status}`
-      );
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error(`設置場所ID:${id}の句碑取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return [];
   }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
 }
 
-/**
- * 出典詳細を取得
- */
 export async function getSourceById(id: number): Promise<ApiSource | null> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/sources/${id}`);
+  const response = await fetch(`${API_BASE_URL}/sources/${id}`);
 
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data || null;
-  } catch (error) {
-    console.error(`出典ID:${id}の取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return null;
   }
+
+  const data = await response.json();
+  return data || null;
 }
 
-/**
- * 出典に関連する句碑一覧を取得
- */
 export async function getSourceMonuments(
   id: number
 ): Promise<MonumentWithRelations[]> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/sources/${id}/monuments`);
+  const response = await fetch(`${API_BASE_URL}/sources/${id}/monuments`);
 
-    if (!response.ok) {
-      throw new Error(
-        `出典の句碑データの取得に失敗しました: ${response.status}`
-      );
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error(`出典ID:${id}の句碑取得中にエラーが発生しました:`, error);
+  if (!response.ok) {
     return [];
   }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
 }
 
 type GetHaikuMonumentsOptions = {
@@ -544,32 +406,28 @@ type GetHaikuMonumentsOptions = {
 export async function getAllHaikuMonuments(
   options?: GetHaikuMonumentsOptions
 ): Promise<HaikuMonument[]> {
-  try {
+  if (options && Object.keys(options).length > 0) {
     const params = {
-      // デフォルトのlimitを20に設定してリソース制限を回避
-      limit: options?.limit || 20,
-      offset: options?.offset || 0,
-      q: options?.search,
-      region: options?.region,
-      prefecture: options?.prefecture,
-      poet_id: options?.poet_id,
-      inscription_contains: options?.title_contains,
-      poet_name_contains: options?.name_contains,
-      ordering: options?.ordering?.join(','),
+      limit: options.limit || 20,
+      offset: options.offset || 0,
+      q: options.search,
+      region: options.region,
+      prefecture: options.prefecture,
+      poet_id: options.poet_id,
+      inscription_contains: options.title_contains,
+      poet_name_contains: options.name_contains,
+      ordering: options.ordering?.join(','),
     };
 
     const monuments = await getMonuments(params);
     const mapped = mapMonumentsToHaikuMonuments(monuments);
     return mapped;
-  } catch (error) {
-    console.error('句碑データの取得中にエラーが発生しました:', error);
-    return [];
   }
+
+  const monuments = await getAllMonuments();
+  return monuments;
 }
 
-/**
- * 無限スクロール用のページネーション対応関数
- */
 export async function getHaikuMonumentsPage(
   options: GetHaikuMonumentsOptions & { pageParam?: number }
 ): Promise<{
@@ -577,142 +435,142 @@ export async function getHaikuMonumentsPage(
   nextPage: number | undefined;
   hasMore: boolean;
 }> {
-  try {
-    const limit = options?.limit || 20;
-    const offset = (options.pageParam || 0) * limit;
+  const limit = options?.limit || 20;
+  const offset = (options.pageParam || 0) * limit;
 
-    const params = {
-      limit: limit + 1,
-      offset,
-      q: options?.search,
-      region: options?.region,
-      prefecture: options?.prefecture,
-      poet_id: options?.poet_id,
-      inscription_contains: options?.title_contains,
-      poet_name_contains: options?.name_contains,
-      ordering: options?.ordering?.join(','),
-    };
+  const params = {
+    limit: limit + 1,
+    offset,
+    q: options?.search,
+    region: options?.region,
+    prefecture: options?.prefecture,
+    poet_id: options?.poet_id,
+    inscription_contains: options?.title_contains,
+    poet_name_contains: options?.name_contains,
+    ordering: options?.ordering?.join(','),
+  };
 
-    const monuments = await getMonuments(params);
-    const mapped = mapMonumentsToHaikuMonuments(monuments);
+  const monuments = await getMonuments(params);
+  const mapped = mapMonumentsToHaikuMonuments(monuments);
 
-    const hasMore = mapped.length > limit;
-    const data = hasMore ? mapped.slice(0, limit) : mapped;
-    const nextPage = hasMore ? (options.pageParam || 0) + 1 : undefined;
+  const hasMore = mapped.length > limit;
+  const data = hasMore ? mapped.slice(0, limit) : mapped;
+  const nextPage = hasMore ? (options.pageParam || 0) + 1 : undefined;
 
-    return {
-      data,
-      nextPage,
-      hasMore,
-    };
-  } catch (error) {
-    console.error('句碑データの取得中にエラーが発生しました:', error);
-    return {
-      data: [],
-      nextPage: undefined,
-      hasMore: false,
-    };
-  }
+  return {
+    data,
+    nextPage,
+    hasMore,
+  };
 }
 
 export async function getHaikuMonumentById(
   id: number
 ): Promise<HaikuMonument | null> {
-  try {
-    const monument = await getMonumentById(id);
+  const monument = await getMonumentById(id);
 
-    if (!monument) {
-      return null;
-    }
-
-    return mapMonumentToHaikuMonument(monument);
-  } catch (error) {
-    console.error(`句碑ID:${id}の取得中にエラーが発生しました:`, error);
+  if (!monument) {
     return null;
   }
+
+  return mapMonumentToHaikuMonument(monument);
 }
 
 export async function getHaikuMonumentsByPoet(
   poetId: number
 ): Promise<HaikuMonument[]> {
-  try {
-    const monuments = await getPoetMonuments(poetId);
-    return mapMonumentsToHaikuMonuments(monuments);
-  } catch (error) {
-    console.error(`俳人ID:${poetId}の句碑取得中にエラーが発生しました:`, error);
-    return [];
-  }
+  const monuments = await getPoetMonuments(poetId);
+  return mapMonumentsToHaikuMonuments(monuments);
 }
 
 export async function getHaikuMonumentsByRegion(
   region: string
 ): Promise<HaikuMonument[]> {
-  try {
-    const monuments = await getMonuments({ region });
-    return mapMonumentsToHaikuMonuments(monuments);
-  } catch (error) {
-    console.error(`地域:${region}の句碑取得中にエラーが発生しました:`, error);
-    return [];
-  }
+  const monuments = await getMonuments({ region });
+  return mapMonumentsToHaikuMonuments(monuments);
 }
 
 export async function getAllPoets(): Promise<Poet[]> {
   try {
-    const poets = await getPoets();
-    return mapNewPoetsToPoets(poets);
+    const apiPoets = await getAllPoetsFromApi();
+    const mappedPoets = apiPoets.map(mapNewPoetToPoet);
+
+    return mappedPoets;
   } catch (error) {
-    console.error('俳人データの取得中にエラーが発生しました:', error);
+    console.error('Error in getAllPoets:', error);
     return [];
   }
 }
 
 export async function getPoetByIdOld(id: number): Promise<Poet | null> {
-  try {
-    const poet = await getPoetById(id);
+  const poet = await getPoetById(id);
 
-    if (!poet) {
-      return null;
-    }
-
-    return mapNewPoetToPoet(poet);
-  } catch (error) {
-    console.error(`俳人ID:${id}の取得中にエラーが発生しました:`, error);
+  if (!poet) {
     return null;
   }
+
+  return mapNewPoetToPoet(poet);
 }
 
 export async function getAllLocations(): Promise<Location[]> {
-  try {
-    const locations = await getLocations();
-    return mapNewLocationsToLocations(locations);
-  } catch (error) {
-    console.error('場所データの取得中にエラーが発生しました:', error);
-    return [];
-  }
+  const locations = await getLocations();
+  return mapNewLocationsToLocations(locations);
 }
 
 export async function getAllSources(): Promise<Source[]> {
-  try {
-    const sources = await getSources();
-    return mapNewSourcesToSources(sources);
-  } catch (error) {
-    console.error('出典データの取得中にエラーが発生しました:', error);
-    return [];
-  }
+  const sources = await getSources();
+  return mapNewSourcesToSources(sources);
 }
 
 export async function getAllNews(): Promise<News[]> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/news`);
-    if (!response.ok) {
-      throw new Error('お知らせデータの取得に失敗しました');
-    }
-    const data = (await response.json()) as News[];
-    return data;
-  } catch (error) {
-    console.error('お知らせデータの取得中にエラーが発生しました:', error);
-    return [];
-  }
+  const mockNews: News[] = [
+    {
+      id: 1,
+      title: 'くひめぐりβ版公開のお知らせ',
+      content:
+        'くひめぐりのβ版を公開いたしました。現在、全国の句碑データを順次追加中です。',
+      published_at: '2025-08-01T00:00:00Z',
+      created_at: '2025-08-01T00:00:00Z',
+      updated_at: '2025-08-01T00:00:00Z',
+      is_important: true,
+      category: 'release',
+    },
+    {
+      id: 2,
+      title: '全国句碑データベース構築開始',
+      content:
+        '日本全国の句碑情報を収集・整理し、デジタルアーカイブとして提供開始いたします。',
+      published_at: '2025-07-15T00:00:00Z',
+      created_at: '2025-07-15T00:00:00Z',
+      updated_at: '2025-07-15T00:00:00Z',
+      is_important: false,
+      category: 'update',
+    },
+    {
+      id: 3,
+      title: '句碑位置情報の精度向上について',
+      content:
+        'GPSデータの精度向上により、より正確な句碑の位置情報を提供できるようになりました。',
+      published_at: '2025-07-01T00:00:00Z',
+      created_at: '2025-07-01T00:00:00Z',
+      updated_at: '2025-07-01T00:00:00Z',
+      is_important: false,
+      category: 'improvement',
+    },
+    {
+      id: 4,
+      title: 'API仕様変更のお知らせ',
+      content:
+        'より効率的なデータ取得のため、API仕様を一部変更いたしました。ユーザーの皆様への影響はございません。',
+      published_at: '2025-06-15T00:00:00Z',
+      created_at: '2025-06-15T00:00:00Z',
+      updated_at: '2025-06-15T00:00:00Z',
+      is_important: false,
+      category: 'maintenance',
+    },
+  ];
+
+  return mockNews;
 }
 
 export async function getHaikuMonumentsByCoordinates(
@@ -720,11 +578,6 @@ export async function getHaikuMonumentsByCoordinates(
   lon: number,
   radius: number
 ): Promise<HaikuMonument[]> {
-  try {
-    const monuments = await getMonumentsByCoordinates(lat, lon, radius);
-    return mapMonumentsToHaikuMonuments(monuments);
-  } catch (error) {
-    console.error('座標周辺の句碑データ取得エラー:', error);
-    return [];
-  }
+  const monuments = await getMonumentsByCoordinates(lat, lon, radius);
+  return mapMonumentsToHaikuMonuments(monuments);
 }
