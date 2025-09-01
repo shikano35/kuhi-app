@@ -5,8 +5,6 @@ import dynamic from 'next/dynamic';
 import { MapFilter } from '../MapFilter';
 import { HaikuInfoPanel } from '../HaikuInfoPanel/index';
 import { HaikuMonument } from '@/types/definitions/haiku';
-import { useQuery } from '@tanstack/react-query';
-import { getAllHaikuMonuments } from '@/lib/api';
 import { ChevronRight, X } from 'lucide-react';
 import { useFilterStore } from '@/store/useFilterStore';
 
@@ -26,15 +24,6 @@ type MapClientComponentProps = {
 export function MapClientComponent({
   initialMonuments,
 }: MapClientComponentProps) {
-  const {
-    data: _data,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['haiku-monuments'],
-    queryFn: () => getAllHaikuMonuments(),
-  });
-
   const {
     mapFilteredMonuments,
     setMapFilteredMonuments,
@@ -108,23 +97,6 @@ export function MapClientComponent({
 
   return (
     <div className="relative w-full h-screen">
-      {isLoading && (
-        <div className="fixed top-0 left-0 w-full min-h-screen bg-background flex items-center justify-center z-50">
-          <div className="flex flex-col items-center">
-            <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mb-3" />
-            <p className="text-primary">地図データを読み込み中...</p>
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-red-50 border border-red-400 text-destructive px-4 py-2 rounded z-50">
-          {error instanceof Error
-            ? error.message
-            : '句碑データの読み込み中にエラーが発生しました'}
-        </div>
-      )}
-
       <div
         className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-background shadow-lg z-10 transition-all duration-300 overflow-hidden ${
           isFilterOpen ? 'w-80' : 'w-0'
