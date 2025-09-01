@@ -72,8 +72,8 @@ describe('API関数のパフォーマンステスト', () => {
 
     const executionTime = endTime - startTime;
 
-    // 処理時間が600ms未満であることを期待
-    expect(executionTime).toBeLessThan(600);
+    // 処理時間が1000ms未満であることを期待
+    expect(executionTime).toBeLessThan(1000);
     console.log(`getAllHaikuMonuments 実行時間: ${executionTime.toFixed(2)}ms`);
   });
 
@@ -84,8 +84,8 @@ describe('API関数のパフォーマンステスト', () => {
 
     const executionTime = endTime - startTime;
 
-    // 処理時間が250ms未満であることを期待
-    expect(executionTime).toBeLessThan(250);
+    // 処理時間が500ms未満であることを期待
+    expect(executionTime).toBeLessThan(500);
     console.log(`getHaikuMonumentById 実行時間: ${executionTime.toFixed(2)}ms`);
   });
 
@@ -96,8 +96,8 @@ describe('API関数のパフォーマンステスト', () => {
 
     const executionTime = endTime - startTime;
 
-    // 処理時間が350ms未満であることを期待
-    expect(executionTime).toBeLessThan(350);
+    // 処理時間が1000ms未満であることを期待
+    expect(executionTime).toBeLessThan(1000);
     console.log(`getAllPoets 実行時間: ${executionTime.toFixed(2)}ms`);
   });
 

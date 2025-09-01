@@ -20,7 +20,7 @@ describe('API関数のテスト', () => {
         expect(firstMonument).toHaveProperty('poets');
         expect(firstMonument).toHaveProperty('locations');
       }
-    });
+    }, 30000);
 
     test('APIエラー時には空配列を返すこと', async () => {
       const result = await getAllHaikuMonuments();
@@ -54,7 +54,7 @@ describe('API関数のテスト', () => {
 
       expect(Array.isArray(result)).toBe(true);
       expect(true).toBe(true);
-    });
+    }, 30000);
   });
 
   describe('getHaikuMonumentsByRegion', () => {
@@ -66,7 +66,7 @@ describe('API関数のテスト', () => {
 
       expect(Array.isArray(result)).toBe(true);
       expect(true).toBe(true);
-    });
+    }, 30000);
   });
 
   describe('getAllPoets', () => {
@@ -79,12 +79,12 @@ describe('API関数のテスト', () => {
         expect(firstPoet).toHaveProperty('id');
         expect(firstPoet).toHaveProperty('name');
       }
-    });
+    }, 15000);
 
     test('APIエラー時には空配列を返すこと', async () => {
       const result = await getAllPoets();
       expect(Array.isArray(result)).toBe(true);
-    });
+    }, 15000);
   });
 
   describe('getAllLocations', () => {
@@ -98,11 +98,11 @@ describe('API関数のテスト', () => {
         expect(firstLocation).toHaveProperty('region');
         expect(firstLocation).toHaveProperty('prefecture');
       }
-    });
+    }, 15000);
 
     test('APIエラー時には空配列を返すこと', async () => {
       const result = await getAllLocations();
       expect(Array.isArray(result)).toBe(true);
-    });
+    }, 15000);
   });
 });

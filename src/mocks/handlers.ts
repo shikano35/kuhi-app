@@ -1,10 +1,43 @@
 import { http, HttpResponse, delay } from 'msw';
 import { apiHandlers } from './api-handlers';
+import { mockMonuments, mockPoets } from './data/api-data';
 
 const API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhi.jp';
 
 export const handlers = [
   ...apiHandlers,
+
+  http.get(`${API_BASE_URL}/monuments/all`, async () => {
+    await delay(500);
+    const extendedMonuments = [];
+    for (let i = 0; i < 50; i++) {
+      const monument = {
+        ...mockMonuments[0],
+        id: i + 1,
+        canonical_name: `テスト句碑${i + 1}（松尾芭蕉）`,
+        canonical_uri: `https://api.kuhi.jp/monuments/${i + 1}`,
+        events: [
+          {
+            id: i + 1,
+            event_type: 'erected',
+            hu_time_normalized: `HT:interval/${1900 + i * 2}-01-01/${1900 + i * 2}-12-31`,
+            interval_start: `${1900 + i * 2}-01-01`,
+            interval_end: `${1900 + i * 2}-12-31`,
+            uncertainty_note: null,
+            actor: `建立者${i + 1}`,
+            source: mockMonuments[0].sources[0],
+          },
+        ],
+      };
+      extendedMonuments.push(monument);
+    }
+    return HttpResponse.json(extendedMonuments);
+  }),
+
+  http.get(`${API_BASE_URL}/poets/all`, async () => {
+    await delay(300);
+    return HttpResponse.json(mockPoets);
+  }),
 
   // ニュース一覧の取得
   http.get(`${API_BASE_URL}/news`, async () => {
@@ -26,6 +59,40 @@ export const handlers = [
       },
     ];
     return HttpResponse.json(news);
+  }),
+
+  // 全句碑取得エンドポイント
+  http.get('/api/kuhi/monuments/all', async () => {
+    await delay(500);
+    const extendedMonuments = [];
+    for (let i = 0; i < 50; i++) {
+      const monument = {
+        ...mockMonuments[0],
+        id: i + 1,
+        canonical_name: `テスト句碑${i + 1}（松尾芭蕉）`,
+        canonical_uri: `https://api.kuhi.jp/monuments/${i + 1}`,
+        events: [
+          {
+            id: i + 1,
+            event_type: 'erected',
+            hu_time_normalized: `HT:interval/${1900 + i * 2}-01-01/${1900 + i * 2}-12-31`,
+            interval_start: `${1900 + i * 2}-01-01`,
+            interval_end: `${1900 + i * 2}-12-31`,
+            uncertainty_note: null,
+            actor: `建立者${i + 1}`,
+            source: mockMonuments[0].sources[0],
+          },
+        ],
+      };
+      extendedMonuments.push(monument);
+    }
+    return HttpResponse.json(extendedMonuments);
+  }),
+
+  // 全俳人取得エンドポイント
+  http.get('/api/kuhi/poets/all', async () => {
+    await delay(300);
+    return HttpResponse.json(mockPoets);
   }),
 
   // プロフィール関連のAPIハンドラー

@@ -83,8 +83,11 @@ describe('HaikuMap', () => {
   test('マップコンテナがレンダリングされること', async () => {
     renderWithProviders(<MapClientComponent initialMonuments={[]} />);
 
-    // ローディング表示を確認
-    expect(screen.getByText('地図データを読み込み中...')).toBeInTheDocument();
+    // フィルターヘッダー表示
+    expect(screen.getByText('句碑を絞り込む')).toBeInTheDocument();
+
+    // リセットボタン表示
+    expect(screen.getByText('フィルターをリセット')).toBeInTheDocument();
   });
 
   test('フィルターコンポーネントが表示されること', async () => {
