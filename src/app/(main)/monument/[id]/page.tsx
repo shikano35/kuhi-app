@@ -6,6 +6,8 @@ import {
 import { MonumentDetailContainer } from '@/components/Monument/MonumentDetailContainer';
 import type { MonumentWithRelations } from '@/types/definitions/api';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateStaticParams() {
   try {
     console.log('静的パラメータ生成: 句碑データ取得中...');
