@@ -8,8 +8,8 @@ import {
   useRemoveVisit,
 } from '@/lib/api-hooks';
 import { convertUserHaikuMonumentToHaikuMonument } from '@/lib/user-monument-converter';
-import { logError, getUserFriendlyErrorMessage } from '@/lib/error-utils';
-import { HaikuMonument } from '@/types/haiku';
+import { getUserFriendlyErrorMessage } from '@/lib/error-utils';
+import { HaikuMonument } from '@/types/definitions/haiku';
 
 interface ToastState {
   message: string;
@@ -66,10 +66,6 @@ export function useProfileData() {
         await removeFavoriteMutation.mutateAsync({ monumentId });
         showToast('お気に入りから削除しました', 'success');
       } catch (error) {
-        logError(error, 'error', {
-          context: 'ProfileView.handleRemoveFavorite',
-          action: 'remove_favorite',
-        });
         const userMessage = getUserFriendlyErrorMessage(error);
         showToast(userMessage, 'error');
       }
@@ -83,10 +79,6 @@ export function useProfileData() {
         await removeVisitMutation.mutateAsync(monumentId);
         showToast('訪問記録から削除しました', 'success');
       } catch (error) {
-        logError(error, 'error', {
-          context: 'ProfileView.handleRemoveVisit',
-          action: 'remove_visit',
-        });
         const userMessage = getUserFriendlyErrorMessage(error);
         showToast(userMessage, 'error');
       }

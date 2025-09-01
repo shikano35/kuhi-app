@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Poet } from '@/types/haiku';
+import { Poet } from '@/types/definitions/haiku';
 import { Search, User } from 'lucide-react';
 import { MenuDropdown } from '@/components/shared/MenuDropdown';
 

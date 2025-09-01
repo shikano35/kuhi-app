@@ -1,4 +1,3 @@
-import { ContributeForm } from '@/components/Contribute/ContributeForm';
 import { Info } from 'lucide-react';
 import { Metadata } from 'next';
 
@@ -34,8 +33,6 @@ export default function ContributePage() {
             <div className="ml-3">
               <p className="text-sm text-yellow-700">
                 ご提供いただいた情報は、当サイト運営者によって確認を行った上で公開させていただきます。
-                <br />
-                また、情報の正確性を確保するために、追加の問い合わせをさせていただく場合があります。
               </p>
             </div>
           </div>
@@ -51,7 +48,7 @@ export default function ContributePage() {
           </a>
         </div>
       </div>
-      <ContributeForm />
+      {/* <ContributeForm /> */}
     </div>
   );
 }

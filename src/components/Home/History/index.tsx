@@ -73,7 +73,7 @@ export function HistorySection() {
             俳句と句碑の歴史
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            1000年以上の歴史を持つ俳句の変遷と、その文化を刻む句碑の物語をたどります。
+            俳句と句碑の歴史を簡単に紹介します。
           </p>
         </div>
 

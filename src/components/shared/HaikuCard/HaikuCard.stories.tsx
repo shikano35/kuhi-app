@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { SessionProvider } from 'next-auth/react';
 import { HaikuCard } from './index';
-import { HaikuMonument } from '@/types/haiku';
+import { MonumentWithRelations } from '@/types/definitions/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient({
@@ -37,38 +37,82 @@ type Story = StoryObj<typeof HaikuCard>;
 
 const now = new Date().toISOString();
 
-const baseMonument: HaikuMonument = {
+const baseMonument: MonumentWithRelations = {
   id: 1,
-  inscription: '冬牡丹千鳥よ雪のほととぎす',
-  commentary: '松尾芭蕉の句',
-  kigo: '冬牡丹,千鳥,雪',
-  season: '冬',
-  is_reliable: true,
-  has_reverse_inscription: true,
-  material: '石材',
-  total_height: 150,
-  width: 60,
-  depth: 30,
-  established_date: '昭和12年4月',
-  established_year: '1937-4',
-  founder: '小林雨月',
+  canonical_name: '冬牡丹千鳥よ雪のほととぎす',
+  canonical_uri: 'https://api.kuhi.jp/monuments/1',
   monument_type: '句碑',
-  designation_status: null,
-  photo_url: 'https://example.com/photo1.jpg',
-  photo_date: '2022-01-01',
-  photographer: '撮影者',
-  model_3d_url: null,
-  remarks: null,
+  monument_type_uri: null,
+  material: '石材',
+  material_uri: null,
   created_at: now,
   updated_at: now,
-  poet_id: 1,
-  source_id: 1,
-  location_id: 1,
+  original_established_date: '昭和12年4月',
+  hu_time_normalized: '1937-04',
+  interval_start: null,
+  interval_end: null,
+  uncertainty_note: null,
+  inscriptions: [
+    {
+      id: 1,
+      side: 'front',
+      original_text: '冬牡丹千鳥よ雪のほととぎす',
+      transliteration: null,
+      reading: null,
+      language: 'ja',
+      notes: null,
+      poems: [
+        {
+          id: 1,
+          text: '冬牡丹千鳥よ雪のほととぎす',
+          normalized_text: '冬牡丹千鳥よ雪のほととぎす',
+          text_hash: 'hash1',
+          kigo: '冬牡丹,千鳥,雪',
+          season: '冬',
+          created_at: now,
+          updated_at: now,
+        },
+      ],
+    },
+  ],
+  events: [],
+  media: [
+    {
+      id: 1,
+      media_type: 'photo',
+      url: 'https://example.com/photo1.jpg',
+      iiif_manifest_url: null,
+      captured_at: '2022-01-01',
+      photographer: '撮影者',
+      license: null,
+    },
+  ],
+  locations: [
+    {
+      id: 1,
+      imi_pref_code: '24',
+      region: '東海',
+      prefecture: '三重県',
+      municipality: '桑名市',
+      address: '桑名市北寺町47',
+      place_name: '本統寺',
+      latitude: 35.065502,
+      longitude: 136.692193,
+      geohash: null,
+      geom_geojson: null,
+      accuracy_m: null,
+      created_at: now,
+      updated_at: now,
+    },
+  ],
   poets: [
     {
       id: 1,
       name: '松尾芭蕉',
+      name_kana: 'まつおばしょう',
       biography: '俳聖として知られる江戸時代の俳人',
+      birth_year: 1644,
+      death_year: 1694,
       link_url: 'https://example.com/basho',
       image_url: 'https://example.com/basho.jpg',
       created_at: now,
@@ -78,25 +122,14 @@ const baseMonument: HaikuMonument = {
   sources: [
     {
       id: 1,
-      title: '俳句のくに・三重',
+      citation: '俳句のくに・三重',
       author: '三重県庁',
+      title: '俳句のくに・三重',
       publisher: '三重県庁',
       source_year: 2011,
       url: 'https://example.com/source1',
       created_at: now,
       updated_at: now,
-    },
-  ],
-  locations: [
-    {
-      id: 1,
-      region: '東海',
-      prefecture: '三重県',
-      municipality: '桑名市',
-      address: '桑名市北寺町47',
-      place_name: '本統寺',
-      latitude: 35.065502,
-      longitude: 136.692193,
     },
   ],
 };
@@ -111,32 +144,7 @@ export const WithoutImage: Story = {
   args: {
     monument: {
       ...baseMonument,
-      id: 2,
-      inscription: '葉桜や頬白よりも散りおそし',
-      photo_url: null,
-      poets: [
-        {
-          id: 2,
-          name: '与謝蕪村',
-          biography: '江戸中期の俳人・画家',
-          link_url: 'https://example.com/buson',
-          image_url: 'https://example.com/buson.jpg',
-          created_at: now,
-          updated_at: now,
-        },
-      ],
-      locations: [
-        {
-          id: 2,
-          region: '近畿',
-          prefecture: '京都府',
-          municipality: '京都市',
-          address: '京都市上京区',
-          place_name: '蕪村堂',
-          latitude: 35.025986,
-          longitude: 135.759747,
-        },
-      ],
+      media: [],
     },
   },
 };
@@ -146,13 +154,29 @@ export const LongText: Story = {
     monument: {
       ...baseMonument,
       id: 3,
-      inscription:
-        'これは長いサンプルテキストです。これは長いサンプルテキストです。これは長いサンプルテキストです。',
+      inscriptions: [
+        {
+          ...baseMonument.inscriptions[0],
+          original_text:
+            'これは長いサンプルテキストです。これは長いサンプルテキストです。これは長いサンプルテキストです。',
+          poems: [
+            {
+              ...baseMonument.inscriptions[0].poems[0],
+              text: 'これは長いサンプルテキストです。これは長いサンプルテキストです。これは長いサンプルテキストです。',
+              normalized_text:
+                'これは長いサンプルテキストです。これは長いサンプルテキストです。これは長いサンプルテキストです。',
+            },
+          ],
+        },
+      ],
       poets: [
         {
           id: 3,
           name: '小林一茶',
+          name_kana: 'こばやしいっさ',
           biography: '江戸後期の俳人',
+          birth_year: 1763,
+          death_year: 1828,
           link_url: 'https://example.com/issa',
           image_url: 'https://example.com/issa.jpg',
           created_at: now,
@@ -161,6 +185,7 @@ export const LongText: Story = {
       ],
       locations: [
         {
+          ...baseMonument.locations[0],
           id: 3,
           region: '中部',
           prefecture: '長野県',
@@ -180,12 +205,29 @@ export const MultiplePoets: Story = {
     monument: {
       ...baseMonument,
       id: 4,
-      inscription: '菜の花や月は東に日は西に',
+      inscriptions: [
+        {
+          ...baseMonument.inscriptions[0],
+          original_text: '菜の花や月は東に日は西に',
+          poems: [
+            {
+              ...baseMonument.inscriptions[0].poems[0],
+              text: '菜の花や月は東に日は西に',
+              normalized_text: '菜の花や月は東に日は西に',
+              kigo: '菜の花',
+              season: '春',
+            },
+          ],
+        },
+      ],
       poets: [
         {
           id: 2,
           name: '与謝蕪村',
+          name_kana: 'よさぶそん',
           biography: '江戸中期の俳人・画家',
+          birth_year: 1716,
+          death_year: 1784,
           link_url: 'https://example.com/buson',
           image_url: 'https://example.com/buson.jpg',
           created_at: now,
@@ -194,7 +236,10 @@ export const MultiplePoets: Story = {
         {
           id: 4,
           name: '正岡子規',
+          name_kana: 'まさおかしき',
           biography: '明治期の俳人・歌人',
+          birth_year: 1867,
+          death_year: 1902,
           link_url: 'https://example.com/shiki',
           image_url: 'https://example.com/shiki.jpg',
           created_at: now,
@@ -203,6 +248,7 @@ export const MultiplePoets: Story = {
       ],
       locations: [
         {
+          ...baseMonument.locations[0],
           id: 4,
           region: '関東',
           prefecture: '東京都',

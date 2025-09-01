@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
                 "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
                 "font-src 'self' fonts.gstatic.com",
                 "img-src 'self' data: blob: https: http://localhost:3000",
-                "connect-src 'self' *.kuhiapi.com *.googleapis.com *.google-analytics.com",
+                "connect-src 'self' *.kuhi.jp *.googleapis.com *.google-analytics.com",
                 "frame-src 'self' *.google.com",
                 "object-src 'none'",
                 "upgrade-insecure-requests"
@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '*.kuhiapi.com',
+        hostname: '*.kuhi.jp',
         pathname: '**',
       },
       {

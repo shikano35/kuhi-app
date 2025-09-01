@@ -7,7 +7,7 @@ import {
   GetUserVisitsResponse,
   UserVisit,
   UserHaikuMonument,
-} from '@/types/haiku';
+} from '@/types/definitions/haiku';
 
 export async function getUserFavorites(): Promise<GetUserFavoritesResponse> {
   const response = await fetch('/api/user/favorites');

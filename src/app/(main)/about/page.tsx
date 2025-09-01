@@ -99,8 +99,8 @@ export default function AboutPage() {
               松尾芭蕉（東京都文京区の深川芭蕉庵跡）
             </li>
             <li>
-              <span className="font-medium">「閑さや岩にしみ入る蝉の声」</span>{' '}
-              - 松尾芭蕉（岩手県平泉町の中尊寺）
+              <span className="font-medium">「夏草や兵どもが夢の跡」</span> -
+              松尾芭蕉（岩手県平泉町の毛越寺南大門跡）
             </li>
             <li>
               <span className="font-medium">
@@ -110,7 +110,7 @@ export default function AboutPage() {
             </li>
             <li>
               <span className="font-medium">「菜の花や月は東に日は西に」</span>{' '}
-              - 与謝蕪村（京都府京都市の蕪村旧跡）
+              - 与謝蕪村（大阪府大阪市北区の梅田芸術劇場前）
             </li>
           </ul>
         </section>
@@ -123,13 +123,9 @@ export default function AboutPage() {
             句碑は単なる石碑ではなく、日本の文学や文化を後世に伝える貴重な文化遺産です。
             また、地域の歴史や風土を物語る重要な資料としても価値があります。
           </p>
-          <p className="mb-4 text-lg">
+          <p className="text-lg">
             近年では、句碑を巡る「句碑めぐり」や「俳句の道」として観光資源化され、
             地域振興や伝統文化の普及に一役買っています。
-          </p>
-          <p className="text-lg">
-            当サイトでは、こうした句碑の情報を収集・整理し、多くの方々に知っていただくことを目的としています。
-            句碑を通じて、日本の豊かな俳句文化に触れていただければ幸いです。
           </p>
         </section>
 
@@ -171,7 +167,9 @@ export default function AboutPage() {
               </ul>
             </div>
             <div className="bg-muted/30 p-6 rounded-lg">
-              <h3 className="text-xl font-medium mb-3">アカウント機能</h3>
+              <h3 className="text-xl font-medium mb-3">
+                アカウント機能（準備中）
+              </h3>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                 <li>お気に入り登録 - 気になる句碑をブックマーク</li>
                 <li>訪問記録 - 訪れた句碑を記録して思い出を残す</li>

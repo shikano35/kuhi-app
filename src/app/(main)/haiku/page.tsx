@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
-import { getAllHaikuMonuments } from '@/lib/api';
+import { getAllMonumentsFromInscriptions } from '@/lib/kuhi-api';
 import { baseMetadata } from '@/lib/metadata';
 import { HaikuListView } from '@/components/List/HaikuListView';
+import { mapMonumentsToHaikuMonuments } from '@/lib/api-mappers';
 
 export const metadata: Metadata = {
   ...baseMetadata,
@@ -11,12 +12,27 @@ export const metadata: Metadata = {
 };
 
 export default async function HaikuPage() {
-  const poems = await getAllHaikuMonuments();
+  try {
+    const monuments = await getAllMonumentsFromInscriptions();
+    const poems = mapMonumentsToHaikuMonuments(monuments);
 
-  return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8">俳句リスト</h1>
-      <HaikuListView poems={poems} />
-    </div>
-  );
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <h1 className="text-3xl font-bold mb-8">俳句リスト</h1>
+        <HaikuListView poems={poems} />
+      </div>
+    );
+  } catch {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <h1 className="text-3xl font-bold mb-8">俳句リスト</h1>
+        <div className="text-center py-8">
+          <p className="text-red-500 mb-2">データの取得に失敗しました</p>
+          <p className="text-muted-foreground">
+            しばらく時間をおいてから再度お試しください。
+          </p>
+        </div>
+      </div>
+    );
+  }
 }

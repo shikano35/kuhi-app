@@ -27,7 +27,7 @@ import {
   GetUserVisitsResponse,
   UserFavorite,
   UserHaikuMonument,
-} from '@/types/haiku';
+} from '@/types/definitions/haiku';
 
 const PAGE_SIZE = 12;
 

@@ -1,14 +1,15 @@
 import { unstable_cache } from 'next/cache';
 import {
   getAllHaikuMonuments as _getAllHaikuMonuments,
-  getAllPoets as _getAllPoets,
-  getPoetById as _getPoetById,
+  getPoets as _getPoets,
+  getPoetByIdOld as _getPoetById,
   getAllLocations as _getAllLocations,
   getHaikuMonumentById as _getHaikuMonumentById,
   getHaikuMonumentsByPoet as _getHaikuMonumentsByPoet,
   getAllSources as _getAllSources,
   getAllNews as _getAllNews,
 } from './api';
+import { mapNewPoetToPoet } from './api-mappers';
 import {
   getUserFavoritesServer as _getUserFavorites,
   getUserVisitsServer as _getUserVisits,
@@ -21,10 +22,11 @@ import {
   GetUserVisitsResponse,
   News,
   Source,
-} from '@/types/haiku';
+} from '@/types/definitions/haiku';
 
 export const getAllHaikuMonuments = unstable_cache(
   async (params?: {
+    limit?: number;
     search?: string;
     region?: string;
     prefecture?: string;
@@ -40,7 +42,8 @@ export const getAllHaikuMonuments = unstable_cache(
 
 export const getAllPoets = unstable_cache(
   async (): Promise<Poet[]> => {
-    return _getAllPoets();
+    const apiPoets = await _getPoets();
+    return apiPoets.map(mapNewPoetToPoet);
   },
   ['poets'],
   {

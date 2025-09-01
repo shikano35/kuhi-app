@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { Loader2, X, MapPin } from 'lucide-react';
-import { HaikuMonument } from '@/types/haiku';
+import { MonumentWithRelations } from '@/types/definitions/api';
 
 interface VisitedTabContentProps {
-  visited: HaikuMonument[];
+  visited: MonumentWithRelations[];
   loading: boolean;
   isRemoving: boolean;
   onRemoveVisit: (monumentId: number) => void;
@@ -46,7 +46,7 @@ export const VisitedTabContent = memo<VisitedTabContentProps>(
           <div className="relative" key={monument.id}>
             <HaikuCard monument={monument} showFavoriteButton={false} />
             <button
-              aria-label={`${monument.inscription}を訪問記録から削除`}
+              aria-label={`${monument.inscriptions[0]?.original_text || '句碑'}を訪問記録から削除`}
               className="absolute top-4 right-4 p-1 rounded-full bg-background/80 hover:bg-background transition-colors"
               disabled={isRemoving}
               onClick={() => onRemoveVisit(monument.id)}

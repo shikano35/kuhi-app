@@ -1,18 +1,11 @@
 import { Metadata } from 'next';
-import { getAllPoets, getPoetById } from '@/lib/server-api';
+import { getAllPoets, getPoetById } from '@/lib/kuhi-api';
 import { BackButton } from '@/components/BackButton';
 import { PoetDetailsContainer } from '@/components/Poet/PoetDetailsContainer';
 
 export async function generateStaticParams() {
-  try {
-    const poets = await getAllPoets();
-    return poets.map((poet) => ({
-      id: poet.id.toString(),
-    }));
-  } catch (error) {
-    console.error('Failed to generate static params for poets:', error);
-    return [];
-  }
+  const poets = await getAllPoets();
+  return poets.map((poet) => ({ id: poet.id.toString() }));
 }
 
 type PoetPageProps = {
@@ -25,20 +18,20 @@ export async function generateMetadata({
   const { id } = await params;
   const poetId = Number(id);
 
-  const poet = await getPoetById(poetId);
-
-  if (!poet) {
+  try {
+    const poet = await getPoetById(poetId);
+    if (!poet) return { title: '俳人が見つかりません | くひめぐり' };
     return {
-      title: '俳人が見つかりません | くひめぐり',
+      title: `${poet.name} | くひめぐり`,
+      description: poet.biography || `${poet.name}の句碑情報ページです。`,
+    };
+  } catch {
+    return {
+      title: '俳人詳細 | くひめぐり',
+      description: '俳人の詳細情報ページです。',
     };
   }
-
-  return {
-    title: `${poet.name} | くひめぐり`,
-    description: poet.biography || `${poet.name}の句碑情報ページです。`,
-  };
 }
-
 export default async function PoetPage({ params }: PoetPageProps) {
   const { id } = await params;
   const poetId = Number(id);

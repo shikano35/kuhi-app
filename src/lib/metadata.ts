@@ -10,12 +10,12 @@ export const baseMetadata: Metadata = {
     title: 'くひめぐり - Haiku monument tour -',
     description: '日本各地の句碑を紹介するサイト',
     type: 'website',
-    url: 'https://sample.kuhiapi.com',
+    url: 'https://kuhi.jp',
     siteName: 'くひめぐり',
     locale: 'ja_JP',
     images: [
       {
-        url: 'https://sample.kuhiapi.com',
+        url: 'https://kuhi.jp',
         width: 1200,
         height: 630,
         alt: 'くひめぐり',
