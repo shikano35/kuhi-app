@@ -156,7 +156,6 @@ export default function ThemeGalleryClient({
             テーマ別に俳句関連の文化資料を探索できます
           </p>
         </div>
-
         <div className="mb-8">
           <h2 className="text-lg lg:text-xl font-semibold text-primary mb-4">
             テーマを選択
@@ -180,7 +179,6 @@ export default function ThemeGalleryClient({
             </div>
           </div>
         </div>
-
         <div className="mb-8">
           <h2 className="text-lg lg:text-xl font-semibold text-primary mb-4">
             {themeOptions[currentTheme].label}を選択
@@ -202,7 +200,6 @@ export default function ThemeGalleryClient({
             ))}
           </div>
         </div>
-
         <div className="mb-8">
           <h2 className="text-lg lg:text-xl font-semibold text-primary mb-4">
             カスタム検索
@@ -230,15 +227,13 @@ export default function ThemeGalleryClient({
               検索
             </Button>
           </div>
-        </div>
-
+        </div>{' '}
         {isLoading && (
           <div className="bg-background rounded-lg p-8 text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
             <p className="text-muted-foreground">検索中...</p>
           </div>
         )}
-
         {error && (
           <div className="bg-background rounded-lg p-8 text-center">
             <AlertCircle className="w-8 h-8 text-destructive mx-auto mb-4" />
@@ -248,7 +243,6 @@ export default function ThemeGalleryClient({
             </Button>
           </div>
         )}
-
         {!isLoading && results.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-primary mb-4">
@@ -282,7 +276,6 @@ export default function ThemeGalleryClient({
             )}
           </div>
         )}
-
         {!isLoading && results.length === 0 && !error && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">
