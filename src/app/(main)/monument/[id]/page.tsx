@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { getMonumentById } from '@/lib/kuhi-api';
 import { MonumentDetailContainer } from '@/components/Monument/MonumentDetailContainer';
+import type { MonumentWithRelations } from '@/types/definitions/api';
 
 export const dynamic = 'force-dynamic';
 

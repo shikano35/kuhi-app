@@ -117,6 +117,9 @@ export async function getAllMonuments(): Promise<HaikuMonument[]> {
     console.error('Error fetching all monuments:', error);
     return [];
   }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
 }
 
 export async function getMonumentById(
@@ -142,6 +145,9 @@ export async function getMonumentById(
     console.error(`[getMonumentById] Error fetching monument ${id}:`, error);
     return null;
   }
+
+  const data = await response.json();
+  return data || null;
 }
 
 export async function getPoetMonuments(
