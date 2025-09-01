@@ -1,4 +1,4 @@
-import { HaikuMonument } from '@/types/definitions/haiku';
+import { MonumentWithRelations } from '@/types/definitions/api';
 
 export type HistoryDataPoint = {
   year: number;
@@ -38,7 +38,7 @@ export const HISTORICAL_EVENTS: Record<number, string> = {
 };
 
 export function processHistoryData(
-  monuments: HaikuMonument[]
+  monuments: MonumentWithRelations[]
 ): HistoryDataPoint[] {
   const yearGroupMap: Map<number, { count: number; poetIds: Set<number> }> =
     new Map();
@@ -47,18 +47,32 @@ export function processHistoryData(
   });
 
   monuments.forEach((monument) => {
-    if (!monument.established_year) return;
-    const actualYear = parseInt(monument.established_year.split('-')[0], 10);
-    if (isNaN(actualYear)) return;
+    let establishedYear: number | null = null;
 
-    const offset = actualYear - START_YEAR;
+    if (monument.events && monument.events.length > 0) {
+      const erectEvent = monument.events.find(
+        (event) => event.event_type === 'erected'
+      );
+      if (erectEvent && erectEvent.interval_start) {
+        const yearMatch = erectEvent.interval_start.match(/(\d{4})/);
+        if (yearMatch) {
+          establishedYear = parseInt(yearMatch[1], 10);
+        }
+      }
+    }
+
+    if (!establishedYear) return;
+
+    const offset = establishedYear - START_YEAR;
     const bucketIndex = Math.round(offset / INTERVAL);
     const closestYear = START_YEAR + bucketIndex * INTERVAL;
 
     const group = yearGroupMap.get(closestYear);
     if (group) {
       group.count += 1;
-      monument.poets.forEach((poet) => group.poetIds.add(poet.id));
+      if (monument.poets && monument.poets.length > 0) {
+        monument.poets.forEach((poet) => group.poetIds.add(poet.id));
+      }
     }
   });
 
