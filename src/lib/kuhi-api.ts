@@ -27,6 +27,8 @@ class KuhiApiError extends Error {
 }
 
 async function fetcher<T>(url: string): Promise<T> {
+  console.log(`[fetcher] Making request to: ${url}`);
+
   const response = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -34,7 +36,23 @@ async function fetcher<T>(url: string): Promise<T> {
     next: { revalidate: 3600 }, // 1時間キャッシュ
   });
 
+  console.log(
+    `[fetcher] Response status: ${response.status} ${response.statusText}`
+  );
+
   if (!response.ok) {
+    if (response.status === 503) {
+      console.error(
+        `[fetcher] Service unavailable (503), retrying after delay...`
+      );
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      throw new KuhiApiError(
+        `Service temporarily unavailable: ${response.status} ${response.statusText}`,
+        response.status,
+        response
+      );
+    }
+
     throw new KuhiApiError(
       `API request failed: ${response.status} ${response.statusText}`,
       response.status,
@@ -42,7 +60,9 @@ async function fetcher<T>(url: string): Promise<T> {
     );
   }
 
-  return response.json();
+  const data = await response.json();
+  console.log(`[fetcher] Successfully fetched data from: ${url}`);
+  return data;
 }
 
 function buildQueryString(params: Record<string, unknown>): string {
@@ -76,26 +96,31 @@ export async function getAllMonumentsFromInscriptions(): Promise<
 > {
   const allInscriptions: Inscription[] = [];
   let offset = 0;
-  const limit = 50;
+  const limit = 30;
   let hasMore = true;
 
   // 全ての碑文データを取得
   while (hasMore) {
-    const url = `${KUHI_API_BASE_URL}/inscriptions?limit=${limit}&offset=${offset}`;
-    const response = (await fetcher(url)) as { inscriptions?: Inscription[] };
+    try {
+      const url = `${KUHI_API_BASE_URL}/inscriptions?limit=${limit}&offset=${offset}`;
+      const response = (await fetcher(url)) as { inscriptions?: Inscription[] };
 
-    if (response.inscriptions && response.inscriptions.length > 0) {
-      allInscriptions.push(...response.inscriptions);
-      offset += limit;
+      if (response.inscriptions && response.inscriptions.length > 0) {
+        allInscriptions.push(...response.inscriptions);
+        offset += limit;
 
-      if (response.inscriptions.length < limit) {
+        if (response.inscriptions.length < limit) {
+          hasMore = false;
+        }
+      } else {
         hasMore = false;
       }
-    } else {
+
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    } catch (error) {
+      console.error(`Failed to fetch inscriptions at offset ${offset}:`, error);
       hasMore = false;
     }
-
-    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   const monumentsMap = new Map<number, MonumentWithRelations>();
@@ -187,24 +212,29 @@ async function getAllMonumentsFromPagination(): Promise<
 > {
   const allMonuments: MonumentWithRelations[] = [];
   let offset = 0;
-  const limit = 30;
+  const limit = 20;
   let hasMore = true;
 
   while (hasMore) {
-    const monuments = await getMonuments({ limit, offset });
+    try {
+      const monuments = await getMonuments({ limit, offset });
 
-    if (monuments.length === 0) {
-      hasMore = false;
-    } else {
-      allMonuments.push(...monuments);
-      offset += limit;
-
-      if (monuments.length < limit) {
+      if (monuments.length === 0) {
         hasMore = false;
-      }
-    }
+      } else {
+        allMonuments.push(...monuments);
+        offset += limit;
 
-    await new Promise((resolve) => setTimeout(resolve, 200));
+        if (monuments.length < limit) {
+          hasMore = false;
+        }
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    } catch (error) {
+      console.error(`Failed to fetch monuments at offset ${offset}:`, error);
+      hasMore = false;
+    }
   }
 
   if (allMonuments.length === 0) {

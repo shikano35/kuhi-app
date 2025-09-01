@@ -1,31 +1,11 @@
 import { Metadata } from 'next';
-import {
-  getMonumentById,
-  getAllMonumentsFromInscriptions,
-} from '@/lib/kuhi-api';
+import { getMonumentById } from '@/lib/kuhi-api';
 import { MonumentDetailContainer } from '@/components/Monument/MonumentDetailContainer';
-import type { MonumentWithRelations } from '@/types/definitions/api';
+
+export const dynamic = 'force-dynamic';
 
 export async function generateStaticParams() {
-  try {
-    console.log('静的パラメータ生成: 句碑データ取得中...');
-
-    let monuments: MonumentWithRelations[] = [];
-    try {
-      monuments = await getAllMonumentsFromInscriptions();
-      console.log(`静的パラメータ用データ取得: ${monuments.length}件`);
-    } catch (error) {
-      console.error('句碑データの取得に失敗:', error);
-      monuments = [];
-    }
-
-    return monuments.map((monument) => ({
-      id: monument.id.toString(),
-    }));
-  } catch (error) {
-    console.error('Failed to generate static params for monuments:', error);
-    return [];
-  }
+  return [];
 }
 
 type MonumentPageProps = {
