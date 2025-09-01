@@ -1,10 +1,8 @@
 import { Metadata } from 'next';
-import { getMonuments } from '@/lib/kuhi-api';
+import { getAllMonumentsFromInscriptions } from '@/lib/kuhi-api';
 import { baseMetadata } from '@/lib/metadata';
 import { HaikuListView } from '@/components/List/HaikuListView';
 import { mapMonumentsToHaikuMonuments } from '@/lib/api-mappers';
-
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   ...baseMetadata,
@@ -15,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function HaikuPage() {
   try {
-    const monuments = await getMonuments({ limit: 50 });
+    const monuments = await getAllMonumentsFromInscriptions();
     const poems = mapMonumentsToHaikuMonuments(monuments);
 
     return (

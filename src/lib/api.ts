@@ -117,32 +117,14 @@ export async function getAllMonuments(): Promise<HaikuMonument[]> {
     console.error('Error fetching all monuments:', error);
     return [];
   }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
 }
 
 export async function getMonumentById(
   id: number
 ): Promise<MonumentWithRelations | null> {
-  try {
-    const url = `${API_BASE_URL}/monuments/${id}`;
-    console.log(`[getMonumentById] Fetching monument from: ${url}`);
+  const response = await apiFetch(`${API_BASE_URL}/monuments/${id}`);
 
-    const response = await apiFetch(url);
-
-    if (!response.ok) {
-      console.error(
-        `[getMonumentById] Failed to fetch monument ${id}: ${response.status} ${response.statusText}`
-      );
-      return null;
-    }
-
-    const data = await response.json();
-    console.log(`[getMonumentById] Successfully fetched monument ${id}`);
-    return data || null;
-  } catch (error) {
-    console.error(`[getMonumentById] Error fetching monument ${id}:`, error);
+  if (!response.ok) {
     return null;
   }
 

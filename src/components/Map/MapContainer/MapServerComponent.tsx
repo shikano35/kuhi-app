@@ -1,15 +1,29 @@
-import { getMonuments } from '@/lib/kuhi-api';
+import {
+  getAllMonuments,
+  getAllMonumentsFromInscriptions,
+} from '@/lib/kuhi-api';
 import { MapClientComponent } from './MapClientComponent';
 import { mapMonumentsToHaikuMonuments } from '@/lib/api-mappers';
+import type { MonumentWithRelations } from '@/types/definitions/api';
 
 export async function MapServerComponent() {
   try {
-    const monuments = await getMonuments({ limit: 50 });
+    let monuments: MonumentWithRelations[] = [];
+
+    try {
+      monuments = await getAllMonuments();
+    } catch {
+      try {
+        monuments = await getAllMonumentsFromInscriptions();
+      } catch {
+        monuments = [];
+      }
+    }
+
     const haikuMonuments = mapMonumentsToHaikuMonuments(monuments);
 
     return <MapClientComponent initialMonuments={haikuMonuments} />;
-  } catch (error) {
-    console.error('Failed to load monuments:', error);
+  } catch {
     return <MapClientComponent initialMonuments={[]} />;
   }
 }
