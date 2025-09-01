@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { PoetListServerComponent } from './PoetListServerComponent';
+import PoetListServerComponent from './PoetListServerComponent';
 import { PoetListSkeleton } from './PoetListSkeleton';
 
 export function PoetListContainer() {

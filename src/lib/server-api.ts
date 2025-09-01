@@ -1,7 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import {
   getAllHaikuMonuments as _getAllHaikuMonuments,
-  getAllPoets as _getAllPoets,
+  getPoets as _getPoets,
   getPoetByIdOld as _getPoetById,
   getAllLocations as _getAllLocations,
   getHaikuMonumentById as _getHaikuMonumentById,
@@ -9,6 +9,7 @@ import {
   getAllSources as _getAllSources,
   getAllNews as _getAllNews,
 } from './api';
+import { mapNewPoetToPoet } from './api-mappers';
 import {
   getUserFavoritesServer as _getUserFavorites,
   getUserVisitsServer as _getUserVisits,
@@ -41,7 +42,8 @@ export const getAllHaikuMonuments = unstable_cache(
 
 export const getAllPoets = unstable_cache(
   async (): Promise<Poet[]> => {
-    return _getAllPoets();
+    const apiPoets = await _getPoets();
+    return apiPoets.map(mapNewPoetToPoet);
   },
   ['poets'],
   {
