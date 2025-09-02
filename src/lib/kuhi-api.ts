@@ -10,11 +10,6 @@ import {
   SourcesQueryParams,
 } from '@/types/definitions/api';
 
-const KUHI_API_BASE_URL =
-  typeof window !== 'undefined'
-    ? '/api/kuhi'
-    : process.env.KUHI_API_URL || 'https://api.kuhi.jp';
-
 class KuhiApiError extends Error {
   constructor(
     message: string,
@@ -24,6 +19,14 @@ class KuhiApiError extends Error {
     super(message);
     this.name = 'KuhiApiError';
   }
+}
+
+function getKuhiApiBaseUrl(): string {
+  if (typeof window !== 'undefined') {
+    return '/api/kuhi';
+  }
+
+  return process.env.KUHI_API_URL ?? 'https://api.kuhi.jp';
 }
 
 async function fetcher<T>(url: string): Promise<T> {
@@ -65,9 +68,9 @@ export async function getMonuments(
   params: MonumentsQueryParams = {}
 ): Promise<MonumentWithRelations[]> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  const url = `${KUHI_API_BASE_URL}/monuments${queryString ? `?${queryString}` : ''}`;
-  const response = await fetcher<MonumentWithRelations[]>(url);
-  return response;
+  const base = getKuhiApiBaseUrl();
+  const url = `${base}/monuments${queryString ? `?${queryString}` : ''}`;
+  return await fetcher<MonumentWithRelations[]>(url);
 }
 
 // inscriptionsから全ての句碑データを再構築する関数
@@ -81,7 +84,8 @@ export async function getAllMonumentsFromInscriptions(): Promise<
 
   // 全ての碑文データを取得
   while (hasMore) {
-    const url = `${KUHI_API_BASE_URL}/inscriptions?limit=${limit}&offset=${offset}`;
+    const base = getKuhiApiBaseUrl();
+    const url = `${base}/inscriptions?limit=${limit}&offset=${offset}`;
     const response = (await fetcher(url)) as { inscriptions?: Inscription[] };
 
     if (response.inscriptions && response.inscriptions.length > 0) {
@@ -147,13 +151,10 @@ export async function getAllMonumentsFromInscriptions(): Promise<
   return monuments;
 }
 
-// 全ての句碑を取得する関数
 export async function getAllMonuments(): Promise<MonumentWithRelations[]> {
   if (typeof window !== 'undefined') {
     const response = await fetch('/api/kuhi/monuments/all', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     });
 
     if (!response.ok) {
@@ -165,12 +166,7 @@ export async function getAllMonuments(): Promise<MonumentWithRelations[]> {
     }
 
     const result = await response.json();
-
-    if (result.monuments) {
-      return result.monuments;
-    }
-
-    return result;
+    return result.monuments ?? result;
   }
 
   const monuments = await getMonuments({ limit: 10 });
@@ -260,34 +256,36 @@ export async function getAllPoets(): Promise<Poet[]> {
 export async function getMonumentById(
   id: number
 ): Promise<MonumentWithRelations> {
-  const url = `${KUHI_API_BASE_URL}/monuments/${id}`;
+  const base = getKuhiApiBaseUrl();
+  const url = `${base}/monuments/${id}`;
   return fetcher<MonumentWithRelations>(url);
 }
 
 export async function getPoets(params: PoetsQueryParams = {}): Promise<Poet[]> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  const url = `${KUHI_API_BASE_URL}/poets${queryString ? `?${queryString}` : ''}`;
-  const response = await fetcher<Poet[]>(url);
-  return response;
+  const base = getKuhiApiBaseUrl();
+  const url = `${base}/poets${queryString ? `?${queryString}` : ''}`;
+  return fetcher<Poet[]>(url);
 }
 
 export async function getPoetById(id: number): Promise<Poet> {
-  const url = `${KUHI_API_BASE_URL}/poets/${id}`;
+  const base = getKuhiApiBaseUrl();
+  const url = `${base}/poets/${id}`;
   return fetcher<Poet>(url);
 }
 
 export async function getMonumentsByPoet(
   poetId: number
 ): Promise<MonumentWithRelations[]> {
-  const url = `${KUHI_API_BASE_URL}/poets/${poetId}/monuments`;
+  const base = getKuhiApiBaseUrl();
+  const url = `${base}/poets/${poetId}/monuments`;
   const simpleMonuments = await fetcher<{ id: number }[]>(url);
 
   const monumentPromises = simpleMonuments.map((monument) =>
     getMonumentById(monument.id)
   );
 
-  const monuments = await Promise.all(monumentPromises);
-  return monuments;
+  return Promise.all(monumentPromises);
 }
 
 // Location API
@@ -295,20 +293,22 @@ export async function getLocations(
   params: LocationsQueryParams = {}
 ): Promise<Location[]> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  const url = `${KUHI_API_BASE_URL}/locations${queryString ? `?${queryString}` : ''}`;
-  const response = await fetcher<Location[]>(url);
-  return response;
+  const base = getKuhiApiBaseUrl();
+  const url = `${base}/locations${queryString ? `?${queryString}` : ''}`;
+  return fetcher<Location[]>(url);
 }
 
 export async function getLocationById(id: number): Promise<Location> {
-  const url = `${KUHI_API_BASE_URL}/locations/${id}`;
+  const base = getKuhiApiBaseUrl();
+  const url = `${base}/locations/${id}`;
   return fetcher<Location>(url);
 }
 
 export async function getMonumentsByLocation(
   locationId: number
 ): Promise<MonumentWithRelations[]> {
-  const url = `${KUHI_API_BASE_URL}/locations/${locationId}/monuments`;
+  const base = getKuhiApiBaseUrl();
+  const url = `${base}/locations/${locationId}/monuments`;
   return fetcher<MonumentWithRelations[]>(url);
 }
 
@@ -317,20 +317,22 @@ export async function getSources(
   params: SourcesQueryParams = {}
 ): Promise<Source[]> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  const url = `${KUHI_API_BASE_URL}/sources${queryString ? `?${queryString}` : ''}`;
-  const response = await fetcher<Source[]>(url);
-  return response;
+  const base = getKuhiApiBaseUrl();
+  const url = `${base}/sources${queryString ? `?${queryString}` : ''}`;
+  return fetcher<Source[]>(url);
 }
 
 export async function getSourceById(id: number): Promise<Source> {
-  const url = `${KUHI_API_BASE_URL}/sources/${id}`;
+  const base = getKuhiApiBaseUrl();
+  const url = `${base}/sources/${id}`;
   return fetcher<Source>(url);
 }
 
 export async function getMonumentsBySource(
   sourceId: number
 ): Promise<MonumentWithRelations[]> {
-  const url = `${KUHI_API_BASE_URL}/sources/${sourceId}/monuments`;
+  const base = getKuhiApiBaseUrl();
+  const url = `${base}/sources/${sourceId}/monuments`;
   return fetcher<MonumentWithRelations[]>(url);
 }
 
