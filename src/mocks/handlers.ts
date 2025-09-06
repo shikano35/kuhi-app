@@ -10,19 +10,34 @@ export const handlers = [
   http.get(`${API_BASE_URL}/monuments/all`, async () => {
     await delay(500);
     const extendedMonuments = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 400; i++) {
       const monument = {
         ...mockMonuments[0],
         id: i + 1,
         canonical_name: `テスト句碑${i + 1}（松尾芭蕉）`,
         canonical_uri: `https://api.kuhi.jp/monuments/${i + 1}`,
+        locations: [
+          {
+            id: i + 1,
+            imi_pref_code: null,
+            region: ['東海', '関東', '関西', '九州', '東北'][i % 5],
+            prefecture: ['三重県', '東京都', '大阪府', '福岡県', '宮城県'][
+              i % 5
+            ],
+            municipality: `市区町村${i + 1}`,
+            place_name: `テスト場所${i + 1}`,
+            latitude: 35.0 + (i % 10) * 0.1,
+            longitude: 136.0 + (i % 10) * 0.1,
+            geojson: null,
+          },
+        ],
         events: [
           {
             id: i + 1,
             event_type: 'erected',
-            hu_time_normalized: `HT:interval/${1900 + i * 2}-01-01/${1900 + i * 2}-12-31`,
-            interval_start: `${1900 + i * 2}-01-01`,
-            interval_end: `${1900 + i * 2}-12-31`,
+            hu_time_normalized: `HT:interval/${1900 + (i % 50)}-01-01/${1900 + (i % 50)}-12-31`,
+            interval_start: `${1900 + (i % 50)}-01-01`,
+            interval_end: `${1900 + (i % 50)}-12-31`,
             uncertainty_note: null,
             actor: `建立者${i + 1}`,
             source: mockMonuments[0].sources[0],
@@ -65,19 +80,34 @@ export const handlers = [
   http.get('/api/kuhi/monuments/all', async () => {
     await delay(500);
     const extendedMonuments = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 400; i++) {
       const monument = {
         ...mockMonuments[0],
         id: i + 1,
         canonical_name: `テスト句碑${i + 1}（松尾芭蕉）`,
         canonical_uri: `https://api.kuhi.jp/monuments/${i + 1}`,
+        locations: [
+          {
+            id: i + 1,
+            imi_pref_code: null,
+            region: ['東海', '関東', '関西', '九州', '東北'][i % 5],
+            prefecture: ['三重県', '東京都', '大阪府', '福岡県', '宮城県'][
+              i % 5
+            ],
+            municipality: `市区町村${i + 1}`,
+            place_name: `テスト場所${i + 1}`,
+            latitude: 35.0 + (i % 10) * 0.1,
+            longitude: 136.0 + (i % 10) * 0.1,
+            geojson: null,
+          },
+        ],
         events: [
           {
             id: i + 1,
             event_type: 'erected',
             hu_time_normalized: `HT:interval/${1900 + i * 2}-01-01/${1900 + i * 2}-12-31`,
-            interval_start: `${1900 + i * 2}-01-01`,
-            interval_end: `${1900 + i * 2}-12-31`,
+            interval_start: `${1900 + (i % 50)}-01-01`,
+            interval_end: `${1900 + (i % 50)}-12-31`,
             uncertainty_note: null,
             actor: `建立者${i + 1}`,
             source: mockMonuments[0].sources[0],
@@ -86,7 +116,12 @@ export const handlers = [
       };
       extendedMonuments.push(monument);
     }
-    return HttpResponse.json(extendedMonuments);
+    return HttpResponse.json({
+      monuments: extendedMonuments,
+      total: extendedMonuments.length,
+      isPartial: false,
+      message: `Mock data for testing (${extendedMonuments.length} total)`,
+    });
   }),
 
   // 全俳人取得エンドポイント
