@@ -17,8 +17,7 @@ export async function MonumentDetailServerComponent({
     }
 
     return <MonumentDetailClientComponent monument={monument} />;
-  } catch (error) {
-    console.error('Failed to load monument:', error);
+  } catch {
     notFound();
   }
 }

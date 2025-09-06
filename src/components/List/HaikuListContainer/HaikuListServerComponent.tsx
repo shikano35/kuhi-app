@@ -44,9 +44,7 @@ export async function HaikuListServerComponent({
         poets={poets}
       />
     );
-  } catch (error) {
-    console.error('句碑リスト初期データ取得エラー:', error);
-
+  } catch {
     try {
       const [poets, locations] = await Promise.all([
         getPoets({ limit: 100 }),
@@ -61,9 +59,7 @@ export async function HaikuListServerComponent({
           poets={poets}
         />
       );
-    } catch (fallbackError) {
-      console.error('フォールバックデータ取得エラー:', fallbackError);
-
+    } catch {
       return (
         <HaikuListClientComponent
           _initialSearchParams={searchParams}

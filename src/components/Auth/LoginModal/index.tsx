@@ -27,8 +27,7 @@ export function LoginModal({ children }: LoginModalProps) {
     setIsLoading(true);
     try {
       await signIn('google', { callbackUrl: '/' });
-    } catch (error) {
-      console.error(error);
+    } catch {
       setError('ログインに失敗しました。再度お試しください。');
     } finally {
       setIsLoading(false);

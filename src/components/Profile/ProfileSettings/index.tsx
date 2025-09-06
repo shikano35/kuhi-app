@@ -89,7 +89,6 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
         router.push('/profile');
       }, 2000);
     } catch (error) {
-      console.error('プロフィール更新エラー:', error);
       setErrorMessage(
         error instanceof Error
           ? error.message
@@ -123,7 +122,6 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
       setCurrentImage(imageUrl);
       setSuccessMessage('プロフィール画像が更新されました');
     } catch (error) {
-      console.error('画像アップロードエラー:', error);
       setErrorMessage(
         error instanceof Error
           ? error.message
@@ -143,7 +141,6 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
       setCurrentImage(null);
       setSuccessMessage('プロフィール画像が削除されました');
     } catch (error) {
-      console.error('画像削除エラー:', error);
       setErrorMessage(
         error instanceof Error ? error.message : '画像の削除に失敗しました。'
       );
