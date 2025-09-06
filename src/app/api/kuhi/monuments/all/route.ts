@@ -1,101 +1,75 @@
 import { NextResponse } from 'next/server';
 import { simpleFetch, createErrorResponse } from '@/lib/api-utils';
+import type { MonumentWithRelations } from '@/types/definitions/api';
 
 const KUHI_API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhi.jp';
 
 export async function GET() {
   try {
-    const allMonuments = [];
-    let offset = 0;
-    const limit = 30;
-    let hasMore = true;
-    let consecutiveErrors = 0;
+    const allMonuments: MonumentWithRelations[] = [];
+    const batchSize = 9;
+    const limit = 50;
 
-    while (hasMore && consecutiveErrors < 3) {
-      const url = `${KUHI_API_BASE_URL}/monuments?limit=${limit}&offset=${offset}`;
+    const promises = Array.from({ length: batchSize }, (_, i) => {
+      const offset = i * limit;
+      const url = `${KUHI_API_BASE_URL}/monuments?limit=${limit}&offset=${offset}&expand=locations,inscriptions.poems,poets`;
 
-      try {
-        const response = await simpleFetch(url, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          next: { revalidate: 3600 }, // 1時間キャッシュ
+      return simpleFetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        next: { revalidate: 7200 }, // 2時間キャッシュ
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            console.warn(`Failed to fetch batch ${i}: ${response.status}`);
+            return [] as MonumentWithRelations[];
+          }
+
+          const monuments = (await response.json()) as MonumentWithRelations[];
+          if (!Array.isArray(monuments)) {
+            console.warn(`Batch ${i} returned non-array data`);
+            return [] as MonumentWithRelations[];
+          }
+
+          return monuments;
+        })
+        .catch((error) => {
+          console.warn(`Batch ${i} failed:`, error);
+          return [] as MonumentWithRelations[];
         });
+    });
 
-        if (!response.ok) {
-          consecutiveErrors++;
+    const results = await Promise.allSettled(promises);
 
-          if (response.status === 503 || response.status === 429) {
-            if (consecutiveErrors < 3) {
-              const delay = 2000 * consecutiveErrors;
-              await new Promise((resolve) => setTimeout(resolve, delay));
-              continue;
-            }
-            break;
-          }
-
-          if (consecutiveErrors >= 3) {
-            break;
-          }
-          continue;
-        }
-
-        consecutiveErrors = 0;
-
-        const monuments = await response.json();
-
-        if (monuments.length === 0) {
-          hasMore = false;
-        } else {
-          allMonuments.push(...monuments);
-          offset += limit;
-
-          if (monuments.length < limit) {
-            hasMore = false;
-          }
-
-          if (hasMore) {
-            const delay = allMonuments.length > 200 ? 500 : 300;
-            await new Promise((resolve) => setTimeout(resolve, delay));
-          }
-        }
-
-        if (allMonuments.length >= 1000) {
-          hasMore = false;
-        }
-      } catch {
-        consecutiveErrors++;
-
-        if (consecutiveErrors < 3) {
-          const delay = 3000 * consecutiveErrors;
-          await new Promise((resolve) => setTimeout(resolve, delay));
-        } else {
-          break;
-        }
+    results.forEach((result) => {
+      if (result.status === 'fulfilled') {
+        allMonuments.push(...result.value);
       }
-    }
+    });
+
+    const limitedMonuments = allMonuments.slice(0, 800);
 
     const responseData = {
-      monuments: allMonuments,
-      total: allMonuments.length,
-      isPartial: consecutiveErrors > 0 || allMonuments.length >= 1000,
+      monuments: limitedMonuments,
+      total: limitedMonuments.length,
+      isPartial: limitedMonuments.length === 800,
       message:
-        consecutiveErrors > 0
-          ? 'Partial data due to API errors'
-          : allMonuments.length >= 1000
-            ? 'Partial data due to limit'
-            : 'Complete data',
+        limitedMonuments.length === 800
+          ? 'Limited to 800 monuments for map performance'
+          : `Map monuments with location data (${limitedMonuments.length} total)`,
     };
 
     return NextResponse.json(responseData, {
       headers: {
-        'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=86400', // 30分キャッシュに短縮
+        'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=3600',
       },
     });
   } catch (error) {
+    console.error('Map monuments API error:', error);
     const errorResponse = createErrorResponse(
       error,
-      'Failed to fetch all monuments'
+      'Failed to fetch map monuments'
     );
     return NextResponse.json(errorResponse, { status: 500 });
   }
