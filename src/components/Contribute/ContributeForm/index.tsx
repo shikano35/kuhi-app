@@ -114,8 +114,7 @@ export function ContributeForm() {
           photoInputRef.current.value = '';
         }
       }
-    } catch (err) {
-      console.error('投稿エラー:', err);
+    } catch {
       setError('投稿中にエラーが発生しました。もう一度お試しください。');
     } finally {
       setIsLoading(false);

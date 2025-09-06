@@ -111,8 +111,16 @@ export async function getAllMonuments(): Promise<HaikuMonument[]> {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-    return data.map(mapMonumentToHaikuMonument);
+    const result = await response.json();
+
+    const monuments = result.monuments || result;
+
+    if (!Array.isArray(monuments)) {
+      console.warn('API response is not an array:', monuments);
+      return [];
+    }
+
+    return monuments.map(mapMonumentToHaikuMonument);
   } catch (error) {
     console.error('Error fetching all monuments:', error);
     return [];

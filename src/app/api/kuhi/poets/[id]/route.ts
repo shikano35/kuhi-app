@@ -14,7 +14,7 @@ export async function GET(
       headers: {
         'Content-Type': 'application/json',
       },
-      next: { revalidate: 3600 }, // 1時間キャッシュ
+      next: { revalidate: 7200 }, // 2時間キャッシュ
     });
 
     if (!response.ok) {

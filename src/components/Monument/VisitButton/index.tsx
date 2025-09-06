@@ -27,17 +27,13 @@ export function VisitButton({ monumentId }: VisitButtonProps) {
   const handleVisitToggle = async () => {
     if (!session?.user || isLoading) return;
 
-    try {
-      if (isVisited) {
-        await removeVisitMutation.mutateAsync(monumentId);
-      } else {
-        await addVisitMutation.mutateAsync({
-          monumentId,
-          visitedAt: new Date(),
-        });
-      }
-    } catch (error) {
-      console.error('Failed to toggle visit:', error);
+    if (isVisited) {
+      await removeVisitMutation.mutateAsync(monumentId);
+    } else {
+      await addVisitMutation.mutateAsync({
+        monumentId,
+        visitedAt: new Date(),
+      });
     }
   };
 

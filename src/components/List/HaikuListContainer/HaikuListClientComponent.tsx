@@ -47,7 +47,7 @@ export function HaikuListClientComponent({
     isFetchingNextPage,
     isLoading,
     isError,
-    error,
+    error: _error,
   } = useInfiniteMonuments({
     q: searchQuery,
     region: regionFilter === 'すべて' ? undefined : regionFilter,
@@ -71,7 +71,6 @@ export function HaikuListClientComponent({
   }, [infiniteData, initialMonuments]);
 
   if (isError) {
-    console.error('句碑データ取得エラー:', error);
     return (
       <div className="text-center py-12">
         <p className="text-lg text-muted-foreground mb-4">

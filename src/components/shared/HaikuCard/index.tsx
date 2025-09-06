@@ -47,14 +47,10 @@ export function HaikuCard({
 
     if (!session?.user || isLoading) return;
 
-    try {
-      if (isFavorited) {
-        await removeFavoriteMutation.mutateAsync({ monumentId: id });
-      } else {
-        await addFavoriteMutation.mutateAsync({ monumentId: id });
-      }
-    } catch (error) {
-      console.error('Failed to toggle favorite:', error);
+    if (isFavorited) {
+      await removeFavoriteMutation.mutateAsync({ monumentId: id });
+    } else {
+      await addFavoriteMutation.mutateAsync({ monumentId: id });
     }
   };
 

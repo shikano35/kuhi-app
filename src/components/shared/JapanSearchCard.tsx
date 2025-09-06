@@ -72,7 +72,7 @@ export function JapanSearchCard({
       const safeId = encodeURIComponent(navigationId);
       router.push(`/gallery/${safeId}`);
     } else {
-      console.error('有効な識別子が見つかりません:', item);
+      return;
     }
   };
 
