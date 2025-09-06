@@ -28,15 +28,10 @@ export function FavoriteButton({ monumentId }: FavoriteButtonProps) {
 
   const handleFavoriteToggle = async () => {
     if (!session?.user || isLoading) return;
-
-    try {
-      if (isFavorited) {
-        await removeFavoriteMutation.mutateAsync({ monumentId });
-      } else {
-        await addFavoriteMutation.mutateAsync({ monumentId });
-      }
-    } catch (error) {
-      console.error('Failed to toggle favorite:', error);
+    if (isFavorited) {
+      await removeFavoriteMutation.mutateAsync({ monumentId });
+    } else {
+      await addFavoriteMutation.mutateAsync({ monumentId });
     }
   };
 
