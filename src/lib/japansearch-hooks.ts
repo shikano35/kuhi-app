@@ -82,12 +82,17 @@ export function useDefaultImages() {
     queryKey: ['default-gallery-images'],
     queryFn: async ({ pageParam = 1 }): Promise<JapanSearchItem[]> => {
       const from = (pageParam - 1) * ITEMS_PER_PAGE;
-      const response = await searchJapanSearchItems({
-        keyword: '俳句 文化財',
-        size: ITEMS_PER_PAGE,
-        from,
-      });
-      return response.list;
+      const response = await fetch(
+        `/api/japansearch/search?keyword=${encodeURIComponent('俳句 文化財')}&size=${ITEMS_PER_PAGE}&from=${from}`
+      );
+
+      if (!response.ok) {
+        console.error('Gallery API error:', response.status);
+        return [];
+      }
+
+      const data = await response.json();
+      return data.list || [];
     },
     getNextPageParam: (lastPage, allPages) => {
       if (lastPage.length < ITEMS_PER_PAGE) return undefined;
@@ -95,6 +100,7 @@ export function useDefaultImages() {
     },
     initialPageParam: 1,
     staleTime: 1000 * 60 * 10,
+    retry: 2,
   });
 }
 
