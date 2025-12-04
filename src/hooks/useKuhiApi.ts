@@ -48,7 +48,7 @@ export function useInfiniteMonuments(params: MonumentsQueryParams = {}) {
         };
       } catch {
         try {
-          const inscriptionsUrl = `${process.env.KUHI_API_URL || 'https://api.kuhi.jp'}/inscriptions?limit=${params.limit || 20}&offset=${offset}`;
+          const inscriptionsUrl = `https://api.kuhi.jp/inscriptions?limit=${params.limit || 20}&offset=${offset}`;
           const response = await fetch(inscriptionsUrl);
 
           if (!response.ok) {
