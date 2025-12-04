@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
         `API request failed - Status: ${response.status}, URL: ${targetUrl}, Response: ${errorText}`
       );
       const errorResponse = createErrorResponse(
-        response,
+        errorText,
         'Failed to fetch monuments'
       );
       return NextResponse.json(errorResponse, {
