@@ -1,12 +1,9 @@
 import { Metadata } from 'next';
-import { getAllPoets, getPoetById } from '@/lib/kuhi-api';
+import { getPoetById } from '@/lib/kuhi-api';
 import { BackButton } from '@/components/BackButton';
 import { PoetDetailsContainer } from '@/components/Poet/PoetDetailsContainer';
 
-export async function generateStaticParams() {
-  const poets = await getAllPoets();
-  return poets.map((poet) => ({ id: poet.id.toString() }));
-}
+export const dynamic = 'force-dynamic';
 
 type PoetPageProps = {
   params: Promise<{ id: string }>;
