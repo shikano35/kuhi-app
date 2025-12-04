@@ -48,6 +48,7 @@ async function apiFetch(
       ...API_HEADERS,
       ...options.headers,
     },
+    next: { revalidate: 3600 }, // 1時間キャッシュ
   });
 }
 

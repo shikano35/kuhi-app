@@ -92,7 +92,7 @@ export function useDefaultImages() {
       }
 
       const data = await response.json();
-      return data.list || [];
+      return data.items || [];
     },
     getNextPageParam: (lastPage, allPages) => {
       if (lastPage.length < ITEMS_PER_PAGE) return undefined;

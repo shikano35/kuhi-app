@@ -183,7 +183,7 @@ export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
     const promises: Promise<MonumentWithRelations[]>[] = [];
 
     const limit = 100;
-    const batchCount = 3;
+    const batchCount = 6;
 
     for (let i = 0; i < batchCount; i++) {
       const offset = i * limit;
