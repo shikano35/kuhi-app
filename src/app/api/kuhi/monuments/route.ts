@@ -7,28 +7,29 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const queryString = searchParams.toString();
+    const targetUrl = `${KUHI_API_BASE_URL}/monuments${queryString ? `?${queryString}` : ''}`;
 
-    const response = await simpleFetch(
-      `${KUHI_API_BASE_URL}/monuments${queryString ? `?${queryString}` : ''}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        next: { revalidate: 7200 }, // 2時間キャッシュ
-      }
-    );
+    console.log(`Fetching monuments from: ${targetUrl}`);
+
+    const response = await simpleFetch(targetUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      next: { revalidate: 3600 }, // 1時間キャッシュに短縮
+    });
 
     if (!response.ok) {
-      console.error(`API request failed with status: ${response.status}`);
+      const errorText = await response.text().catch(() => 'Unknown error');
+      console.error(
+        `API request failed - Status: ${response.status}, URL: ${targetUrl}, Response: ${errorText}`
+      );
       const errorResponse = createErrorResponse(
-        response,
+        errorText,
         'Failed to fetch monuments'
       );
       return NextResponse.json(errorResponse, {
-        status:
-          response.status === 503 || response.status === 429
-            ? response.status
-            : 500,
+        status: response.status,
       });
     }
 
