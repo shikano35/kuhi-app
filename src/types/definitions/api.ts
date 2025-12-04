@@ -12,7 +12,7 @@ export interface Monument {
   material: string | null;
   material_uri: string | null;
   is_reliable: boolean;
-  verification_status: string;
+  verification_status: 'verified' | 'unverified' | 'pending';
   verified_at: string | null;
   verified_by: string | null;
   reliability_note: string | null;
