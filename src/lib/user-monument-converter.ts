@@ -29,7 +29,7 @@ export function convertUserHaikuMonumentToMonumentWithRelations(
     material: userMonument.material || null,
     material_uri: null,
     is_reliable: false,
-    verification_status: 'unverified',
+    verification_status: 'unverified' as const,
     verified_at: null,
     verified_by: null,
     reliability_note: null,
