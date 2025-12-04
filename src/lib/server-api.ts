@@ -1,7 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import {
   getAllHaikuMonuments as _getAllHaikuMonuments,
-  getPoets as _getPoets,
+  getAllPoetsFromApi as _getAllPoetsFromApi,
   getPoetByIdOld as _getPoetById,
   getAllLocations as _getAllLocations,
   getHaikuMonumentById as _getHaikuMonumentById,
@@ -42,7 +42,8 @@ export const getAllHaikuMonuments = unstable_cache(
 
 export const getAllPoets = unstable_cache(
   async (): Promise<Poet[]> => {
-    const apiPoets = await _getPoets();
+    // すべての俳人を取得（ページネーション対応）
+    const apiPoets = await _getAllPoetsFromApi();
     return apiPoets.map(mapNewPoetToPoet);
   },
   ['poets'],
@@ -85,27 +86,37 @@ export const getAllSources = unstable_cache(
   }
 );
 
-export const getHaikuMonumentById = unstable_cache(
-  async (id: number): Promise<HaikuMonument | null> => {
-    return _getHaikuMonumentById(id);
-  },
-  ['haiku-monument'],
-  {
-    revalidate: 60 * 60 * 2,
-    tags: ['haiku-monument'],
-  }
-);
+export async function getHaikuMonumentById(
+  id: number
+): Promise<HaikuMonument | null> {
+  const cachedFn = unstable_cache(
+    async (monumentId: number): Promise<HaikuMonument | null> => {
+      return _getHaikuMonumentById(monumentId);
+    },
+    [`haiku-monument-${id}`],
+    {
+      revalidate: 60 * 60 * 2,
+      tags: ['haiku-monument', `monument-${id}`],
+    }
+  );
+  return cachedFn(id);
+}
 
-export const getHaikuMonumentsByPoet = unstable_cache(
-  async (poetId: number): Promise<HaikuMonument[]> => {
-    return _getHaikuMonumentsByPoet(poetId);
-  },
-  ['haiku-monuments-by-poet'],
-  {
-    revalidate: 60 * 60 * 2,
-    tags: ['haiku-monuments', 'poets'],
-  }
-);
+export async function getHaikuMonumentsByPoet(
+  poetId: number
+): Promise<HaikuMonument[]> {
+  const cachedFn = unstable_cache(
+    async (id: number): Promise<HaikuMonument[]> => {
+      return _getHaikuMonumentsByPoet(id);
+    },
+    [`haiku-monuments-by-poet-${poetId}`],
+    {
+      revalidate: 60 * 60 * 2,
+      tags: ['haiku-monuments', 'poets', `poet-${poetId}`],
+    }
+  );
+  return cachedFn(poetId);
+}
 
 export const getUserFavorites = unstable_cache(
   async (): Promise<GetUserFavoritesResponse> => {

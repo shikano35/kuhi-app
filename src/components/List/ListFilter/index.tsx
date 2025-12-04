@@ -115,6 +115,12 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
         </div>
         <div className="flex gap-2">
           <button
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            type="submit"
+          >
+            検索
+          </button>
+          <button
             className="px-4 py-2 bg-gray-100 text-primary rounded-md hover:bg-gray-300 transition-colors flex items-center"
             onClick={() => setFilterVisible(!filterVisible)}
             type="button"
@@ -195,13 +201,20 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
             </div>
           </div>
 
-          <div className="mt-4 flex justify-end">
+          <div className="mt-4 flex justify-end gap-2">
             <button
-              className="px-4 py-2 bg-gray-200 text-primary rounded-md hover:bg-gray-300 transition-colors mr-2"
+              className="px-4 py-2 bg-gray-200 text-primary rounded-md hover:bg-gray-300 transition-colors"
               onClick={handleReset}
               type="button"
             >
               リセット
+            </button>
+            <button
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              onClick={() => handleSubmit()}
+              type="button"
+            >
+              この条件で絞り込む
             </button>
           </div>
         </div>

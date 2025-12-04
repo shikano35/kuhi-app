@@ -86,7 +86,7 @@ export async function getMonuments(
 export async function getAllMonuments(): Promise<HaikuMonument[]> {
   try {
     const allMonuments: MonumentWithRelations[] = [];
-    const batchSize = 3;
+    const batchSize = 6;
     const limit = 100;
 
     const promises = Array.from({ length: batchSize }, (_, i) => {

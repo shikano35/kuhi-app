@@ -7,7 +7,7 @@ const KUHI_API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhi.jp';
 export async function GET() {
   try {
     const allMonuments: MonumentWithRelations[] = [];
-    const batchSize = 3;
+    const batchSize = 6;
     const limit = 100;
 
     const promises = Array.from({ length: batchSize }, (_, i) => {
