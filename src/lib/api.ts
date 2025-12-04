@@ -32,6 +32,12 @@ import {
 
 const API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhi.jp';
 
+const API_HEADERS: HeadersInit = {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  'User-Agent': 'kuhi-app/1.0 (https://kuhi.jp)',
+};
+
 async function apiFetch(
   url: string,
   options: RequestInit = {}
@@ -39,7 +45,7 @@ async function apiFetch(
   return fetch(url, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      ...API_HEADERS,
       ...options.headers,
     },
   });
@@ -80,8 +86,8 @@ export async function getMonuments(
 export async function getAllMonuments(): Promise<HaikuMonument[]> {
   try {
     const allMonuments: MonumentWithRelations[] = [];
-    const batchSize = 9;
-    const limit = 50;
+    const batchSize = 3;
+    const limit = 100;
 
     const promises = Array.from({ length: batchSize }, (_, i) => {
       const offset = i * limit;
@@ -105,8 +111,7 @@ export async function getAllMonuments(): Promise<HaikuMonument[]> {
         allMonuments.push(...result.value);
       }
     });
-
-    return allMonuments.slice(0, 800).map(mapMonumentToHaikuMonument);
+    return allMonuments.map(mapMonumentToHaikuMonument);
   } catch (error) {
     console.error('Error fetching all monuments:', error);
     return [];

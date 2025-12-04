@@ -1,3 +1,9 @@
+const DEFAULT_HEADERS: HeadersInit = {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  'User-Agent': 'kuhi-app/1.0 (https://kuhi.jp)',
+};
+
 export async function simpleFetch(
   url: string,
   options: RequestInit = {}
@@ -8,6 +14,10 @@ export async function simpleFetch(
   try {
     const response = await fetch(url, {
       ...options,
+      headers: {
+        ...DEFAULT_HEADERS,
+        ...options.headers,
+      },
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
