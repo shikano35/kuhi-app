@@ -29,23 +29,36 @@ function getKuhiApiBaseUrl(): string {
   return process.env.KUHI_API_URL ?? 'https://api.kuhi.jp';
 }
 
-async function fetcher<T>(url: string): Promise<T> {
-  const response = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    next: { revalidate: 3600 }, // 1時間キャッシュ
-  });
+async function fetcher<T>(url: string, retries = 3): Promise<T> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        next: { revalidate: 7200 }, // 2時間キャッシュ
+      });
 
-  if (!response.ok) {
-    throw new KuhiApiError(
-      `API request failed: ${response.status} ${response.statusText}`,
-      response.status,
-      response
-    );
+      if (!response.ok) {
+        throw new KuhiApiError(
+          `API request failed: ${response.status} ${response.statusText}`,
+          response.status,
+          response
+        );
+      }
+
+      return response.json();
+    } catch (error) {
+      if (attempt === retries) {
+        throw error;
+      }
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.pow(2, attempt) * 1000)
+      );
+    }
   }
 
-  return response.json();
+  throw new Error('Failed to fetch after retries');
 }
 
 function buildQueryString(params: Record<string, unknown>): string {
@@ -174,45 +187,56 @@ export async function getAllMonuments(): Promise<MonumentWithRelations[]> {
     return result.monuments ?? result;
   }
 
-  const monuments = await getMonuments({ limit: 10 });
-  if (monuments.length > 0) {
-    return await getAllMonumentsFromPagination();
-  }
-
-  return await getAllMonumentsFromInscriptions();
+  return await getMapMonuments();
 }
 
-// 通常のページネーション取得
-async function getAllMonumentsFromPagination(): Promise<
-  MonumentWithRelations[]
-> {
-  const allMonuments: MonumentWithRelations[] = [];
-  let offset = 0;
-  const limit = 30;
-  let hasMore = true;
+export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
+  const _base = getKuhiApiBaseUrl();
 
-  while (hasMore) {
-    const monuments = await getMonuments({ limit, offset });
+  try {
+    const allMonuments: MonumentWithRelations[] = [];
+    const promises: Promise<MonumentWithRelations[]>[] = [];
 
-    if (monuments.length === 0) {
-      hasMore = false;
-    } else {
-      allMonuments.push(...monuments);
-      offset += limit;
-
-      if (monuments.length < limit) {
-        hasMore = false;
-      }
+    for (let i = 0; i < 9; i++) {
+      const offset = i * 50;
+      const promise = getMonuments({
+        limit: 50,
+        offset,
+        expand: 'locations,inscriptions.poems,poets',
+      }).catch((_error) => {
+        return [] as MonumentWithRelations[];
+      });
+      promises.push(promise);
     }
+    const results = await Promise.allSettled(promises);
+    results.forEach((result) => {
+      if (result.status === 'fulfilled') {
+        allMonuments.push(...result.value);
+      }
+    });
 
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    return allMonuments.slice(0, 800);
+  } catch (error) {
+    console.warn(
+      'Map monuments fetch failed, falling back to basic data:',
+      error
+    );
+
+    try {
+      const monuments = await getMonuments({
+        limit: 200,
+        expand: 'locations,inscriptions.poems,poets',
+      });
+      return monuments.filter(
+        (m) =>
+          m.locations &&
+          m.locations.length > 0 &&
+          m.locations.some((loc) => loc.latitude && loc.longitude)
+      );
+    } catch {
+      return [];
+    }
   }
-
-  if (allMonuments.length === 0) {
-    return await getAllMonumentsFromInscriptions();
-  }
-
-  return allMonuments;
 }
 
 // 全ての俳人を取得する関数

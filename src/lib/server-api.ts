@@ -35,7 +35,7 @@ export const getAllHaikuMonuments = unstable_cache(
   },
   ['haiku-monuments'],
   {
-    revalidate: 60 * 60,
+    revalidate: 60 * 60 * 2,
     tags: ['haiku-monuments'],
   }
 );
@@ -47,7 +47,7 @@ export const getAllPoets = unstable_cache(
   },
   ['poets'],
   {
-    revalidate: 60 * 60,
+    revalidate: 60 * 60 * 2,
     tags: ['poets'],
   }
 );
@@ -58,7 +58,7 @@ export const getPoetById = unstable_cache(
   },
   ['poet-by-id'],
   {
-    revalidate: 60 * 60,
+    revalidate: 60 * 60 * 2,
     tags: ['poets'],
   }
 );
@@ -69,7 +69,7 @@ export const getAllLocations = unstable_cache(
   },
   ['locations'],
   {
-    revalidate: 60 * 60,
+    revalidate: 60 * 60 * 2,
     tags: ['locations'],
   }
 );
@@ -91,7 +91,7 @@ export const getHaikuMonumentById = unstable_cache(
   },
   ['haiku-monument'],
   {
-    revalidate: 60 * 60,
+    revalidate: 60 * 60 * 2,
     tags: ['haiku-monument'],
   }
 );
@@ -102,7 +102,7 @@ export const getHaikuMonumentsByPoet = unstable_cache(
   },
   ['haiku-monuments-by-poet'],
   {
-    revalidate: 60 * 60,
+    revalidate: 60 * 60 * 2,
     tags: ['haiku-monuments', 'poets'],
   }
 );
