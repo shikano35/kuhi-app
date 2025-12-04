@@ -45,7 +45,7 @@ const baseMonument: MonumentWithRelations = {
   monument_type_uri: null,
   material: '石材',
   material_uri: null,
-  is_reliable: true,
+  is_reliable: false,
   verification_status: 'unverified',
   verified_at: null,
   verified_by: null,
