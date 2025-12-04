@@ -297,6 +297,30 @@ export async function getLocations(
   return fetcher<Location[]>(url);
 }
 
+export async function getAllLocations(): Promise<Location[]> {
+  const allLocations: Location[] = [];
+  let offset = 0;
+  const limit = 100;
+  let hasMore = true;
+
+  while (hasMore) {
+    const locations = await getLocations({ limit, offset });
+
+    if (locations.length === 0) {
+      hasMore = false;
+    } else {
+      allLocations.push(...locations);
+      offset += limit;
+
+      if (locations.length < limit) {
+        hasMore = false;
+      }
+    }
+  }
+
+  return allLocations;
+}
+
 export async function getLocationById(id: number): Promise<Location> {
   const base = getKuhiApiBaseUrl();
   const url = `${base}/locations/${id}`;
