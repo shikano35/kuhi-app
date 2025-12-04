@@ -1,4 +1,4 @@
-import { getMonuments, getPoets, getLocations } from '@/lib/kuhi-api';
+import { getMonuments, getAllPoets, getAllLocations } from '@/lib/kuhi-api';
 import { HaikuListClientComponent } from './HaikuListClientComponent';
 import { MonumentWithRelations, Poet } from '@/types/definitions/api';
 
@@ -26,8 +26,8 @@ export async function HaikuListServerComponent({
             ? undefined
             : searchParams?.prefecture,
       }),
-      getPoets({ limit: 100 }),
-      getLocations({ limit: 100 }),
+      getAllPoets(),
+      getAllLocations(),
     ]);
 
     const filteredMonuments = searchParams?.poet_id
@@ -47,8 +47,8 @@ export async function HaikuListServerComponent({
   } catch {
     try {
       const [poets, locations] = await Promise.all([
-        getPoets({ limit: 100 }),
-        getLocations({ limit: 100 }),
+        getAllPoets(),
+        getAllLocations(),
       ]);
 
       return (
