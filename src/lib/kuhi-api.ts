@@ -21,12 +21,10 @@ class KuhiApiError extends Error {
   }
 }
 
-function getKuhiApiBaseUrl(): string {
-  if (typeof window !== 'undefined') {
-    return '/api/kuhi';
-  }
+const KUHI_API_BASE_URL = 'https://api.kuhi.jp';
 
-  return process.env.KUHI_API_URL ?? 'https://api.kuhi.jp';
+function getKuhiApiBaseUrl(): string {
+  return KUHI_API_BASE_URL;
 }
 
 async function fetcher<T>(url: string, retries = 3): Promise<T> {
@@ -170,23 +168,6 @@ export async function getAllMonumentsFromInscriptions(): Promise<
 }
 
 export async function getAllMonuments(): Promise<MonumentWithRelations[]> {
-  if (typeof window !== 'undefined') {
-    const response = await fetch('/api/kuhi/monuments/all', {
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    if (!response.ok) {
-      throw new KuhiApiError(
-        `全句碑取得失敗: ${response.status} ${response.statusText}`,
-        response.status,
-        response
-      );
-    }
-
-    const result = await response.json();
-    return result.monuments ?? result;
-  }
-
   return await getMapMonuments();
 }
 
@@ -241,24 +222,6 @@ export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
 
 // 全ての俳人を取得する関数
 export async function getAllPoets(): Promise<Poet[]> {
-  if (typeof window !== 'undefined') {
-    const response = await fetch('/api/kuhi/poets/all', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new KuhiApiError(
-        `全俳人取得失敗: ${response.status} ${response.statusText}`,
-        response.status,
-        response
-      );
-    }
-
-    return response.json();
-  }
-
   const allPoets: Poet[] = [];
   let offset = 0;
   const limit = 50;

@@ -77,50 +77,36 @@ export async function getMonuments(
   return Array.isArray(data) ? data : [];
 }
 
-function getServerBaseUrl(): string {
-  if (typeof window !== 'undefined') {
-    return '';
-  }
-
-  if (process.env.KUHI_API_URL) {
-    return process.env.KUHI_API_URL;
-  }
-
-  if (process.env.NODE_ENV === 'development') {
-    return 'http://localhost:3000';
-  }
-
-  console.warn(
-    '本番環境でベースURLが設定されていません。KUHI_API_URLを設定してください。'
-  );
-  return 'https://kuhi.jp';
-}
-
 export async function getAllMonuments(): Promise<HaikuMonument[]> {
   try {
-    const baseUrl = getServerBaseUrl();
-    const url = `${baseUrl}/api/kuhi/monuments/all`;
+    const allMonuments: MonumentWithRelations[] = [];
+    const batchSize = 9;
+    const limit = 50;
 
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const promises = Array.from({ length: batchSize }, (_, i) => {
+      const offset = i * limit;
+      const url = `${API_BASE_URL}/monuments?limit=${limit}&offset=${offset}&expand=locations,inscriptions.poems,poets`;
+
+      return apiFetch(url)
+        .then(async (response) => {
+          if (!response.ok) {
+            return [] as MonumentWithRelations[];
+          }
+          const monuments = await response.json();
+          return Array.isArray(monuments) ? monuments : [];
+        })
+        .catch(() => [] as MonumentWithRelations[]);
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const results = await Promise.allSettled(promises);
 
-    const result = await response.json();
+    results.forEach((result) => {
+      if (result.status === 'fulfilled') {
+        allMonuments.push(...result.value);
+      }
+    });
 
-    const monuments = result.monuments || result;
-
-    if (!Array.isArray(monuments)) {
-      console.warn('API response is not an array:', monuments);
-      return [];
-    }
-
-    return monuments.map(mapMonumentToHaikuMonument);
+    return allMonuments.slice(0, 800).map(mapMonumentToHaikuMonument);
   } catch (error) {
     console.error('Error fetching all monuments:', error);
     return [];
@@ -171,21 +157,32 @@ export async function getPoets(
 
 export async function getAllPoetsFromApi(): Promise<ApiPoet[]> {
   try {
-    const baseUrl = getServerBaseUrl();
-    const url = `${baseUrl}/api/kuhi/poets/all`;
+    const allPoets: ApiPoet[] = [];
+    let offset = 0;
+    const limit = 50;
+    let hasMore = true;
 
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    while (hasMore) {
+      const url = `${API_BASE_URL}/poets?limit=${limit}&offset=${offset}`;
+      const response = await apiFetch(url);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        break;
+      }
+
+      const poets = await response.json();
+      if (!Array.isArray(poets) || poets.length === 0) {
+        hasMore = false;
+      } else {
+        allPoets.push(...poets);
+        offset += limit;
+        if (poets.length < limit) {
+          hasMore = false;
+        }
+      }
     }
 
-    const data = await response.json();
-    return data;
+    return allPoets;
   } catch (error) {
     console.error('Error fetching poets from API:', error);
     return [];
