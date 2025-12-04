@@ -140,7 +140,7 @@ const mockMonuments: MonumentWithRelations[] = [
     monument_type_uri: null,
     material: null,
     material_uri: null,
-    is_reliable: true,
+    is_reliable: false,
     verification_status: 'unverified',
     verified_at: null,
     verified_by: null,
