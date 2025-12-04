@@ -11,6 +11,11 @@ export interface Monument {
   monument_type_uri: string | null;
   material: string | null;
   material_uri: string | null;
+  is_reliable: boolean;
+  verification_status: string;
+  verified_at: string | null;
+  verified_by: string | null;
+  reliability_note: string | null;
   created_at: string;
   updated_at: string;
   original_established_date: string | null;
