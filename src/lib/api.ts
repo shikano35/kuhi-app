@@ -111,7 +111,6 @@ export async function getAllMonuments(): Promise<HaikuMonument[]> {
         allMonuments.push(...result.value);
       }
     });
-
     return allMonuments.map(mapMonumentToHaikuMonument);
   } catch (error) {
     console.error('Error fetching all monuments:', error);
