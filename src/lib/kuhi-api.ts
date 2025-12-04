@@ -27,13 +27,17 @@ function getKuhiApiBaseUrl(): string {
   return KUHI_API_BASE_URL;
 }
 
+const API_HEADERS: HeadersInit = {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  'User-Agent': 'kuhi-app/1.0 (https://kuhi.jp)',
+};
+
 async function fetcher<T>(url: string, retries = 3): Promise<T> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: API_HEADERS,
         next: { revalidate: 7200 }, // 2時間キャッシュ
       });
 
@@ -178,10 +182,13 @@ export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
     const allMonuments: MonumentWithRelations[] = [];
     const promises: Promise<MonumentWithRelations[]>[] = [];
 
-    for (let i = 0; i < 9; i++) {
-      const offset = i * 50;
+    const limit = 100;
+    const batchCount = 3;
+
+    for (let i = 0; i < batchCount; i++) {
+      const offset = i * limit;
       const promise = getMonuments({
-        limit: 50,
+        limit,
         offset,
         expand: 'locations,inscriptions.poems,poets',
       }).catch((_error) => {
@@ -196,7 +203,7 @@ export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
       }
     });
 
-    return allMonuments.slice(0, 800);
+    return allMonuments;
   } catch (error) {
     console.warn(
       'Map monuments fetch failed, falling back to basic data:',
@@ -205,7 +212,7 @@ export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
 
     try {
       const monuments = await getMonuments({
-        limit: 200,
+        limit: 100,
         expand: 'locations,inscriptions.poems,poets',
       });
       return monuments.filter(

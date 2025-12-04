@@ -7,8 +7,8 @@ const KUHI_API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhi.jp';
 export async function GET() {
   try {
     const allMonuments: MonumentWithRelations[] = [];
-    const batchSize = 9;
-    const limit = 50;
+    const batchSize = 3;
+    const limit = 100;
 
     const promises = Array.from({ length: batchSize }, (_, i) => {
       const offset = i * limit;
@@ -48,16 +48,11 @@ export async function GET() {
       }
     });
 
-    const limitedMonuments = allMonuments.slice(0, 800);
-
     const responseData = {
-      monuments: limitedMonuments,
-      total: limitedMonuments.length,
-      isPartial: limitedMonuments.length === 800,
-      message:
-        limitedMonuments.length === 800
-          ? 'Limited to 800 monuments for map performance'
-          : `Map monuments with location data (${limitedMonuments.length} total)`,
+      monuments: allMonuments,
+      total: allMonuments.length,
+      isPartial: false,
+      message: `Map monuments with location data (${allMonuments.length} total)`,
     };
 
     return NextResponse.json(responseData, {
