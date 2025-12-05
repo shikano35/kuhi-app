@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MonumentWithRelations } from '@/types/definitions/api';
-import { truncateInscription } from '@/lib/utils';
 import { MapPinIcon, UserIcon, Heart, Loader2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import {
@@ -96,7 +95,7 @@ export function HaikuCard({
         </div>
         <div className="p-4 flex-grow">
           <h3 className="text-lg font-medium mb-2 line-clamp-1">
-            {truncateInscription(inscription)}
+            {inscription}
           </h3>
 
           <div className="mt-auto">

@@ -42,7 +42,6 @@ export const getAllHaikuMonuments = unstable_cache(
 
 export const getAllPoets = unstable_cache(
   async (): Promise<Poet[]> => {
-    // すべての俳人を取得（ページネーション対応）
     const apiPoets = await _getAllPoetsFromApi();
     return apiPoets.map(mapNewPoetToPoet);
   },
