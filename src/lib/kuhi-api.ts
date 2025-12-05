@@ -139,7 +139,7 @@ export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
       let totalInBatch = 0;
       let lastBatchSize = 0;
 
-      results.forEach((result, index) => {
+      results.forEach((result) => {
         if (result.status === 'fulfilled' && result.value.length > 0) {
           allMonuments.push(...result.value);
           totalInBatch += result.value.length;
