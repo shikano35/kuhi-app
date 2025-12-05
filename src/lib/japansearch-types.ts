@@ -273,10 +273,8 @@ function extractSpatialFromRdfindex(
       );
       const filteredSpatial = spatialValues.filter(
         (s) =>
-          !s.includes(':') ||
-          s.includes('県') ||
-          s.includes('市') ||
-          s.includes('国')
+          !s.match(/^https?:/) &&
+          !s.match(/^urn:/)
       );
       if (filteredSpatial.length > 0) {
         return filteredSpatial;
