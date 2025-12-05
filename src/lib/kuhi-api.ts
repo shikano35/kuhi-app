@@ -143,9 +143,7 @@ export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
         if (result.status === 'fulfilled' && result.value.length > 0) {
           allMonuments.push(...result.value);
           totalInBatch += result.value.length;
-          if (index === results.length - 1 || result.value.length > 0) {
-            lastBatchSize = result.value.length;
-          }
+          lastBatchSize = result.value.length;
         }
       });
 
