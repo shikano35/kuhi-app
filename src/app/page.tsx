@@ -1,5 +1,7 @@
 import { HeroSection } from '@/components/Home/Hero';
+import { TodaysHaikuSection } from '@/components/Home/TodaysHaiku';
 import { RegionalHaikuContainer } from '@/components/Home/RegionalHaikuContainer';
+import { PickupSection } from '@/components/Home/PickupSection';
 import { SearchSection } from '@/components/Home/Search';
 import { PoetContainer } from '@/components/Home/PoetContainer';
 import { HistorySection } from '@/components/Home/History';
@@ -14,6 +16,8 @@ export default function Home() {
       <RegionalHaikuContainer />
       <PoetContainer />
       <SearchSection />
+      <TodaysHaikuSection />
+      <PickupSection />
       <HistorySection />
       <OtherSection />
     </main>
