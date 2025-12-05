@@ -1,9 +1,5 @@
 import { describe, expect, beforeEach } from 'vitest';
-import {
-  formatEstablishedDate,
-  truncateInscription,
-  createUrlWithParams,
-} from '@/lib/utils';
+import { formatEstablishedDate, createUrlWithParams } from '@/lib/utils';
 
 describe('ユーティリティ関数のテスト', () => {
   describe('formatEstablishedDate', () => {
@@ -17,33 +13,6 @@ describe('ユーティリティ関数のテスト', () => {
       const input = '';
       const result = formatEstablishedDate(input);
       expect(result).toBe(input);
-    });
-  });
-
-  describe('truncateInscription', () => {
-    test('指定した最大長さより短い場合はそのまま返すこと', () => {
-      const inscription = '古池や蛙飛び込む水の音';
-      const result = truncateInscription(inscription, 30);
-      expect(result).toBe(inscription);
-    });
-
-    test('指定した最大長さより長い場合は省略すること', () => {
-      const inscription =
-        '五月雨を集めて早し最上川夏の山古城のしのぶ夕暮れの風景';
-      const maxLength = 20;
-      const expected = '五月雨を集めて早し最上川夏の山古城のしの...';
-      const result = truncateInscription(inscription, maxLength);
-      expect(result).toBe(expected);
-      expect(result.length).toBe(maxLength + 3); // 省略記号の3文字を含む
-    });
-
-    test('デフォルトの最大長さ（30文字）を使用すること', () => {
-      const inscription =
-        '五月雨を集めて早し最上川夏の山古城のしのぶ夕暮れの風景かたつむりそろそろ登れ富士の山';
-      const expected =
-        '五月雨を集めて早し最上川夏の山古城のしのぶ夕暮れの風景かたつ...';
-      const result = truncateInscription(inscription);
-      expect(result).toBe(expected);
     });
   });
 

@@ -207,10 +207,11 @@ describe('HaikuCard', () => {
 
     renderWithProvider(<HaikuCard monument={longInscriptionMonument} />);
 
-    // 省略されたテキストが含まれているか確認
-    const displayedText =
-      screen.getByText(/古池や蛙飛び込む水の音春の海終日のたり/);
+    // テキストが表示されていることを確認
+    const displayedText = screen.getByText(
+      '古池や蛙飛び込む水の音春の海終日のたりのたりかな閑さや岩にしみ入る蝉の声これは非常に長い俳句の例です'
+    );
     expect(displayedText).toBeInTheDocument();
-    expect(displayedText).toHaveTextContent(/\.\.\.$/); // 省略記号で終わることを確認
+    expect(displayedText).toHaveClass('line-clamp-1');
   });
 });

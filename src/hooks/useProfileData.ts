@@ -7,7 +7,7 @@ import {
   useRemoveFavorite,
   useRemoveVisit,
 } from '@/lib/api-hooks';
-import { convertUserHaikuMonumentToHaikuMonument } from '@/lib/user-monument-converter';
+import { mapUserMonumentToHaikuMonument } from '@/lib/api-mappers';
 import { getUserFriendlyErrorMessage } from '@/lib/error-utils';
 import { HaikuMonument } from '@/types/definitions/haiku';
 
@@ -37,7 +37,7 @@ export function useProfileData() {
     if (!favoritesData?.favorites) return [];
 
     return favoritesData.favorites.map((fav) =>
-      convertUserHaikuMonumentToHaikuMonument(fav.monument)
+      mapUserMonumentToHaikuMonument(fav.monument)
     );
   }, [favoritesData]);
 
@@ -45,7 +45,7 @@ export function useProfileData() {
     if (!visitsData?.visits) return [];
 
     return visitsData.visits.map((visit) =>
-      convertUserHaikuMonumentToHaikuMonument(visit.monument)
+      mapUserMonumentToHaikuMonument(visit.monument)
     );
   }, [visitsData]);
 
