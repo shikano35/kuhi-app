@@ -17,7 +17,7 @@ type JapanSearchCardProps = {
   variant?: 'default' | 'compact';
 };
 
-export default function JapanSearchCard({
+export function JapanSearchCard({
   item,
   variant = 'default',
 }: JapanSearchCardProps) {
