@@ -75,8 +75,8 @@ function MonumentCard({
             >
               {haiku}
             </p>
-
-            <p className="text-sm text-accent-purple mb-2">― {poetName}</p>
+            
+            <p className="text-sm text-muted-foreground mb-2">{poetName}</p>
 
             {location && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">

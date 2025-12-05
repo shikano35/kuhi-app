@@ -82,7 +82,7 @@ export function TodaysHaikuClientComponent({
           viewport={{ once: true }}
           whileInView={{ opacity: 1, y: 0 }}
         >
-          ― {poetName}
+          {poetName}
         </motion.p>
 
         {locationText && (
