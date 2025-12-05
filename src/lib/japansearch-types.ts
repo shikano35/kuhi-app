@@ -20,6 +20,13 @@ export interface JapanSearchItem {
     identifier?: string;
     language?: string | string[];
     rights?: string | string[];
+    category?: string[];
+    location?: string[];
+  };
+  rdfindex?: {
+    type?: string[];
+    temporal?: string[];
+    spatial?: string[];
   };
 }
 
@@ -241,6 +248,96 @@ function extractDate(item: Record<string, unknown>): string | undefined {
 }
 
 /**
+ * rdfindexから場所情報を抽出
+ */
+function extractSpatialFromRdfindex(
+  item: JapanSearchItem & Record<string, unknown>
+): string[] {
+  if (
+    item.rdfindex?.spatial &&
+    Array.isArray(item.rdfindex.spatial) &&
+    item.rdfindex.spatial.length > 0
+  ) {
+    return item.rdfindex.spatial;
+  }
+
+  // 場所情報
+  if (item.common && typeof item.common === 'object') {
+    const common = item.common as Record<string, unknown>;
+    if (common.location && Array.isArray(common.location)) {
+      return common.location.filter((v): v is string => typeof v === 'string');
+    }
+    if (common.spatial && Array.isArray(common.spatial)) {
+      const spatialValues = common.spatial.filter(
+        (v): v is string => typeof v === 'string'
+      );
+      const filteredSpatial = spatialValues.filter(
+        (s) =>
+          !s.match(/^https?:/) &&
+          !s.match(/^urn:/)
+      );
+      if (filteredSpatial.length > 0) {
+        return filteredSpatial;
+      }
+    }
+  }
+
+  const locationFields = [
+    'cobas-9-s', // cobas: 地理的名称
+  ];
+  const locations = extractFromDynamicFields(item, locationFields);
+  return locations.filter(
+    (loc) =>
+      !loc.includes(':') && !loc.includes('絵画') && !loc.includes('工芸')
+  );
+}
+
+/**
+ * rdfindexから資料タイプを抽出
+ */
+function extractTypeFromRdfindex(
+  item: JapanSearchItem & Record<string, unknown>
+): string | undefined {
+  if (
+    item.rdfindex?.type &&
+    Array.isArray(item.rdfindex.type) &&
+    item.rdfindex.type.length > 0
+  ) {
+    return item.rdfindex.type[0];
+  }
+
+  const typeFields = [
+    'cobas-4-s', // 分類（絵画、陶磁、金工など）
+    'cobas-31-s', // 英語分類
+  ];
+  const types = extractFromDynamicFields(item, typeFields);
+  return types[0];
+}
+
+/**
+ * rdfindexから時代情報を抽出
+ */
+function extractTemporalFromRdfindex(
+  item: JapanSearchItem & Record<string, unknown>
+): string[] {
+  if (
+    item.rdfindex?.temporal &&
+    Array.isArray(item.rdfindex.temporal) &&
+    item.rdfindex.temporal.length > 0
+  ) {
+    return item.rdfindex.temporal;
+  }
+
+  if (item.common?.temporal && Array.isArray(item.common.temporal)) {
+    return item.common.temporal.filter(
+      (v): v is string => typeof v === 'string'
+    );
+  }
+
+  return [];
+}
+
+/**
  * アイテムを正規化
  */
 export function normalizeJapanSearchItem(
@@ -264,7 +361,7 @@ export function normalizeJapanSearchItem(
   const subject =
     item.common?.subject ||
     extractFromDynamicFields(item, [
-      'cobas-4-s', // 分類
+      'cobas-29-s', // カテゴリ分類
       'keioobjecthub-12-s', // 主題
       'adeac-7-s', // 主題
       'subject', // 汎用
@@ -272,15 +369,13 @@ export function normalizeJapanSearchItem(
     ]);
 
   // 地理的情報の抽出
-  const spatial =
-    item.common?.spatial ||
-    extractFromDynamicFields(item, [
-      'cobas-29-s', // 地域
-      'keioobjecthub-28-s', // 地域
-      'adeac-12-s', // 地域
-      'spatial', // 汎用
-      'location', // 汎用
-    ]);
+  const spatial = extractSpatialFromRdfindex(item);
+
+  // 資料タイプの抽出
+  const type = extractTypeFromRdfindex(item);
+
+  // 時代情報の抽出
+  const temporal = extractTemporalFromRdfindex(item);
 
   // 言語情報の抽出
   const language =
@@ -325,13 +420,16 @@ export function normalizeJapanSearchItem(
       thumbnailUrl: thumbnailUrl || item.common?.thumbnailUrl,
       dataProvider: dataProvider || item.common?.dataProvider,
       date: date || item.common?.date,
+      type: type || item.common?.type,
+      temporal: temporal.length > 0 ? temporal : item.common?.temporal,
       landingPage: item.common?.linkUrl || item.common?.landingPage,
       creator: creator && creator.length > 0 ? creator : item.common?.creator,
       subject: subject && subject.length > 0 ? subject : item.common?.subject,
-      spatial: spatial && spatial.length > 0 ? spatial : item.common?.spatial,
+      spatial: spatial.length > 0 ? spatial : undefined,
       language: language || item.common?.language,
       rights: rights || item.common?.rights,
       identifier: identifier || item.common?.identifier,
     },
+    rdfindex: item.rdfindex,
   };
 }

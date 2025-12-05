@@ -20,7 +20,6 @@ const API_HEADERS: HeadersInit = {
 
 const CACHE_REVALIDATE = 7200;
 const API_MAX_LIMIT = 100;
-const MAP_BATCH_COUNT = 6;
 
 class KuhiApiError extends Error {
   constructor(
@@ -101,24 +100,63 @@ export async function getAllMonuments(): Promise<MonumentWithRelations[]> {
 export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
   try {
     const allMonuments: MonumentWithRelations[] = [];
-    const promises: Promise<MonumentWithRelations[]>[] = [];
+    let offset = 0;
+    let hasMore = true;
 
-    for (let i = 0; i < MAP_BATCH_COUNT; i++) {
-      const offset = i * API_MAX_LIMIT;
-      const promise = getMonuments({
-        limit: API_MAX_LIMIT,
-        offset,
-        expand: 'locations,inscriptions.poems,poets',
-      }).catch(() => [] as MonumentWithRelations[]);
-      promises.push(promise);
+    const firstBatch = await getMonuments({
+      limit: API_MAX_LIMIT,
+      offset: 0,
+      expand: 'locations,inscriptions.poems,poets',
+    });
+
+    if (firstBatch.length === 0) {
+      return [];
     }
 
-    const results = await Promise.allSettled(promises);
-    results.forEach((result) => {
-      if (result.status === 'fulfilled') {
-        allMonuments.push(...result.value);
+    allMonuments.push(...firstBatch);
+    offset = API_MAX_LIMIT;
+
+    if (firstBatch.length < API_MAX_LIMIT) {
+      return allMonuments;
+    }
+
+    while (hasMore) {
+      const batchPromises: Promise<MonumentWithRelations[]>[] = [];
+      const batchCount = 10;
+
+      for (let i = 0; i < batchCount; i++) {
+        const currentOffset = offset + i * API_MAX_LIMIT;
+        batchPromises.push(
+          getMonuments({
+            limit: API_MAX_LIMIT,
+            offset: currentOffset,
+            expand: 'locations,inscriptions.poems,poets',
+          }).catch(() => [] as MonumentWithRelations[])
+        );
       }
-    });
+
+      const results = await Promise.allSettled(batchPromises);
+      let totalInBatch = 0;
+      let lastBatchSize = 0;
+
+      results.forEach((result) => {
+        if (result.status === 'fulfilled' && result.value.length > 0) {
+          allMonuments.push(...result.value);
+          totalInBatch += result.value.length;
+          lastBatchSize = result.value.length;
+        }
+      });
+
+      offset += batchCount * API_MAX_LIMIT;
+
+      if (totalInBatch === 0 || lastBatchSize < API_MAX_LIMIT) {
+        hasMore = false;
+      }
+
+      if (allMonuments.length >= 3000) {
+        hasMore = false;
+      }
+    }
 
     return allMonuments;
   } catch {
