@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
   Card,
@@ -27,13 +27,14 @@ type HaikuListViewProps = {
   poems: HaikuMonument[];
 };
 
+const SEASONS = ['春', '夏', '秋', '冬'] as const;
+
 export function HaikuListView({ poems }: HaikuListViewProps) {
   const [search, setSearch] = useState('');
   const [season, setSeason] = useState('all');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [filteredPoems, setFilteredPoems] = useState<HaikuMonument[]>(poems);
 
-  useEffect(() => {
+  const filteredPoems = useMemo(() => {
     let filtered = poems;
 
     if (search) {
@@ -58,10 +59,8 @@ export function HaikuListView({ poems }: HaikuListViewProps) {
       });
     }
 
-    setFilteredPoems(filtered);
+    return filtered;
   }, [search, season, poems]);
-
-  const seasons = ['春', '夏', '秋', '冬'];
 
   return (
     <div
@@ -88,7 +87,7 @@ export function HaikuListView({ poems }: HaikuListViewProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">すべての季節</SelectItem>
-              {seasons.map((s) => (
+              {SEASONS.map((s) => (
                 <SelectItem key={s} value={s}>
                   {s}
                 </SelectItem>

@@ -12,6 +12,7 @@ import {
   TooltipProps,
 } from 'recharts';
 import { type HistoryDataPoint } from './utils';
+import { useSyncExternalStore } from 'react';
 
 type ChartMode = 'monuments' | 'poets';
 
@@ -19,8 +20,17 @@ export type ClientHistoryChartProps = {
   historyData: HistoryDataPoint[];
 };
 
+function useIsClient() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+}
+
 export function ClientHistoryChart({ historyData }: ClientHistoryChartProps) {
   const [mode, setMode] = useState<ChartMode>('monuments');
+  const isClient = useIsClient();
 
   const ticks = historyData
     .map((d) => d.year)
@@ -44,6 +54,24 @@ export function ClientHistoryChart({ historyData }: ClientHistoryChartProps) {
       </div>
     );
   };
+
+  if (!isClient) {
+    return (
+      <div className="w-full" style={{ height: '400px' }}>
+        <div className="flex justify-end mb-4">
+          <div className="inline-flex rounded-md shadow-sm">
+            <div className="px-4 py-2 text-sm font-medium border bg-gray-100 rounded-l-md">
+              句碑数
+            </div>
+            <div className="px-4 py-2 text-sm font-medium border bg-gray-100 rounded-r-md">
+              俳人数
+            </div>
+          </div>
+        </div>
+        <div className="w-full h-[360px] bg-muted/30 animate-pulse rounded-md" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -74,8 +102,8 @@ export function ClientHistoryChart({ historyData }: ClientHistoryChartProps) {
         </div>
       </div>
 
-      <div className="w-full h-[400px]">
-        <ResponsiveContainer height="100%" width="100%">
+      <div className="w-full" style={{ height: '400px', minHeight: '400px' }}>
+        <ResponsiveContainer height={400} width="100%">
           <AreaChart
             data={historyData}
             margin={{ top: 10, right: 30, left: 0, bottom: 30 }}

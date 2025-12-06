@@ -106,10 +106,15 @@ export function MapClientComponent({
       </div>
 
       <button
+        aria-expanded={isFilterOpen}
+        aria-label={
+          isFilterOpen ? 'フィルターパネルを閉じる' : 'フィルターパネルを開く'
+        }
         className={`fixed top-20 z-10 bg-background p-2 rounded-md transition-all duration-300 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 ${
           isFilterOpen ? 'left-64' : 'left-4 shadow-md'
         }`}
         onClick={toggleFilter}
+        type="button"
       >
         {isFilterOpen ? (
           <X className="size-5" />

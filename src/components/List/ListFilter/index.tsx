@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FilterIcon } from 'lucide-react';
 import { useFilterStore } from '@/store/useFilterStore';
@@ -27,6 +27,7 @@ type ListFilterProps = {
 
 export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
   const router = useRouter();
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const {
     listSearchText,
@@ -42,6 +43,13 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
   } = useFilterStore();
 
   const [filterVisible, setFilterVisible] = useState(false);
+
+  useEffect(() => {
+    if (useFilterStore.persist?.rehydrate) {
+      useFilterStore.persist.rehydrate();
+    }
+    setIsHydrated(true);
+  }, []);
 
   const prefectures = [
     'すべて',
@@ -97,6 +105,11 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
     setListSelectedPoet(poetName, poet?.id);
   };
 
+  const displaySearchText = isHydrated ? listSearchText : '';
+  const displayRegion = isHydrated ? listSelectedRegion : 'すべて';
+  const displayPrefecture = isHydrated ? listSelectedPrefecture : 'すべて';
+  const displayPoet = isHydrated ? listSelectedPoet : 'すべて';
+
   return (
     <div>
       <form
@@ -110,7 +123,7 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
             onChange={(e) => setListSearchText(e.target.value)}
             placeholder="俳句、俳人、場所などで検索..."
             type="text"
-            value={listSearchText}
+            value={displaySearchText}
           />
         </div>
         <div className="flex gap-2">
@@ -148,7 +161,7 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
                   const region = e.target.value;
                   setListSelectedRegion(region);
                 }}
-                value={listSelectedRegion}
+                value={displayRegion}
               >
                 {REGIONS.map((region) => (
                   <option key={region} value={region}>
@@ -169,7 +182,7 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
                 className="w-full px-3 py-2 bg-background border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                 id="prefecture"
                 onChange={(e) => setListSelectedPrefecture(e.target.value)}
-                value={listSelectedPrefecture}
+                value={displayPrefecture}
               >
                 {prefectures.map((prefecture) => (
                   <option key={prefecture} value={prefecture}>
@@ -190,7 +203,7 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
                 className="w-full px-3 py-2 bg-background border border-border rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                 id="poet"
                 onChange={(e) => handlePoetChange(e.target.value)}
-                value={listSelectedPoet}
+                value={displayPoet}
               >
                 {poetNames.map((poet) => (
                   <option key={poet} value={poet}>

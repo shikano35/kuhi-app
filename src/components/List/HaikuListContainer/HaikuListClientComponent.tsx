@@ -68,7 +68,10 @@ export function HaikuListClientComponent({
   const infiniteData = useFlattenedInfiniteMonuments(data?.pages);
 
   const monuments = useMemo(() => {
-    return infiniteData.length > 0 ? infiniteData : initialMonuments;
+    if (infiniteData.length > 0) {
+      return infiniteData;
+    }
+    return initialMonuments;
   }, [infiniteData, initialMonuments]);
 
   if (isError) {
