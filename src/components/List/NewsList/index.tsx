@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,14 +17,16 @@ type NewsListProps = {
 export function NewsList({ news }: NewsListProps) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
-  const [filteredNews, setFilteredNews] = useState<News[]>(news);
 
-  const categories = [
-    'all',
-    ...new Set(news.map((item) => item.category).filter(Boolean)),
-  ];
+  const categories = useMemo(
+    () => [
+      'all',
+      ...new Set(news.map((item) => item.category).filter(Boolean)),
+    ],
+    [news]
+  );
 
-  useEffect(() => {
+  const filteredNews = useMemo(() => {
     let filtered = news;
 
     if (search) {
@@ -41,12 +43,10 @@ export function NewsList({ news }: NewsListProps) {
       filtered = filtered.filter((item) => item.category === category);
     }
 
-    filtered = [...filtered].sort(
+    return [...filtered].sort(
       (a, b) =>
         new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
     );
-
-    setFilteredNews(filtered);
   }, [search, category, news]);
 
   return (

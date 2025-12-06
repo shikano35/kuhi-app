@@ -37,7 +37,7 @@ export function AuthButton({ isFlag = false }: { isFlag?: boolean }) {
   useEffect(() => {
     setLoading(status === 'loading');
     setUser(session?.user || null);
-  }, [session, status, setUser, setLoading]);
+  }, [session, status]);
 
   if (status === 'loading') {
     return isFlag ? (

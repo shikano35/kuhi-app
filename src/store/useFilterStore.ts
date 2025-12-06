@@ -99,6 +99,7 @@ export const useFilterStore = create<FilterState>()(
     }),
     {
       name: 'haiku-filters',
+      skipHydration: true,
     }
   )
 );

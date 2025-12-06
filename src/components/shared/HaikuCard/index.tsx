@@ -62,6 +62,9 @@ export function HaikuCard({
         <div className="relative h-48 bg-muted">
           {showFavoriteButton && session?.user && (
             <button
+              aria-label={
+                isFavorited ? 'お気に入りから削除' : 'お気に入りに追加'
+              }
               className={`absolute top-2 right-2 z-10 p-2 rounded-full ${
                 isFavorited
                   ? 'text-red-500 hover:text-red-600 transition-colors'
@@ -69,6 +72,7 @@ export function HaikuCard({
               }`}
               disabled={isLoading}
               onClick={handleFavoriteToggle}
+              type="button"
             >
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
