@@ -159,7 +159,7 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
 
   useEffect(() => {
     onFilterChange(filteredMonuments);
-  }, [filteredMonuments]);
+  }, [filteredMonuments, onFilterChange]);
 
   const handleRegionChange = (region: string) => {
     setMapSelectedRegion(region);

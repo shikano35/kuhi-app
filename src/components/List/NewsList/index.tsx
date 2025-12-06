@@ -100,7 +100,7 @@ export function NewsList({ news }: NewsListProps) {
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
                           {item.is_important && (
-                            <AlertCircle className="h-4 w-4 mt-0.25 text-destructive" />
+                            <AlertCircle className="h-4 w-4 mt-px text-destructive" />
                           )}
                           <span className="text-sm text-muted-foreground">
                             {format(publishDate, 'yyyy年MM月dd日', {

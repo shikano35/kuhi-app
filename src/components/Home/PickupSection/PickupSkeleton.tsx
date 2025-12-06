@@ -15,7 +15,7 @@ function SkeletonCard() {
 
 export function PickupSkeleton() {
   return (
-    <section className="w-full bg-gradient-to-b from-muted/30 to-background py-16 md:py-24">
+    <section className="w-full bg-linear-to-b from-muted/30 to-background py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16">
           <div className="mb-8">

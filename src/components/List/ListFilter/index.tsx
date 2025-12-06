@@ -117,7 +117,7 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
         onSubmit={handleSubmit}
         role="form"
       >
-        <div className="flex-grow">
+        <div className="grow">
           <input
             className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:border-primary"
             onChange={(e) => setListSearchText(e.target.value)}
