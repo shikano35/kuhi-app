@@ -14,12 +14,12 @@ describe('API関数のテスト', () => {
       const result = await getAllHaikuMonuments();
 
       expect(Array.isArray(result)).toBe(true);
-      if (result.length > 0) {
-        const firstMonument = result[0];
-        expect(firstMonument).toHaveProperty('id');
-        expect(firstMonument).toHaveProperty('poets');
-        expect(firstMonument).toHaveProperty('locations');
-      }
+      expect(result.length).toBeGreaterThan(0);
+
+      const firstMonument = result[0];
+      expect(firstMonument).toMatchObject({ id: expect.any(Number) });
+      expect(Array.isArray(firstMonument.poets)).toBe(true);
+      expect(Array.isArray(firstMonument.locations)).toBe(true);
     }, 30000);
 
     test('APIエラー時には空配列を返すこと', async () => {
@@ -32,11 +32,13 @@ describe('API関数のテスト', () => {
     test('指定したIDの句碑データを取得できること', async () => {
       const result = await getHaikuMonumentById(1);
 
-      if (result) {
-        expect(result).toHaveProperty('id');
-        expect(result).toHaveProperty('poets');
-        expect(result).toHaveProperty('locations');
+      if (!result) {
+        throw new Error('Monument with id=1 was not found');
       }
+
+      expect(result).toMatchObject({ id: 1 });
+      expect(Array.isArray(result.poets)).toBe(true);
+      expect(Array.isArray(result.locations)).toBe(true);
     });
 
     test('存在しないIDの場合はnullを返すこと', async () => {
@@ -74,11 +76,13 @@ describe('API関数のテスト', () => {
       const result = await getAllPoets();
 
       expect(Array.isArray(result)).toBe(true);
-      if (result.length > 0) {
-        const firstPoet = result[0];
-        expect(firstPoet).toHaveProperty('id');
-        expect(firstPoet).toHaveProperty('name');
-      }
+      expect(result.length).toBeGreaterThan(0);
+
+      const firstPoet = result[0];
+      expect(firstPoet).toMatchObject({
+        id: expect.any(Number),
+        name: expect.any(String),
+      });
     }, 15000);
 
     test('APIエラー時には空配列を返すこと', async () => {
@@ -92,12 +96,14 @@ describe('API関数のテスト', () => {
       const result = await getAllLocations();
 
       expect(Array.isArray(result)).toBe(true);
-      if (result.length > 0) {
-        const firstLocation = result[0];
-        expect(firstLocation).toHaveProperty('id');
-        expect(firstLocation).toHaveProperty('region');
-        expect(firstLocation).toHaveProperty('prefecture');
-      }
+      expect(result.length).toBeGreaterThan(0);
+
+      const firstLocation = result[0];
+      expect(firstLocation).toMatchObject({
+        id: expect.any(Number),
+        region: expect.any(String),
+        prefecture: expect.any(String),
+      });
     }, 15000);
 
     test('APIエラー時には空配列を返すこと', async () => {

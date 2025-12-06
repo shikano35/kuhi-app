@@ -10,11 +10,10 @@ const dirname =
     ? __dirname
     : path.dirname(fileURLToPath(import.meta.url));
 
+const enableStorybookTests = process.env.STORYBOOK_TEST === 'true';
+
 export default defineConfig({
-  plugins: [
-    react(),
-    tsconfigPaths(),
-  ],
+  plugins: [react(), tsconfigPaths()],
 
   resolve: {
     alias: {
@@ -27,7 +26,7 @@ export default defineConfig({
       'src/tests/**/*.test.ts',
       'src/**/*.test.ts',
       'src/**/*.test.tsx',
-      'src/**/*.spec.ts'
+      'src/**/*.spec.ts',
     ],
     environment: 'jsdom',
     globals: true,
@@ -35,35 +34,37 @@ export default defineConfig({
 
     css: {
       modules: {
-        classNameStrategy: 'stable'
-      }
+        classNameStrategy: 'stable',
+      },
     },
 
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       include: ['src/**/*.{test,spec}.{ts,tsx}'],
-      exclude: ['node_modules/', 'dist/', '.storybook/**']
+      exclude: ['node_modules/', 'dist/', '.storybook/**'],
     },
 
-    workspace: [
-      { extends: true },
-      {
-        extends: true,
-        plugins: [
-          storybookTest({ configDir: path.join(dirname, '.storybook') }),
-        ],
-        test: {
-          name: 'storybook',
-          browser: {
-            enabled: true,
-            headless: true,
-            name: 'chromium',
-            provider: 'playwright',
+    workspace: enableStorybookTests
+      ? [
+          { extends: true },
+          {
+            extends: true,
+            plugins: [
+              storybookTest({ configDir: path.join(dirname, '.storybook') }),
+            ],
+            test: {
+              name: 'storybook',
+              browser: {
+                enabled: true,
+                headless: true,
+                name: 'chromium',
+                provider: 'playwright',
+              },
+              setupFiles: ['.storybook/vitest.setup.ts'],
+            },
           },
-          setupFiles: ['.storybook/vitest.setup.ts'],
-        },
-      },
-    ],
+        ]
+      : [{ extends: true }],
   },
 });
