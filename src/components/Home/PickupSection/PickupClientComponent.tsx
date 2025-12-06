@@ -53,7 +53,7 @@ function MonumentCard({
                 src={imageUrl}
               />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-muted to-secondary">
+              <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-muted to-secondary">
                 <span
                   className={cn(
                     'text-4xl text-accent-purple/30',
@@ -75,7 +75,7 @@ function MonumentCard({
             >
               {haiku}
             </p>
-            
+
             <p className="text-sm text-muted-foreground mb-2">{poetName}</p>
 
             {location && (
@@ -112,7 +112,7 @@ function PoetCard({ index, poet }: { poet: Poet; index: number }) {
                 src={poet.image_url}
               />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-muted to-secondary">
+              <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-muted to-secondary">
                 <User className="w-12 h-12 text-accent-purple/30" />
               </div>
             )}
@@ -146,7 +146,7 @@ export function PickupClientComponent({
   poets,
 }: PickupClientComponentProps) {
   return (
-    <section className="w-full bg-gradient-to-b from-muted/30 to-background py-16 md:py-24">
+    <section className="w-full bg-linear-to-b from-muted/30 to-background py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16">
           <div className="flex items-center justify-between mb-8">

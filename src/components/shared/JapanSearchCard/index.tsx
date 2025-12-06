@@ -92,7 +92,7 @@ export function JapanSearchCard({
             </div>
           ) : (
             <div
-              className={`w-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50 ${variant === 'compact' ? 'aspect-square' : 'aspect-video'}`}
+              className={`w-full flex items-center justify-center bg-linear-to-br from-muted to-muted/50 ${variant === 'compact' ? 'aspect-square' : 'aspect-video'}`}
             >
               <div className="text-center">
                 {getTypeIcon()}
@@ -138,13 +138,13 @@ export function JapanSearchCard({
                 <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
                   {temporalText && (
                     <span className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3 flex-shrink-0" />
+                      <Calendar className="h-3 w-3 shrink-0" />
                       <span className="truncate">{temporalText}</span>
                     </span>
                   )}
                   {spatialText && (
                     <span className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3 flex-shrink-0" />
+                      <MapPin className="h-3 w-3 shrink-0" />
                       <span className="truncate">{spatialText}</span>
                     </span>
                   )}
@@ -158,7 +158,7 @@ export function JapanSearchCard({
 
                 {dataProvider && (
                   <p className="text-xs text-muted-foreground flex items-center gap-1 pt-1">
-                    <Building2 className="h-3 w-3 flex-shrink-0" />
+                    <Building2 className="h-3 w-3 shrink-0" />
                     <span className="truncate">{dataProvider}</span>
                   </p>
                 )}

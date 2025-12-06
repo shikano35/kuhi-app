@@ -97,7 +97,7 @@ export function HaikuCard({
             </div>
           )}
         </div>
-        <div className="p-4 flex-grow">
+        <div className="p-4 grow">
           <h3 className="text-lg font-medium mb-2 line-clamp-1">
             {inscription}
           </h3>

@@ -40,7 +40,7 @@ function InfoItem({
 }) {
   return (
     <div className="flex gap-3">
-      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+      <div className="shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
         <Icon className="w-4 h-4 text-primary" />
       </div>
       <div className="flex-1 min-w-0">
@@ -67,7 +67,7 @@ export function GalleryDetailContainer({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex items-center justify-center">
         <div className="text-center">
           <div className="relative">
             <div className="w-16 h-16 rounded-full border-4 border-primary/20 mx-auto" />
@@ -81,7 +81,7 @@ export function GalleryDetailContainer({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex items-center justify-center">
         <Card className="max-w-md mx-4 shadow-lg">
           <CardContent className="pt-6">
             <div className="text-center">
@@ -137,7 +137,7 @@ export function GalleryDetailContainer({
 
   if (!item) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex items-center justify-center">
         <Card className="max-w-md mx-4 shadow-lg">
           <CardContent className="pt-6">
             <div className="text-center">
@@ -193,7 +193,7 @@ export function GalleryDetailContainer({
   ].filter((c) => c && c.trim());
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+    <div className="min-h-screen bg-linear-to-b from-background to-muted/30">
       <div className="container mx-auto py-6 px-4 max-w-6xl">
         <BackButton fallbackUrl="/gallery">ギャラリーに戻る</BackButton>
 
@@ -228,7 +228,7 @@ export function GalleryDetailContainer({
             <Card className="overflow-hidden shadow-md">
               <CardContent className="p-0">
                 {hasValidImage ? (
-                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                  <div className="relative aspect-4/3 overflow-hidden bg-muted">
                     <Image
                       alt={title}
                       className="object-contain w-full h-full"
@@ -240,7 +240,7 @@ export function GalleryDetailContainer({
                     />
                   </div>
                 ) : (
-                  <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 flex flex-col items-center justify-center gap-2">
+                  <div className="aspect-4/3 bg-linear-to-br from-muted to-muted/50 flex flex-col items-center justify-center gap-2">
                     <Database className="w-12 h-12 text-muted-foreground/30" />
                     <p className="text-xs text-muted-foreground">
                       画像がありません
