@@ -1,4 +1,4 @@
-import { Shippori_Mincho, Geist_Mono } from 'next/font/google';
+import { Shippori_Mincho, Geist_Mono, Noto_Sans_JP } from 'next/font/google';
 import Script from 'next/script';
 import '../styles/globals.css';
 import { Layout } from '@/layouts';
@@ -18,6 +18,13 @@ const shipporiMincho = Shippori_Mincho({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+});
+
+const notoSansJP = Noto_Sans_JP({
+  variable: '--font-noto-sans-jp',
+  weight: ['400', '500', '700'],
+  subsets: ['latin'],
+  display: 'swap',
 });
 
 export const metadata = baseMetadata;
@@ -43,7 +50,7 @@ export default function RootLayout({
       </Script>
       {process.env.NODE_ENV === 'development' && <MswScript />}
       <body
-        className={`${shipporiMincho.variable} ${geistMono.variable} antialiased`}
+        className={`${shipporiMincho.variable} ${geistMono.variable} ${notoSansJP.variable} antialiased`}
       >
         <TanstackProvider>
           <AuthProvider>

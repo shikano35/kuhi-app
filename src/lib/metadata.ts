@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 
 export const baseMetadata: Metadata = {
-  title: 'くひめぐり - Haiku monument tour -',
+  title: 'くひめぐり',
   description: '日本各地の句碑を紹介するサイト',
-  keywords: 'くひめぐり,haiku,monument,句碑,句碑アプリ,俳句,句碑巡り',
+  keywords: 'くひめぐり,haiku,monument,句碑,kuhi,句碑アプリ,俳句,句碑巡り',
   generator: 'くひめぐり',
   applicationName: 'くひめぐり',
   openGraph: {
-    title: 'くひめぐり - Haiku monument tour -',
+    title: 'くひめぐり',
     description: '日本各地の句碑を紹介するサイト',
     type: 'website',
     url: 'https://kuhi.jp',
@@ -24,7 +24,7 @@ export const baseMetadata: Metadata = {
   },
   twitter: {
     card: 'summary',
-    title: 'くひめぐり - Haiku monument tour -',
+    title: 'くひめぐり',
     description: '日本各地の句碑を紹介するサイト',
   },
 };

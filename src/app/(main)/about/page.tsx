@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Metadata } from 'next';
 import { baseMetadata } from '@/lib/metadata';
 import Link from 'next/link';
+import { PrivacyLinkButton } from '@/components/Privacy/PrivacyLinkButton';
 
 export const metadata: Metadata = {
   ...baseMetadata,
@@ -12,11 +13,13 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-4xl font-bold mb-8 text-center">句碑とは</h1>
+    <div className="font-sans-reading container mx-auto py-8 px-4">
+      <h1 className="font-shippori-mincho text-4xl font-bold mb-8 text-center">
+        句碑とは
+      </h1>
       <div className="max-w-3xl mx-auto">
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+          <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             句碑とは
           </h2>
           <div className="mb-6 relative h-64 w-full">
@@ -28,7 +31,10 @@ export default function AboutPage() {
             />
           </div>
           <p className="mb-4 text-lg">
-            句碑（くひ）とは、俳句や俳諧などの作品を石などに刻んで建立した記念碑のことです。
+            <ruby>
+              句碑<rt>くひ</rt>
+            </ruby>
+            とは、俳句や俳諧などの作品を石などに刻んで建立した記念碑のことです。
             俳人が詠んだ俳句や、その地域に縁のある句を末永く残すために建てられています。
           </p>
           <p className="mb-4 text-lg">
@@ -38,7 +44,7 @@ export default function AboutPage() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+          <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             句碑の歴史
           </h2>
           <p className="mb-4 text-lg">
@@ -52,19 +58,23 @@ export default function AboutPage() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+          <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             句碑の特徴
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
             <div>
-              <h3 className="text-xl font-medium mb-2">素材と形状</h3>
+              <h3 className="font-shippori-mincho text-xl font-medium mb-2">
+                素材と形状
+              </h3>
               <p className="text-primary">
                 多くの句碑は石材（主に花崗岩や大理石など）で作られていますが、木製や金属製のものも存在します。
                 形状は直方体や自然石を活かした不定形なものなど様々で、俳句が刻まれた面は平らに加工されています。
               </p>
             </div>
             <div>
-              <h3 className="text-xl font-medium mb-2">刻字と配置</h3>
+              <h3 className="font-shippori-mincho text-xl font-medium mb-2">
+                刻字と配置
+              </h3>
               <p className="text-primary">
                 句碑には主に縦書きで俳句が刻まれていますが、横書きのものや、石の形状に合わせた配置のものもあります。
                 多くの場合、俳句と俳人名、建立年月日や建立者なども刻まれています。
@@ -73,14 +83,18 @@ export default function AboutPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-xl font-medium mb-2">建立場所</h3>
+              <h3 className="font-shippori-mincho text-xl font-medium mb-2">
+                建立場所
+              </h3>
               <p className="text-primary">
                 俳句にゆかりのある場所や、その句が詠まれた景観を眺められる場所などに建立されることが多いです。
                 寺社仏閣の境内や公園、山頂や河川敷など、様々な場所に見られます。
               </p>
             </div>
             <div>
-              <h3 className="text-xl font-medium mb-2">保存と管理</h3>
+              <h3 className="font-shippori-mincho text-xl font-medium mb-2">
+                保存と管理
+              </h3>
               <p className="text-primary">
                 句碑は地域の文化財として、地方自治体や保存会によって管理されることが多いです。
                 中には国の重要文化財や史跡に指定されている句碑もあります。
@@ -90,33 +104,39 @@ export default function AboutPage() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+          <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             代表的な句碑
           </h2>
           <ul className="list-disc list-inside space-y-2 text-lg">
             <li>
-              <span className="font-medium">「古池や蛙飛び込む水の音」</span> -
-              松尾芭蕉（東京都文京区の深川芭蕉庵跡）
+              <span className="font-shippori-mincho font-medium">
+                「古池や蛙飛び込む水の音」
+              </span>{' '}
+              - 松尾芭蕉（東京都江東区 深川芭蕉庵跡）
             </li>
             <li>
-              <span className="font-medium">「夏草や兵どもが夢の跡」</span> -
-              松尾芭蕉（岩手県平泉町の毛越寺南大門跡）
+              <span className="font-shippori-mincho font-medium">
+                「夏草や兵どもが夢の跡」
+              </span>{' '}
+              - 松尾芭蕉（岩手県平泉町 毛越寺南大門跡）
             </li>
             <li>
-              <span className="font-medium">
+              <span className="font-shippori-mincho font-medium">
                 「柿くへば鐘が鳴るなり法隆寺」
               </span>{' '}
-              - 正岡子規（奈良県斑鳩町の法隆寺）
+              - 正岡子規（奈良県斑鳩町 法隆寺）
             </li>
             <li>
-              <span className="font-medium">「菜の花や月は東に日は西に」</span>{' '}
-              - 与謝蕪村（大阪府大阪市北区の梅田芸術劇場前）
+              <span className="font-shippori-mincho font-medium">
+                「菜の花や月は東に日は西に」
+              </span>{' '}
+              - 与謝蕪村（大阪府大阪市北区 梅田芸術劇場前）
             </li>
           </ul>
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+          <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             句碑の価値と意義
           </h2>
           <p className="mb-4 text-lg">
@@ -130,7 +150,7 @@ export default function AboutPage() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+          <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             「くひめぐり」とは
           </h2>
           <div className="mb-6 relative h-64 w-full">
@@ -152,12 +172,14 @@ export default function AboutPage() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+          <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             サイトの使い方
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="bg-muted/30 p-6 rounded-lg">
-              <h3 className="text-xl font-medium mb-3">句碑を探す</h3>
+              <h3 className="font-shippori-mincho text-xl font-medium mb-3">
+                句碑を探す
+              </h3>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                 <li>
                   地図から探す - 地図上のマーカーをクリックして句碑情報を閲覧
@@ -167,7 +189,7 @@ export default function AboutPage() {
               </ul>
             </div>
             <div className="bg-muted/30 p-6 rounded-lg">
-              <h3 className="text-xl font-medium mb-3">
+              <h3 className="font-shippori-mincho text-xl font-medium mb-3">
                 アカウント機能（準備中）
               </h3>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground">
@@ -180,7 +202,7 @@ export default function AboutPage() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+          <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             利用規約・プライバシーポリシー
           </h2>
           <p className="mb-4 text-lg">
@@ -194,17 +216,12 @@ export default function AboutPage() {
             >
               利用規約を見る
             </Link>
-            <Link
-              className="inline-flex items-center justify-center px-6 py-3 border border-primary rounded-md font-medium text-primary hover:bg-primary hover:text-white transition-colors"
-              href="/"
-            >
-              プライバシーポリシーを見る
-            </Link>
+            <PrivacyLinkButton />
           </div>
         </section>
 
         <section>
-          <h2 className="text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
+          <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             お問い合わせ
           </h2>
           <p className="mb-4 text-lg">

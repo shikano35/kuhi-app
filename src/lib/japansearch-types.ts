@@ -272,9 +272,7 @@ function extractSpatialFromRdfindex(
         (v): v is string => typeof v === 'string'
       );
       const filteredSpatial = spatialValues.filter(
-        (s) =>
-          !s.match(/^https?:/) &&
-          !s.match(/^urn:/)
+        (s) => !s.match(/^https?:/) && !s.match(/^urn:/)
       );
       if (filteredSpatial.length > 0) {
         return filteredSpatial;
