@@ -140,7 +140,7 @@
 }
 
 @layer utilities {
-  .font-serif-reading {
+  .font-sans-reading {
     font-family: var(--font-noto-sans-jp), 'Noto Sans JP', sans-serif;
   }
 }

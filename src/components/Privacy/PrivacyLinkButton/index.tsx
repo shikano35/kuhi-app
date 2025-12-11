@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { PrivacyPolicyContent } from '../PrivacyPolicyContent';
 import {
   Dialog,
@@ -11,10 +10,8 @@ import {
 } from '@/components/ui/dialog';
 
 export function PrivacyLinkButton() {
-  const [open, setOpen] = useState(false);
-
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
+    <Dialog>
       <DialogTrigger asChild>
         <button
           className="inline-flex items-center justify-center px-6 py-3 border border-primary rounded-md font-medium text-primary hover:bg-primary hover:text-white transition-colors"
