@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Source } from '@/types/definitions/haiku';
@@ -12,16 +12,14 @@ interface SourcesListProps {
 
 export function SourcesList({ sources }: SourcesListProps) {
   const [search, setSearch] = useState('');
-  const [filteredSources, setFilteredSources] = useState<Source[]>(sources);
 
-  useEffect(() => {
+  const filteredSources = useMemo(() => {
     if (!search) {
-      setFilteredSources(sources);
-      return;
+      return sources;
     }
 
     const lowerSearch = search.toLowerCase();
-    const filtered = sources.filter((source) => {
+    return sources.filter((source) => {
       return (
         source.title.toLowerCase().includes(lowerSearch) ||
         (source.author && source.author.toLowerCase().includes(lowerSearch)) ||
@@ -29,8 +27,6 @@ export function SourcesList({ sources }: SourcesListProps) {
           source.publisher.toLowerCase().includes(lowerSearch))
       );
     });
-
-    setFilteredSources(filtered);
   }, [search, sources]);
 
   return (

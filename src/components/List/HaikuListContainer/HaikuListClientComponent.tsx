@@ -35,7 +35,7 @@ export function HaikuListClientComponent({
 
   const searchQuery = searchParams.get('q') || '';
   const regionFilter = searchParams.get('region') || 'すべて';
-  const _prefectureFilter = searchParams.get('prefecture') || 'すべて';
+  const prefectureFilter = searchParams.get('prefecture') || 'すべて';
   const poetIdFilter = searchParams.get('poet_id')
     ? Number(searchParams.get('poet_id'))
     : null;
@@ -51,6 +51,7 @@ export function HaikuListClientComponent({
   } = useInfiniteMonuments({
     q: searchQuery,
     region: regionFilter === 'すべて' ? undefined : regionFilter,
+    prefecture: prefectureFilter === 'すべて' ? undefined : prefectureFilter,
     poet_id: poetIdFilter || undefined,
     limit: 30,
   });
@@ -67,7 +68,10 @@ export function HaikuListClientComponent({
   const infiniteData = useFlattenedInfiniteMonuments(data?.pages);
 
   const monuments = useMemo(() => {
-    return infiniteData.length > 0 ? infiniteData : initialMonuments;
+    if (infiniteData.length > 0) {
+      return infiniteData;
+    }
+    return initialMonuments;
   }, [infiniteData, initialMonuments]);
 
   if (isError) {

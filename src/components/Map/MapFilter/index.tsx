@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { HaikuMonument } from '@/types/definitions/haiku';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,8 +57,6 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
   const { data: userFavorites } = useUserFavorites();
   const { data: userVisits } = useUserVisits();
 
-  const isFirstRender = useRef(true);
-
   const prefectures = useMemo(
     () => [
       'すべて',
@@ -89,8 +87,8 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
     [monuments]
   );
 
-  useEffect(() => {
-    if (monuments.length === 0) return;
+  const filteredMonuments = useMemo(() => {
+    if (monuments.length === 0) return [];
 
     let filtered = [...monuments];
 
@@ -136,23 +134,17 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
           combinedIds.includes(monument.id)
         );
       } else if (mapShowFavoritesOnly) {
-        // お気に入りのみ
         filtered = filtered.filter((monument) =>
           favoriteIds.includes(monument.id)
         );
       } else if (mapShowVisitedOnly) {
-        // 訪問済みのみ
         filtered = filtered.filter((monument) =>
           visitedIds.includes(monument.id)
         );
       }
     }
 
-    onFilterChange(filtered);
-
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-    }
+    return filtered;
   }, [
     monuments,
     mapSelectedRegion,
@@ -163,8 +155,11 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
     mapShowVisitedOnly,
     userFavorites,
     userVisits,
-    onFilterChange,
   ]);
+
+  useEffect(() => {
+    onFilterChange(filteredMonuments);
+  }, [filteredMonuments, onFilterChange]);
 
   const handleRegionChange = (region: string) => {
     setMapSelectedRegion(region);

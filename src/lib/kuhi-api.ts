@@ -10,6 +10,17 @@ import {
   SourcesQueryParams,
 } from '@/types/definitions/api';
 
+const KUHI_API_BASE_URL = 'https://api.kuhi.jp';
+
+const API_HEADERS: HeadersInit = {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  'User-Agent': 'kuhi-app/1.0 (https://kuhi.jp)',
+};
+
+const CACHE_REVALIDATE = 7200;
+const API_MAX_LIMIT = 100;
+
 class KuhiApiError extends Error {
   constructor(
     message: string,
@@ -21,24 +32,12 @@ class KuhiApiError extends Error {
   }
 }
 
-const KUHI_API_BASE_URL = 'https://api.kuhi.jp';
-
-function getKuhiApiBaseUrl(): string {
-  return KUHI_API_BASE_URL;
-}
-
-const API_HEADERS: HeadersInit = {
-  'Content-Type': 'application/json',
-  Accept: 'application/json',
-  'User-Agent': 'kuhi-app/1.0 (https://kuhi.jp)',
-};
-
 async function fetcher<T>(url: string, retries = 3): Promise<T> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const response = await fetch(url, {
         headers: API_HEADERS,
-        next: { revalidate: 7200 }, // 2時間キャッシュ
+        next: { revalidate: CACHE_REVALIDATE },
       });
 
       if (!response.ok) {
@@ -83,12 +82,100 @@ export async function getMonuments(
   params: MonumentsQueryParams = {}
 ): Promise<MonumentWithRelations[]> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  const base = getKuhiApiBaseUrl();
-  const url = `${base}/monuments${queryString ? `?${queryString}` : ''}`;
-  return await fetcher<MonumentWithRelations[]>(url);
+  const url = `${KUHI_API_BASE_URL}/monuments${queryString ? `?${queryString}` : ''}`;
+  return fetcher<MonumentWithRelations[]>(url);
 }
 
-// inscriptionsから全ての句碑データを再構築する関数
+export async function getMonumentById(
+  id: number
+): Promise<MonumentWithRelations> {
+  const url = `${KUHI_API_BASE_URL}/monuments/${id}`;
+  return fetcher<MonumentWithRelations>(url);
+}
+
+export async function getAllMonuments(): Promise<MonumentWithRelations[]> {
+  return getMapMonuments();
+}
+
+export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
+  try {
+    const allMonuments: MonumentWithRelations[] = [];
+    let offset = 0;
+    let hasMore = true;
+
+    const firstBatch = await getMonuments({
+      limit: API_MAX_LIMIT,
+      offset: 0,
+      expand: 'locations,inscriptions.poems,poets',
+    });
+
+    if (firstBatch.length === 0) {
+      return [];
+    }
+
+    allMonuments.push(...firstBatch);
+    offset = API_MAX_LIMIT;
+
+    if (firstBatch.length < API_MAX_LIMIT) {
+      return allMonuments;
+    }
+
+    while (hasMore) {
+      const batchPromises: Promise<MonumentWithRelations[]>[] = [];
+      const batchCount = 10;
+
+      for (let i = 0; i < batchCount; i++) {
+        const currentOffset = offset + i * API_MAX_LIMIT;
+        batchPromises.push(
+          getMonuments({
+            limit: API_MAX_LIMIT,
+            offset: currentOffset,
+            expand: 'locations,inscriptions.poems,poets',
+          }).catch(() => [] as MonumentWithRelations[])
+        );
+      }
+
+      const results = await Promise.allSettled(batchPromises);
+      let totalInBatch = 0;
+      let lastBatchSize = 0;
+
+      results.forEach((result) => {
+        if (result.status === 'fulfilled' && result.value.length > 0) {
+          allMonuments.push(...result.value);
+          totalInBatch += result.value.length;
+          lastBatchSize = result.value.length;
+        }
+      });
+
+      offset += batchCount * API_MAX_LIMIT;
+
+      if (totalInBatch === 0 || lastBatchSize < API_MAX_LIMIT) {
+        hasMore = false;
+      }
+
+      if (allMonuments.length >= 3000) {
+        hasMore = false;
+      }
+    }
+
+    return allMonuments;
+  } catch {
+    try {
+      const monuments = await getMonuments({
+        limit: API_MAX_LIMIT,
+        expand: 'locations,inscriptions.poems,poets',
+      });
+      return monuments.filter(
+        (m) =>
+          m.locations?.length > 0 &&
+          m.locations.some((loc) => loc.latitude && loc.longitude)
+      );
+    } catch {
+      return [];
+    }
+  }
+}
+
 export async function getAllMonumentsFromInscriptions(): Promise<
   MonumentWithRelations[]
 > {
@@ -97,10 +184,8 @@ export async function getAllMonumentsFromInscriptions(): Promise<
   const limit = 50;
   let hasMore = true;
 
-  // 全ての碑文データを取得
   while (hasMore) {
-    const base = getKuhiApiBaseUrl();
-    const url = `${base}/inscriptions?limit=${limit}&offset=${offset}`;
+    const url = `${KUHI_API_BASE_URL}/inscriptions?limit=${limit}&offset=${offset}`;
     const response = (await fetcher(url)) as { inscriptions?: Inscription[] };
 
     if (response.inscriptions && response.inscriptions.length > 0) {
@@ -157,7 +242,7 @@ export async function getAllMonumentsFromInscriptions(): Promise<
     }
 
     const monument = monumentsMap.get(monumentId);
-    if (monument && monument.inscriptions) {
+    if (monument?.inscriptions) {
       monument.inscriptions.push(inscription);
 
       if (inscription.poems) {
@@ -167,67 +252,20 @@ export async function getAllMonumentsFromInscriptions(): Promise<
     }
   }
 
-  const monuments = Array.from(monumentsMap.values());
-  return monuments;
+  return Array.from(monumentsMap.values());
 }
 
-export async function getAllMonuments(): Promise<MonumentWithRelations[]> {
-  return await getMapMonuments();
+export async function getPoets(params: PoetsQueryParams = {}): Promise<Poet[]> {
+  const queryString = buildQueryString(params as Record<string, unknown>);
+  const url = `${KUHI_API_BASE_URL}/poets${queryString ? `?${queryString}` : ''}`;
+  return fetcher<Poet[]>(url);
 }
 
-export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
-  const _base = getKuhiApiBaseUrl();
-
-  try {
-    const allMonuments: MonumentWithRelations[] = [];
-    const promises: Promise<MonumentWithRelations[]>[] = [];
-
-    const limit = 100;
-    const batchCount = 3;
-
-    for (let i = 0; i < batchCount; i++) {
-      const offset = i * limit;
-      const promise = getMonuments({
-        limit,
-        offset,
-        expand: 'locations,inscriptions.poems,poets',
-      }).catch((_error) => {
-        return [] as MonumentWithRelations[];
-      });
-      promises.push(promise);
-    }
-    const results = await Promise.allSettled(promises);
-    results.forEach((result) => {
-      if (result.status === 'fulfilled') {
-        allMonuments.push(...result.value);
-      }
-    });
-
-    return allMonuments;
-  } catch (error) {
-    console.warn(
-      'Map monuments fetch failed, falling back to basic data:',
-      error
-    );
-
-    try {
-      const monuments = await getMonuments({
-        limit: 100,
-        expand: 'locations,inscriptions.poems,poets',
-      });
-      return monuments.filter(
-        (m) =>
-          m.locations &&
-          m.locations.length > 0 &&
-          m.locations.some((loc) => loc.latitude && loc.longitude)
-      );
-    } catch {
-      return [];
-    }
-  }
+export async function getPoetById(id: number): Promise<Poet> {
+  const url = `${KUHI_API_BASE_URL}/poets/${id}`;
+  return fetcher<Poet>(url);
 }
 
-// 全ての俳人を取得する関数
 export async function getAllPoets(): Promise<Poet[]> {
   const allPoets: Poet[] = [];
   let offset = 0;
@@ -252,32 +290,10 @@ export async function getAllPoets(): Promise<Poet[]> {
   return allPoets;
 }
 
-export async function getMonumentById(
-  id: number
-): Promise<MonumentWithRelations> {
-  const base = getKuhiApiBaseUrl();
-  const url = `${base}/monuments/${id}`;
-  return fetcher<MonumentWithRelations>(url);
-}
-
-export async function getPoets(params: PoetsQueryParams = {}): Promise<Poet[]> {
-  const queryString = buildQueryString(params as Record<string, unknown>);
-  const base = getKuhiApiBaseUrl();
-  const url = `${base}/poets${queryString ? `?${queryString}` : ''}`;
-  return fetcher<Poet[]>(url);
-}
-
-export async function getPoetById(id: number): Promise<Poet> {
-  const base = getKuhiApiBaseUrl();
-  const url = `${base}/poets/${id}`;
-  return fetcher<Poet>(url);
-}
-
 export async function getMonumentsByPoet(
   poetId: number
 ): Promise<MonumentWithRelations[]> {
-  const base = getKuhiApiBaseUrl();
-  const url = `${base}/poets/${poetId}/monuments`;
+  const url = `${KUHI_API_BASE_URL}/poets/${poetId}/monuments`;
   const simpleMonuments = await fetcher<{ id: number }[]>(url);
 
   const monumentPromises = simpleMonuments.map((monument) =>
@@ -287,69 +303,50 @@ export async function getMonumentsByPoet(
   return Promise.all(monumentPromises);
 }
 
-// Location API
 export async function getLocations(
   params: LocationsQueryParams = {}
 ): Promise<Location[]> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  const base = getKuhiApiBaseUrl();
-  const url = `${base}/locations${queryString ? `?${queryString}` : ''}`;
+  const url = `${KUHI_API_BASE_URL}/locations${queryString ? `?${queryString}` : ''}`;
   return fetcher<Location[]>(url);
 }
 
-export async function getLocationById(id: number): Promise<Location> {
-  const base = getKuhiApiBaseUrl();
-  const url = `${base}/locations/${id}`;
-  return fetcher<Location>(url);
+export async function getAllLocations(): Promise<Location[]> {
+  const allLocations: Location[] = [];
+  let offset = 0;
+  const limit = API_MAX_LIMIT;
+  let hasMore = true;
+
+  while (hasMore) {
+    const locations = await getLocations({ limit, offset });
+
+    if (locations.length === 0) {
+      hasMore = false;
+    } else {
+      allLocations.push(...locations);
+      offset += limit;
+
+      if (locations.length < limit) {
+        hasMore = false;
+      }
+    }
+  }
+
+  return allLocations;
 }
 
-export async function getMonumentsByLocation(
-  locationId: number
-): Promise<MonumentWithRelations[]> {
-  const base = getKuhiApiBaseUrl();
-  const url = `${base}/locations/${locationId}/monuments`;
-  return fetcher<MonumentWithRelations[]>(url);
-}
-
-// Source API
 export async function getSources(
   params: SourcesQueryParams = {}
 ): Promise<Source[]> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  const base = getKuhiApiBaseUrl();
-  const url = `${base}/sources${queryString ? `?${queryString}` : ''}`;
+  const url = `${KUHI_API_BASE_URL}/sources${queryString ? `?${queryString}` : ''}`;
   return fetcher<Source[]>(url);
-}
-
-export async function getSourceById(id: number): Promise<Source> {
-  const base = getKuhiApiBaseUrl();
-  const url = `${base}/sources/${id}`;
-  return fetcher<Source>(url);
-}
-
-export async function getMonumentsBySource(
-  sourceId: number
-): Promise<MonumentWithRelations[]> {
-  const base = getKuhiApiBaseUrl();
-  const url = `${base}/sources/${sourceId}/monuments`;
-  return fetcher<MonumentWithRelations[]>(url);
-}
-
-// ユーティリティ関数
-export function getMonumentImageUrl(
-  monument: MonumentWithRelations
-): string | null {
-  if (monument.media && monument.media.length > 0) {
-    const photo = monument.media.find((m) => m.media_type === 'photo');
-    return photo?.url || null;
-  }
-  return null;
 }
 
 export function getMonumentInscription(
   monument: MonumentWithRelations
 ): string | null {
-  if (monument.inscriptions && monument.inscriptions.length > 0) {
+  if (monument.inscriptions?.length > 0) {
     const frontInscription = monument.inscriptions.find(
       (i) => i.side === 'front'
     );
@@ -360,36 +357,4 @@ export function getMonumentInscription(
     );
   }
   return null;
-}
-
-export function getMonumentPoems(monument: MonumentWithRelations): string[] {
-  if (monument.inscriptions && monument.inscriptions.length > 0) {
-    return monument.inscriptions.flatMap((inscription) =>
-      inscription.poems.map((poem) => poem.text)
-    );
-  }
-  return [];
-}
-
-export function getMonumentSeasons(monument: MonumentWithRelations): string[] {
-  if (monument.inscriptions && monument.inscriptions.length > 0) {
-    const seasons = monument.inscriptions.flatMap((inscription) =>
-      inscription.poems.map((poem) => poem.season).filter(Boolean)
-    );
-    return [...new Set(seasons)] as string[];
-  }
-  return [];
-}
-
-export function getMonumentKigo(monument: MonumentWithRelations): string[] {
-  if (monument.inscriptions && monument.inscriptions.length > 0) {
-    const kigo = monument.inscriptions.flatMap((inscription) =>
-      inscription.poems
-        .map((poem) => poem.kigo)
-        .filter(Boolean)
-        .flatMap((k) => (k ? k.split(',') : []))
-    );
-    return [...new Set(kigo)];
-  }
-  return [];
 }

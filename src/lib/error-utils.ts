@@ -1,6 +1,3 @@
-/**
- * エラーメッセージに変換
- */
 export function getUserFriendlyErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     if (error.message.includes('Failed to remove favorite')) {

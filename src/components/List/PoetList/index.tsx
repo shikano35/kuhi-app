@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,23 +14,19 @@ type PoetListProps = {
 
 export function PoetList({ poets }: PoetListProps) {
   const [search, setSearch] = useState('');
-  const [filteredPoets, setFilteredPoets] = useState<Poet[]>(poets);
 
-  useEffect(() => {
+  const filteredPoets = useMemo(() => {
     if (!search) {
-      setFilteredPoets(poets);
-      return;
+      return poets;
     }
 
     const lowerSearch = search.toLowerCase();
-    const filtered = poets.filter((poet) => {
+    return poets.filter((poet) => {
       return (
         poet.name.toLowerCase().includes(lowerSearch) ||
         (poet.biography && poet.biography.toLowerCase().includes(lowerSearch))
       );
     });
-
-    setFilteredPoets(filtered);
   }, [search, poets]);
 
   return (
@@ -69,9 +65,9 @@ export function PoetList({ poets }: PoetListProps) {
                         <div className="relative h-24 w-24 rounded-full overflow-hidden">
                           <Image
                             alt={poet.name}
-                            className="rounded-full"
-                            layout="fill"
-                            objectFit="cover"
+                            className="rounded-full object-cover"
+                            fill
+                            sizes="96px"
                             src={poet.image_url}
                           />
                         </div>

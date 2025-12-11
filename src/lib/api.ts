@@ -11,16 +11,9 @@ import {
   PoetsQueryParams,
   LocationsQueryParams,
   SourcesQueryParams,
-  PoemsQueryParams,
-  InscriptionsQueryParams,
   Poet as ApiPoet,
   Location as ApiLocation,
   Source as ApiSource,
-  Inscription,
-  Event,
-  Media,
-  InscriptionWithMonument,
-  PoemWithRelations,
 } from '@/types/definitions/api';
 import {
   mapMonumentsToHaikuMonuments,
@@ -38,6 +31,12 @@ const API_HEADERS: HeadersInit = {
   'User-Agent': 'kuhi-app/1.0 (https://kuhi.jp)',
 };
 
+const CACHE_TTL = {
+  SHORT: 60 * 30, // 30分
+  MEDIUM: 60 * 60, // 1時間
+  LONG: 60 * 60 * 24, // 24時間
+} as const;
+
 async function apiFetch(
   url: string,
   options: RequestInit = {}
@@ -48,6 +47,7 @@ async function apiFetch(
       ...API_HEADERS,
       ...options.headers,
     },
+    next: { revalidate: CACHE_TTL.MEDIUM },
   });
 }
 
@@ -86,7 +86,7 @@ export async function getMonuments(
 export async function getAllMonuments(): Promise<HaikuMonument[]> {
   try {
     const allMonuments: MonumentWithRelations[] = [];
-    const batchSize = 3;
+    const batchSize = 6;
     const limit = 100;
 
     const promises = Array.from({ length: batchSize }, (_, i) => {
@@ -111,10 +111,8 @@ export async function getAllMonuments(): Promise<HaikuMonument[]> {
         allMonuments.push(...result.value);
       }
     });
-
     return allMonuments.map(mapMonumentToHaikuMonument);
-  } catch (error) {
-    console.error('Error fetching all monuments:', error);
+  } catch {
     return [];
   }
 }
@@ -165,7 +163,7 @@ export async function getAllPoetsFromApi(): Promise<ApiPoet[]> {
   try {
     const allPoets: ApiPoet[] = [];
     let offset = 0;
-    const limit = 50;
+    const limit = 100;
     let hasMore = true;
 
     while (hasMore) {
@@ -189,8 +187,7 @@ export async function getAllPoetsFromApi(): Promise<ApiPoet[]> {
     }
 
     return allPoets;
-  } catch (error) {
-    console.error('Error fetching poets from API:', error);
+  } catch {
     return [];
   }
 }
@@ -238,170 +235,6 @@ export async function getSources(
   return Array.isArray(data) ? data : [];
 }
 
-export async function getMonumentsByCoordinates(
-  lat: number,
-  lon: number,
-  radius: number
-): Promise<MonumentWithRelations[]> {
-  const latDelta = radius / 111000;
-  const lonDelta = radius / (111000 * Math.cos((lat * Math.PI) / 180));
-
-  const bbox = `${lon - lonDelta},${lat - latDelta},${lon + lonDelta},${lat + latDelta}`;
-
-  const queryString = buildQueryString({ bbox });
-  const url = `${API_BASE_URL}/monuments?${queryString}`;
-
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
-}
-
-export async function getMonumentInscriptions(
-  id: number
-): Promise<Inscription[]> {
-  const response = await fetch(`${API_BASE_URL}/monuments/${id}/inscriptions`);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
-}
-
-export async function getMonumentEvents(id: number): Promise<Event[]> {
-  const response = await fetch(`${API_BASE_URL}/monuments/${id}/events`);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
-}
-
-export async function getMonumentMedia(id: number): Promise<Media[]> {
-  const response = await fetch(`${API_BASE_URL}/monuments/${id}/media`);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
-}
-
-export async function getInscriptions(
-  params: InscriptionsQueryParams = {}
-): Promise<InscriptionWithMonument[]> {
-  const queryString = buildQueryString(params as Record<string, unknown>);
-  const url = `${API_BASE_URL}/inscriptions${queryString ? `?${queryString}` : ''}`;
-
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return data.inscriptions || [];
-}
-
-export async function getInscriptionById(
-  id: number
-): Promise<InscriptionWithMonument | null> {
-  const response = await fetch(`${API_BASE_URL}/inscriptions/${id}`);
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const data = await response.json();
-  return data || null;
-}
-
-export async function getPoems(
-  params: PoemsQueryParams = {}
-): Promise<PoemWithRelations[]> {
-  const queryString = buildQueryString(params as Record<string, unknown>);
-  const url = `${API_BASE_URL}/poems${queryString ? `?${queryString}` : ''}`;
-
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return data.poems || [];
-}
-
-export async function getPoemById(
-  id: number
-): Promise<PoemWithRelations | null> {
-  const response = await fetch(`${API_BASE_URL}/poems/${id}`);
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const data = await response.json();
-  return data || null;
-}
-
-export async function getLocationById(id: number): Promise<ApiLocation | null> {
-  const response = await fetch(`${API_BASE_URL}/locations/${id}`);
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const data = await response.json();
-  return data || null;
-}
-
-export async function getLocationMonuments(
-  id: number
-): Promise<MonumentWithRelations[]> {
-  const response = await fetch(`${API_BASE_URL}/locations/${id}/monuments`);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
-}
-
-export async function getSourceById(id: number): Promise<ApiSource | null> {
-  const response = await fetch(`${API_BASE_URL}/sources/${id}`);
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const data = await response.json();
-  return data || null;
-}
-
-export async function getSourceMonuments(
-  id: number
-): Promise<MonumentWithRelations[]> {
-  const response = await fetch(`${API_BASE_URL}/sources/${id}/monuments`);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
-}
-
 type GetHaikuMonumentsOptions = {
   limit?: number;
   offset?: number;
@@ -431,12 +264,10 @@ export async function getAllHaikuMonuments(
     };
 
     const monuments = await getMonuments(params);
-    const mapped = mapMonumentsToHaikuMonuments(monuments);
-    return mapped;
+    return mapMonumentsToHaikuMonuments(monuments);
   }
 
-  const monuments = await getAllMonuments();
-  return monuments;
+  return getAllMonuments();
 }
 
 export async function getHaikuMonumentsPage(
@@ -468,11 +299,7 @@ export async function getHaikuMonumentsPage(
   const data = hasMore ? mapped.slice(0, limit) : mapped;
   const nextPage = hasMore ? (options.pageParam || 0) + 1 : undefined;
 
-  return {
-    data,
-    nextPage,
-    hasMore,
-  };
+  return { data, nextPage, hasMore };
 }
 
 export async function getHaikuMonumentById(
@@ -494,21 +321,11 @@ export async function getHaikuMonumentsByPoet(
   return mapMonumentsToHaikuMonuments(monuments);
 }
 
-export async function getHaikuMonumentsByRegion(
-  region: string
-): Promise<HaikuMonument[]> {
-  const monuments = await getMonuments({ region });
-  return mapMonumentsToHaikuMonuments(monuments);
-}
-
 export async function getAllPoets(): Promise<Poet[]> {
   try {
     const apiPoets = await getAllPoetsFromApi();
-    const mappedPoets = apiPoets.map(mapNewPoetToPoet);
-
-    return mappedPoets;
-  } catch (error) {
-    console.error('Error in getAllPoets:', error);
+    return apiPoets.map(mapNewPoetToPoet);
+  } catch {
     return [];
   }
 }
@@ -582,13 +399,4 @@ export async function getAllNews(): Promise<News[]> {
   ];
 
   return mockNews;
-}
-
-export async function getHaikuMonumentsByCoordinates(
-  lat: number,
-  lon: number,
-  radius: number
-): Promise<HaikuMonument[]> {
-  const monuments = await getMonumentsByCoordinates(lat, lon, radius);
-  return mapMonumentsToHaikuMonuments(monuments);
 }

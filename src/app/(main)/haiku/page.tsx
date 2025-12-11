@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { getAllMonumentsFromInscriptions } from '@/lib/kuhi-api';
 import { baseMetadata } from '@/lib/metadata';
-import { HaikuListView } from '@/components/List/HaikuListView';
+import { HaikuListViewClientWrapper } from '@/components/List/HaikuListView/HaikuListViewClientWrapper';
 import { mapMonumentsToHaikuMonuments } from '@/lib/api-mappers';
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default async function HaikuPage() {
     return (
       <div className="container mx-auto py-8 px-4">
         <h1 className="text-3xl font-bold mb-8">俳句リスト</h1>
-        <HaikuListView poems={poems} />
+        <HaikuListViewClientWrapper initialPoems={poems} />
       </div>
     );
   } catch {
