@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 export const baseMetadata: Metadata = {
+
   title: 'くひめぐり｜日本全国の句碑データベース',
   description:
     '日本全国の句碑をデータベース化し、一覧・詳細・地図表示で紹介するサイト。',
