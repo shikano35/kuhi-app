@@ -7,7 +7,7 @@ export type HistoryDataPoint = {
   poets: number;
 };
 
-const START_YEAR = 1600;
+const START_YEAR = 1700;
 const END_YEAR = 2025;
 const INTERVAL = 25;
 
@@ -17,10 +17,6 @@ for (let y = START_YEAR; y <= END_YEAR; y += INTERVAL) {
 }
 
 export const HISTORICAL_EVENTS: Record<number, string> = {
-  1600: '俳諧の広がり',
-  1625: '江戸初期の発展期',
-  1650: '俳諧の成熟と市民化',
-  1675: '松尾芭蕉の活躍期',
   1700: '蕉風の定着と流派化',
   1725: '中期俳諧の動き',
   1750: '与謝蕪村の活躍期',
