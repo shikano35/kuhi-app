@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { getAllMonumentsFromInscriptions } from '@/lib/kuhi-api';
 import { baseMetadata } from '@/lib/metadata';
-import { HaikuListViewClientWrapper } from '@/components/List/HaikuListView/HaikuListViewClientWrapper';
+import { HaikuListViewClientWrapper } from '@/app/(main)/list/_components/HaikuListView/HaikuListViewClientWrapper';
 import { mapMonumentsToHaikuMonuments } from '@/lib/api-mappers';
 
 export const metadata: Metadata = {

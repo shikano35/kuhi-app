@@ -1,4 +1,4 @@
-import ImageGalleryContainer from '@/components/Gallery/ImageGalleryContainer';
+import ImageGalleryContainer from '@/app/(main)/gallery/_components/ImageGalleryContainer';
 import { baseMetadata } from '@/lib/metadata';
 import { Metadata } from 'next';
 

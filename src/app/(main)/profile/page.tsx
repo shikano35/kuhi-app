@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { baseMetadata } from '@/lib/metadata';
 import { auth } from '@/lib/auth';
-import { ProfileContainer } from '@/components/Profile/ProfileContainer';
+import { ProfileContainer } from './_components/ProfileContainer';
 
 export const metadata: Metadata = {
   ...baseMetadata,

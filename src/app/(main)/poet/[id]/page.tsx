@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { getPoetById } from '@/lib/kuhi-api';
 import { BackButton } from '@/components/BackButton';
-import { PoetDetailsContainer } from '@/components/Poet/PoetDetailsContainer';
+import { PoetDetailsContainer } from '@/app/(main)/poet/_components/PoetDetailsContainer';
 
 export const dynamic = 'force-dynamic';
 

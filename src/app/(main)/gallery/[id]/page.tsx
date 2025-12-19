@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { GalleryDetailContainer } from '@/components/Gallery/GalleryDetailContainer';
+import { GalleryDetailContainer } from '@/app/(main)/gallery/_components/GalleryDetailContainer';
 import { baseMetadata } from '@/lib/metadata';
 
 export async function generateMetadata({ params }: GalleryDetailPageProps) {

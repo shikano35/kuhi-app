@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { Metadata } from 'next';
 import { baseMetadata } from '@/lib/metadata';
 import Link from 'next/link';
-import { PrivacyLinkButton } from '@/components/Privacy/PrivacyLinkButton';
+import { PrivacyLinkButton } from '@/app/(main)/privacy/_components/PrivacyLinkButton';
 
 export const metadata: Metadata = {
   ...baseMetadata,
