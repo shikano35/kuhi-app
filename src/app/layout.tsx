@@ -5,7 +5,6 @@ import { Layout } from '@/layouts';
 import { baseMetadata } from '@/lib/metadata';
 import { TanstackProvider } from '@/components/Providers/TanstackProvider';
 import AuthProvider from '@/components/Providers/AuthProvider';
-import { MswScript } from '@/components/Providers/MswScript';
 
 const GA_MEASUREMENT_ID = 'G-ZQVEQSTMJQ';
 
@@ -48,7 +47,6 @@ export default function RootLayout({
           gtag('config', '${GA_MEASUREMENT_ID}');
         `}
       </Script>
-      {process.env.NODE_ENV === 'development' && <MswScript />}
       <body
         className={`${shipporiMincho.variable} ${geistMono.variable} ${notoSansJP.variable} antialiased`}
       >
