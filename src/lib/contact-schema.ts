@@ -13,21 +13,20 @@ export const contactFormSchema = z.object({
   name: z
     .string()
     .max(100, '名前は100文字以内で入力してください')
-    .optional()
-    .or(z.literal('')),
+    .optional(),
   email: z
     .string()
     .email('有効なメールアドレスを入力してください')
-    .optional()
-    .or(z.literal('')),
+    .or(z.literal(''))
+    .optional(),
   contactType: z.enum(['copyright', 'error', 'suggestion', 'other'], {
     required_error: 'お問い合わせ種別を選択してください',
   }),
   targetUrl: z
     .string()
     .url('有効なURLを入力してください')
-    .optional()
-    .or(z.literal('')),
+    .or(z.literal(''))
+    .optional(),
   message: z
     .string()
     .min(5, 'お問い合わせ内容は5文字以上で入力してください')
