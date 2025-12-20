@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   ...baseMetadata,
   title: 'プロフィール | くひめぐり',
   description:
-    'あなたのプロフィールページです。お気に入り句碑や訪問履歴を確認できます。',
+    'プロフィールページです。お気に入り句碑や訪問履歴を確認できます。',
 };
 
 export default async function ProfilePage() {

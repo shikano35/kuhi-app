@@ -6,7 +6,7 @@ import { PrivacyLinkButton } from '@/app/(main)/privacy/_components/PrivacyLinkB
 
 export const metadata: Metadata = {
   ...baseMetadata,
-  title: 'このサイトについて | くひめぐり',
+  title: '句碑とは | くひめぐり',
   description:
     '句碑とは何か、句碑めぐりサイトの目的や使い方について解説しています。',
 };

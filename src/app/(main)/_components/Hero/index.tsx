@@ -31,9 +31,9 @@ export function HeroSection() {
             Haiku monument tour
           </h2>
           <p className="text-sm md:text-base lg:text-lg">
-            くひめぐりは、日本全国の句碑についてまとめたサイトです。
+            くひめぐりは、日本全国の句碑を集めたデータベースサイトです。
             <br />
-            句碑に刻まれた俳句、所在地、句碑の写真などをまとめています。
+            句碑に刻まれた俳句や所在地、写真などの情報を紹介しています。
           </p>
         </div>
       </div>

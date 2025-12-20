@@ -22,7 +22,7 @@ function MonumentCard({ monument }: { monument: MonumentWithRelations }) {
     monument.inscriptions?.[0]?.poems?.[0]?.text ||
     monument.inscriptions?.[0]?.original_text ||
     '';
-  const poetName = monument.poets?.[0]?.name || '詠み人知らず';
+  const poetName = monument.poets?.[0]?.name || '作者不詳';
   const location = monument.locations?.[0];
   const imageUrl = monument.media?.[0]?.url;
 
@@ -53,12 +53,7 @@ function MonumentCard({ monument }: { monument: MonumentWithRelations }) {
           </div>
 
           <CardContent className="p-4">
-            <p
-              className={cn(
-                'text-base text-foreground line-clamp-2 mb-2',
-                hinaMincho.className
-              )}
-            >
+            <p className="text-base text-foreground line-clamp-2 mb-2">
               {haiku}
             </p>
 
@@ -137,7 +132,7 @@ export function PickupClientComponent({
               </h2>
             </div>
             <Link
-              className="hidden sm:flex items-center gap-1 text-accent-purple hover:text-accent-purple-light font-medium transition-colors"
+              className="hidden sm:flex items-center gap-1 text-foreground hover:text-muted-foreground font-medium transition-colors"
               href="/list"
             >
               すべて見る
@@ -152,7 +147,7 @@ export function PickupClientComponent({
           </div>
 
           <Link
-            className="flex sm:hidden items-center justify-center gap-1 mt-6 text-accent-purple hover:text-accent-purple-light font-medium transition-colors"
+            className="flex sm:hidden items-center justify-center gap-1 mt-6 text-foreground hover:text-muted-foreground font-medium transition-colors"
             href="/list"
           >
             すべて見る
@@ -168,7 +163,7 @@ export function PickupClientComponent({
               </h2>
             </div>
             <Link
-              className="hidden sm:flex items-center gap-1 text-accent-purple hover:text-accent-purple-light font-medium transition-colors"
+              className="hidden sm:flex items-center gap-1 text-foreground hover:text-muted-foreground font-medium transition-colors"
               href="/poets"
             >
               すべて見る
@@ -183,7 +178,7 @@ export function PickupClientComponent({
           </div>
 
           <Link
-            className="flex sm:hidden items-center justify-center gap-1 mt-6 text-accent-purple hover:text-accent-purple-light font-medium transition-colors"
+            className="flex sm:hidden items-center justify-center gap-1 mt-6 text-foreground hover:text-muted-foreground font-medium transition-colors"
             href="/poets"
           >
             すべて見る
