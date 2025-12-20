@@ -53,10 +53,15 @@ async function verifyTurnstileToken(token: string): Promise<boolean> {
 
     const allowedHosts = (
       process.env.TURNSTILE_ALLOWED_HOSTS || 'localhost,kuhi.jp'
-    ).split(',');
+    )
+      .split(',')
+      .map((host) => host.trim())
+      .filter((host) => host.length > 0);
 
-    if (data.hostname && !allowedHosts.includes(data.hostname)) {
-      console.warn('Turnstile hostname mismatch:', data.hostname);
+    const hostname = data.hostname?.trim();
+
+    if (hostname && !allowedHosts.includes(hostname)) {
+      console.warn('Turnstile hostname mismatch:', hostname);
       return false;
     }
 
