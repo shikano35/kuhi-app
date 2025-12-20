@@ -7,7 +7,13 @@ import {
   getContactTypeLabel,
 } from './contact-schema';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+if (!RESEND_API_KEY) {
+  console.warn(
+    'RESEND_API_KEY is not configured. Contact form emails will not be sent.'
+  );
+}
+const resend = new Resend(RESEND_API_KEY);
 
 type ContactActionResult = {
   success: boolean;
@@ -72,6 +78,16 @@ async function verifyTurnstileToken(token: string): Promise<boolean> {
   }
 }
 
+function sanitizeForEmail(s: string, maxLength = 2000): string {
+  // eslint-disable-next-line no-control-regex
+  const controlCharPattern = /[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]+/g;
+  return s
+    .replace(/\r/g, '')
+    .replace(controlCharPattern, '')
+    .trim()
+    .slice(0, maxLength);
+}
+
 function generateEmailBody(data: ContactFormData): string {
   const lines = [
     '【お問い合わせ内容】',
@@ -81,18 +97,18 @@ function generateEmailBody(data: ContactFormData): string {
   ];
 
   if (data.name) {
-    lines.push(`■ お名前: ${data.name}`, '');
+    lines.push(`■ お名前: ${sanitizeForEmail(data.name, 100)}`, '');
   }
 
   if (data.email) {
-    lines.push(`■ メールアドレス: ${data.email}`, '');
+    lines.push(`■ メールアドレス: ${sanitizeForEmail(data.email, 254)}`, '');
   }
 
   if (data.targetUrl) {
-    lines.push(`■ 対象URL: ${data.targetUrl}`, '');
+    lines.push(`■ 対象URL: ${sanitizeForEmail(data.targetUrl, 2000)}`, '');
   }
 
-  lines.push('■ お問い合わせ内容:', data.message, '');
+  lines.push('■ お問い合わせ内容:', sanitizeForEmail(data.message, 2000), '');
   lines.push('---');
   lines.push(`送信日時: ${new Date().toLocaleString('ja-JP')}`);
 
@@ -147,12 +163,15 @@ export async function submitContactForm(
     const subject = `【くひめぐり】${getContactTypeLabel(data.contactType)}`;
     const body = generateEmailBody(data);
 
+    const fromEmail =
+      process.env.CONTACT_FROM_EMAIL || 'くひめぐり <noreply@kuhi.jp>';
+
     const { data: resendData, error: resendError } = await resend.emails.send({
-      from: 'くひめぐり <noreply@kuhi.jp>',
+      from: fromEmail,
       to: [toEmail],
       subject,
       text: body,
-      replyTo: data.email || undefined,
+      replyTo: data.email?.trim() || undefined,
     });
 
     if (resendError) {

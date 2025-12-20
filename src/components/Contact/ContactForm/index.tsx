@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { Loader2, Send, CheckCircle, AlertCircle } from 'lucide-react';
@@ -37,6 +37,7 @@ export function ContactForm() {
     handleSubmit,
     setValue,
     reset,
+    control,
     formState: { errors },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
@@ -184,29 +185,34 @@ export function ContactForm() {
           お問い合わせ種別{' '}
           <span className="text-red-600 dark:text-red-400">*</span>
         </Label>
-        <Select
-          defaultValue="other"
-          onValueChange={(value) =>
-            setValue('contactType', value as ContactFormData['contactType'])
-          }
-        >
-          <SelectTrigger
-            aria-describedby={
-              errors.contactType ? 'contactType-error' : undefined
-            }
-            aria-invalid={!!errors.contactType}
-            id="contactType"
-          >
-            <SelectValue placeholder="種別を選択" />
-          </SelectTrigger>
-          <SelectContent>
-            {contactTypes.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
-                {type.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Controller
+          control={control}
+          name="contactType"
+          render={({ field }) => (
+            <Select
+              defaultValue={field.value}
+              onValueChange={field.onChange}
+              value={field.value}
+            >
+              <SelectTrigger
+                aria-describedby={
+                  errors.contactType ? 'contactType-error' : undefined
+                }
+                aria-invalid={!!errors.contactType}
+                id="contactType"
+              >
+                <SelectValue placeholder="種別を選択" />
+              </SelectTrigger>
+              <SelectContent>
+                {contactTypes.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
         {errors.contactType && (
           <p
             className="text-sm text-red-600 dark:text-red-400"
@@ -278,7 +284,7 @@ export function ContactForm() {
                 language: 'ja',
               }}
               ref={turnstileRef}
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
             />
             {errors.turnstileToken && (
               <p className="text-sm text-red-600 dark:text-red-400">
@@ -288,7 +294,8 @@ export function ContactForm() {
           </>
         ) : (
           <p className="text-sm text-red-600 dark:text-red-400">
-            セキュリティ保護機能（Turnstile）が正しく構成されていないため、現在フォームを送信できません。管理者は NEXT_PUBLIC_TURNSTILE_SITE_KEY を設定してください。
+            セキュリティ保護機能（Turnstile）が正しく構成されていないため、現在フォームを送信できません。管理者は
+            NEXT_PUBLIC_TURNSTILE_SITE_KEY を設定してください。
           </p>
         )}
       </div>

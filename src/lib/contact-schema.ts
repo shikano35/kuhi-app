@@ -9,24 +9,30 @@ export const contactTypes = [
 
 export type ContactType = (typeof contactTypes)[number]['value'];
 
+const optionalTrimmedString = (schema: z.ZodString) =>
+  z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (val === undefined) return undefined;
+      const trimmed = val.trim();
+      return trimmed === '' ? undefined : trimmed;
+    })
+    .pipe(schema.optional());
+
 export const contactFormSchema = z.object({
-  name: z
-    .string()
-    .max(100, '名前は100文字以内で入力してください')
-    .optional(),
-  email: z
-    .string()
-    .email('有効なメールアドレスを入力してください')
-    .or(z.literal(''))
-    .optional(),
+  name: optionalTrimmedString(
+    z.string().max(100, '名前は100文字以内で入力してください')
+  ),
+  email: optionalTrimmedString(
+    z.string().email('有効なメールアドレスを入力してください')
+  ),
   contactType: z.enum(['copyright', 'error', 'suggestion', 'other'], {
     required_error: 'お問い合わせ種別を選択してください',
   }),
-  targetUrl: z
-    .string()
-    .url('有効なURLを入力してください')
-    .or(z.literal(''))
-    .optional(),
+  targetUrl: optionalTrimmedString(
+    z.string().url('有効なURLを入力してください')
+  ),
   message: z
     .string()
     .min(5, 'お問い合わせ内容は5文字以上で入力してください')
