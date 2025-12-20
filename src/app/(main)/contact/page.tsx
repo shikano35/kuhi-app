@@ -3,8 +3,6 @@ import type { Metadata } from 'next';
 import { Container } from '@/components/Container';
 import { ContactForm } from '@/components/Contact/ContactForm';
 
-export const dynamic = 'force-dynamic';
-
 export const metadata: Metadata = {
   title: 'お問い合わせ',
   description:
