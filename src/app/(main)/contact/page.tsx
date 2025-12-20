@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { Container } from '@/components/Container';
 import { ContactForm } from '@/components/Contact/ContactForm';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'お問い合わせ',
   description:
@@ -50,7 +52,9 @@ export default function ContactPage() {
         </div>
 
         <Suspense fallback={<ContactFormSkeleton />}>
-          <ContactForm />
+          <ContactForm
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''}
+          />
         </Suspense>
       </div>
     </Container>
