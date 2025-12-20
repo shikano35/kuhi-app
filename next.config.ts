@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
                 "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
                 "font-src 'self' fonts.gstatic.com",
                 "img-src 'self' data: blob: https: http://localhost:3000",
-                "connect-src 'self' api.kuhi.jp *.googleapis.com *.google-analytics.com *.cloudflareinsights.com challenges.cloudflare.com",
+                "connect-src 'self' api.kuhi.jp *.googleapis.com *.google-analytics.com *.cloudflareinsights.com challenges.cloudflare.com https://analytics.google.com",
                 "frame-src 'self' *.google.com challenges.cloudflare.com",
                 "object-src 'none'",
                 "upgrade-insecure-requests"
