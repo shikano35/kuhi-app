@@ -3,15 +3,18 @@
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/cn';
 
 type BackButtonProps = {
   fallbackUrl?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  className?: string;
 };
 
 export function BackButton({
-  fallbackUrl = '/poets',
-  children,
+  fallbackUrl = '/',
+  children = '戻る',
+  className,
 }: BackButtonProps) {
   const router = useRouter();
 
@@ -25,7 +28,10 @@ export function BackButton({
 
   return (
     <Button
-      className="mb-6 hover:bg-input flex items-center text-lg text-primary hover:text-primary/80"
+      className={cn(
+        'mb-6 hover:bg-input flex items-center text-lg text-primary hover:text-primary/80',
+        className
+      )}
       onClick={handleBackClick}
       variant="ghost"
     >

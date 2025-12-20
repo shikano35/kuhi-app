@@ -15,6 +15,7 @@ const otherLinks = [
   { href: '/contribute', label: '句碑の情報をお持ちの方へ' },
   { href: '/news', label: 'お知らせ一覧' },
   { href: '/privacy', label: 'プライバシーポリシー' },
+  { href: '/contact', label: 'お問い合わせ' },
 ];
 
 const externalLinks = [
