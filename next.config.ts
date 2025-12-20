@@ -19,12 +19,12 @@ const nextConfig: NextConfig = {
               key: "Content-Security-Policy",
               value: [
                 "default-src 'self'",
-                "script-src 'self' 'unsafe-inline' *.googletagmanager.com *.google-analytics.com static.cloudflareinsights.com",
+                "script-src 'self' 'unsafe-inline' *.googletagmanager.com *.google-analytics.com static.cloudflareinsights.com challenges.cloudflare.com",
                 "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
                 "font-src 'self' fonts.gstatic.com",
                 "img-src 'self' data: blob: https: http://localhost:3000",
-                "connect-src 'self' api.kuhi.jp *.googleapis.com *.google-analytics.com *.cloudflareinsights.com",
-                "frame-src 'self' *.google.com",
+                "connect-src 'self' api.kuhi.jp *.googleapis.com *.google-analytics.com *.cloudflareinsights.com challenges.cloudflare.com",
+                "frame-src 'self' *.google.com challenges.cloudflare.com",
                 "object-src 'none'",
                 "upgrade-insecure-requests"
               ].join("; "),
