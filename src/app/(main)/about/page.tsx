@@ -210,12 +210,12 @@ export default function AboutPage() {
             詳細については各リンク先をご確認ください。
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mt-6">
-            <Link
+            {/* <Link
               className="inline-flex items-center justify-center px-6 py-3 border border-primary rounded-md font-medium text-primary hover:bg-primary hover:text-white transition-colors"
               href="/"
             >
               利用規約を見る
-            </Link>
+            </Link> */}
             <PrivacyLinkButton />
           </div>
         </section>

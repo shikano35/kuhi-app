@@ -12,7 +12,7 @@ export function PrivacyLinkButton() {
     <Dialog>
       <DialogTrigger asChild>
         <button
-          className="inline-flex items-center justify-center px-6 py-3 border border-primary rounded-md font-medium text-primary hover:bg-primary hover:text-white transition-colors"
+          className="inline-flex items-center justify-center px-4 py-3 border border-muted-foreground rounded-md font-medium text-primary hover:bg-input/30 hover:border-primary transition-colors"
           type="button"
         >
           プライバシーポリシーを見る
