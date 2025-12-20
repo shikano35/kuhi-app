@@ -26,7 +26,11 @@ import Link from 'next/link';
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
 
-export function ContactForm() {
+interface ContactFormProps {
+  siteKey: string;
+}
+
+export function ContactForm({ siteKey }: ContactFormProps) {
   const [status, setStatus] = useState<FormStatus>('idle');
   const [serverMessage, setServerMessage] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -273,7 +277,7 @@ export function ContactForm() {
       </div>
 
       <div className="space-y-2">
-        {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ? (
+        {siteKey ? (
           <>
             <Turnstile
               onError={handleTurnstileError}
@@ -284,7 +288,7 @@ export function ContactForm() {
                 language: 'ja',
               }}
               ref={turnstileRef}
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+              siteKey={siteKey}
             />
             {errors.turnstileToken && (
               <p className="text-sm text-red-600 dark:text-red-400">
