@@ -91,10 +91,16 @@ export function ContactForm() {
       } else {
         setStatus('error');
         setServerMessage(result.message);
+        setTurnstileToken(null);
+        setValue('turnstileToken', '');
+        turnstileRef.current?.reset();
       }
     } catch {
       setStatus('error');
       setServerMessage('予期しないエラーが発生しました');
+      setTurnstileToken(null);
+      setValue('turnstileToken', '');
+      turnstileRef.current?.reset();
     }
   };
 
