@@ -1,4 +1,4 @@
-import { Shippori_Mincho, Geist_Mono, Noto_Sans_JP } from 'next/font/google';
+import { Shippori_Mincho, Geist_Mono, Noto_Serif_JP } from 'next/font/google';
 import Script from 'next/script';
 import '../styles/globals.css';
 import { Layout } from '@/layouts';
@@ -19,8 +19,8 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const notoSansJP = Noto_Sans_JP({
-  variable: '--font-noto-sans-jp',
+const notoSerifJP = Noto_Serif_JP({
+  variable: '--font-noto-serif-jp',
   weight: ['400', '500', '700'],
   subsets: ['latin'],
   display: 'swap',
@@ -48,7 +48,7 @@ export default function RootLayout({
         `}
       </Script>
       <body
-        className={`${shipporiMincho.variable} ${geistMono.variable} ${notoSansJP.variable} antialiased`}
+        className={`${shipporiMincho.variable} ${geistMono.variable} ${notoSerifJP.variable} antialiased`}
       >
         <TanstackProvider>
           <AuthProvider>

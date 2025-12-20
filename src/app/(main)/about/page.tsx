@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="font-sans-reading container mx-auto py-8 px-4">
+    <div className="font-serif-reading container mx-auto py-8 px-4">
       <h1 className="font-shippori-mincho text-4xl font-bold mb-8 text-center">
         句碑とは
       </h1>

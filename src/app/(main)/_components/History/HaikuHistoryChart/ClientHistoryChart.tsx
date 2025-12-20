@@ -80,8 +80,8 @@ export function ClientHistoryChart({ historyData }: ClientHistoryChartProps) {
           <button
             className={`px-4 py-2 text-sm font-medium border ${
               mode === 'monuments'
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-foreground border-border hover:bg-muted'
             } rounded-l-md`}
             onClick={() => setMode('monuments')}
             type="button"
@@ -91,8 +91,8 @@ export function ClientHistoryChart({ historyData }: ClientHistoryChartProps) {
           <button
             className={`px-4 py-2 text-sm font-medium border ${
               mode === 'poets'
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background text-foreground border-border hover:bg-muted'
             } rounded-r-md`}
             onClick={() => setMode('poets')}
             type="button"
