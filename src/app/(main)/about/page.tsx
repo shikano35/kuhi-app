@@ -229,7 +229,7 @@ export default function AboutPage() {
           </p>
           <Link
             className="inline-flex items-center justify-center px-6 py-3 bg-primary rounded-md font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-            href="/"
+            href="/contact"
           >
             お問い合わせフォームへ
           </Link>
