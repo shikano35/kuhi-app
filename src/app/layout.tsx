@@ -1,13 +1,12 @@
-import { Shippori_Mincho, Geist_Mono, Noto_Sans_JP } from 'next/font/google';
+import { Shippori_Mincho, Geist_Mono, Noto_Serif_JP } from 'next/font/google';
 import Script from 'next/script';
 import '../styles/globals.css';
 import { Layout } from '@/layouts';
 import { baseMetadata } from '@/lib/metadata';
 import { TanstackProvider } from '@/components/Providers/TanstackProvider';
 import AuthProvider from '@/components/Providers/AuthProvider';
-import { MswScript } from '@/components/Providers/MswScript';
 
-const GA_MEASUREMENT_ID = 'G-ZQVEQSTMJQ';
+const GA_MEASUREMENT_ID = 'G-VSLEN6LFQ7';
 
 const shipporiMincho = Shippori_Mincho({
   variable: '--font-shippori-mincho',
@@ -20,8 +19,8 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const notoSansJP = Noto_Sans_JP({
-  variable: '--font-noto-sans-jp',
+const notoSerifJP = Noto_Serif_JP({
+  variable: '--font-noto-serif-jp',
   weight: ['400', '500', '700'],
   subsets: ['latin'],
   display: 'swap',
@@ -48,9 +47,8 @@ export default function RootLayout({
           gtag('config', '${GA_MEASUREMENT_ID}');
         `}
       </Script>
-      {process.env.NODE_ENV === 'development' && <MswScript />}
       <body
-        className={`${shipporiMincho.variable} ${geistMono.variable} ${notoSansJP.variable} antialiased`}
+        className={`${shipporiMincho.variable} ${geistMono.variable} ${notoSerifJP.variable} antialiased`}
       >
         <TanstackProvider>
           <AuthProvider>

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { baseMetadata } from '@/lib/metadata';
-import { NewsContainer } from '@/components/News/NewsContainer';
+import { NewsContainer } from './_components/NewsContainer';
 
 export const metadata: Metadata = {
   ...baseMetadata,

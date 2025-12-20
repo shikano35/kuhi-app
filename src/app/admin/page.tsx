@@ -1,10 +1,9 @@
-import { AdminDashboard } from '@/components/Admin/Dashboard';
+import { AdminDashboard } from './_components/Dashboard';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: '管理ダッシュボード | くひめぐり',
-  description:
-    '句碑情報の管理、ユーザー管理、投稿の確認ができる管理者用ダッシュボードです。',
+  description: '管理者用ダッシュボード',
 };
 
 export default function AdminPage() {

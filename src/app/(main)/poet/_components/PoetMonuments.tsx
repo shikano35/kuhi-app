@@ -1,0 +1,41 @@
+import { useMemo } from 'react';
+import { MonumentWithRelations } from '@/types/definitions/api';
+import { HaikuCard } from '@/components/shared/HaikuCard';
+
+type PoetMonumentsProps = {
+  monuments: MonumentWithRelations[];
+  poetName: string;
+};
+
+export function PoetMonuments({ monuments, poetName }: PoetMonumentsProps) {
+  const uniqueMonuments = useMemo(() => {
+    const seen = new Set<number>();
+    return monuments.filter((monument) => {
+      if (seen.has(monument.id)) {
+        return false;
+      }
+      seen.add(monument.id);
+      return true;
+    });
+  }, [monuments]);
+
+  return (
+    <>
+      <h2 className="text-2xl font-bold mb-6">{poetName}の句碑</h2>
+
+      {uniqueMonuments.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {uniqueMonuments.map((monument) => (
+            <HaikuCard key={monument.id} monument={monument} />
+          ))}
+        </div>
+      ) : (
+        <div className="bg-background rounded-lg p-8 text-center">
+          <p className="text-muted-foreground">
+            この俳人に関連する句碑は見つかりませんでした。
+          </p>
+        </div>
+      )}
+    </>
+  );
+}

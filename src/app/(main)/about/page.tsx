@@ -2,18 +2,18 @@ import Image from 'next/image';
 import { Metadata } from 'next';
 import { baseMetadata } from '@/lib/metadata';
 import Link from 'next/link';
-import { PrivacyLinkButton } from '@/components/Privacy/PrivacyLinkButton';
+import { PrivacyLinkButton } from '@/app/(main)/privacy/_components/PrivacyLinkButton';
 
 export const metadata: Metadata = {
   ...baseMetadata,
-  title: 'このサイトについて | くひめぐり',
+  title: '句碑とは | くひめぐり',
   description:
     '句碑とは何か、句碑めぐりサイトの目的や使い方について解説しています。',
 };
 
 export default function AboutPage() {
   return (
-    <div className="font-sans-reading container mx-auto py-8 px-4">
+    <div className="font-serif-reading container mx-auto py-8 px-4">
       <h1 className="font-shippori-mincho text-4xl font-bold mb-8 text-center">
         句碑とは
       </h1>
@@ -210,12 +210,12 @@ export default function AboutPage() {
             詳細については各リンク先をご確認ください。
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mt-6">
-            <Link
+            {/* <Link
               className="inline-flex items-center justify-center px-6 py-3 border border-primary rounded-md font-medium text-primary hover:bg-primary hover:text-white transition-colors"
               href="/"
             >
               利用規約を見る
-            </Link>
+            </Link> */}
             <PrivacyLinkButton />
           </div>
         </section>
