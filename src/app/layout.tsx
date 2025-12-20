@@ -6,7 +6,7 @@ import { baseMetadata } from '@/lib/metadata';
 import { TanstackProvider } from '@/components/Providers/TanstackProvider';
 import AuthProvider from '@/components/Providers/AuthProvider';
 
-const GA_MEASUREMENT_ID = 'G-ZQVEQSTMJQ';
+const GA_MEASUREMENT_ID = 'G-VSLEN6LFQ7';
 
 const shipporiMincho = Shippori_Mincho({
   variable: '--font-shippori-mincho',
