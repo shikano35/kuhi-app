@@ -9,10 +9,10 @@ type PoetProfileProps = {
 export function PoetProfile({ poet }: PoetProfileProps) {
   return (
     <div className="bg-background rounded-lg shadow-md overflow-hidden mb-8 flex flex-col">
-      <div className="pt-6 px-6 md:pt-8 md:px-8 flex-grow">
+      <div className="pt-6 px-6 md:pt-8 md:px-8 grow">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
           {poet.image_url && (
-            <div className="relative w-48 h-80 rounded-2xl overflow-hidden flex-shrink-0 border-4 border-muted">
+            <div className="relative w-48 h-80 rounded-2xl overflow-hidden shrink-0 border-4 border-muted">
               <Image
                 alt={poet.name}
                 className="object-cover"
@@ -24,7 +24,7 @@ export function PoetProfile({ poet }: PoetProfileProps) {
             </div>
           )}
 
-          <div className="flex-grow text-center md:text-start">
+          <div className="grow text-center md:text-start">
             <h1 className="text-3xl md:text-4xl font-bold mb-8 text-primary">
               {poet.name}
             </h1>

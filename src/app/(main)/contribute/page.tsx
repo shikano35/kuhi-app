@@ -27,7 +27,7 @@ export default function ContributePage() {
 
         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
           <div className="flex">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <Info className="size-5 text-yellow-400" />
             </div>
             <div className="ml-3">

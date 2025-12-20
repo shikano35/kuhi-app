@@ -1,5 +1,3 @@
-'use client';
-
 import { PrivacyPolicyContent } from '../PrivacyPolicyContent';
 import {
   Dialog,

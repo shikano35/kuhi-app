@@ -30,7 +30,7 @@ export function SearchSection() {
             <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1">
                 <input
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-1 focus:border-primary"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:border focus:border-primary"
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="俳句のキーワード、俳人名、地名など"
                   type="text"

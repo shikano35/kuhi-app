@@ -1,5 +1,3 @@
-'use client';
-
 import Image from 'next/image';
 import {
   MapPin,
@@ -66,7 +64,7 @@ export function MonumentDetailClientComponent({
             {monument.established_date && (
               <div className="bg-background rounded-lg shadow p-4 mb-4 leading-6.5">
                 <h3 className="text-lg font-semibold mb-2 flex items-center">
-                  <Calendar className="mr-2 mt-0.25 text-primary size-5" />
+                  <Calendar className="mr-2 mt-px text-primary size-5" />
                   建立情報
                 </h3>
                 <p className="text-primary">
@@ -83,7 +81,7 @@ export function MonumentDetailClientComponent({
             {monument.kigo && (
               <div className="bg-background rounded-lg shadow p-4 mb-4">
                 <h3 className="text-lg font-semibold mb-2 flex items-center">
-                  <Clock className="mr-2 mt-0.25 text-primary size-5" />
+                  <Clock className="mr-2 mt-px text-primary size-5" />
                   季語
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -102,7 +100,7 @@ export function MonumentDetailClientComponent({
             {monument.material && (
               <div className="bg-background rounded-lg shadow p-4">
                 <h3 className="text-lg font-semibold mb-2 flex items-center">
-                  <BrickWall className="mr-2 mt-0.25 text-primary size-5" />
+                  <BrickWall className="mr-2 mt-px text-primary size-5" />
                   材質
                 </h3>
                 <p className="text-primary">{monument.material}</p>
@@ -121,7 +119,7 @@ export function MonumentDetailClientComponent({
                   className="flex items-center text-muted-foreground hover:text-primary hover:underline hover:underline-offset-2"
                   href={`/poet/${poet.id}`}
                 >
-                  <User className="mr-1 mt-0.25 size-5" />
+                  <User className="mr-1 mt-px size-5" />
                   {poet.name}
                 </Link>
               </div>
@@ -130,7 +128,7 @@ export function MonumentDetailClientComponent({
             {monument.commentary && (
               <div className="bg-background rounded-lg shadow p-6 mb-6 leading-6.5">
                 <h2 className="text-xl font-semibold mb-3 flex items-center">
-                  <Info className="mr-2 mt-0.25 text-primary size-5" />
+                  <Info className="mr-2 mt-px text-primary size-5" />
                   解説
                 </h2>
                 <p className="text-primary whitespace-pre-line">
@@ -148,7 +146,7 @@ export function MonumentDetailClientComponent({
 
                 <div className="flex items-start ">
                   {poet.image_url ? (
-                    <div className="relative h-32 w-32 rounded-full overflow-hidden mr-4 flex-shrink-0">
+                    <div className="relative h-32 w-32 rounded-full overflow-hidden mr-4 shrink-0">
                       <Image
                         alt={poet.name}
                         className="object-cover"
@@ -158,8 +156,8 @@ export function MonumentDetailClientComponent({
                       />
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center h-32 w-32 rounded-full overflow-hidden mr-4 flex-shrink-0 bg-muted">
-                      <UserIcon className="size-10 mt-0.25 text-muted-foreground" />
+                    <div className="flex items-center justify-center h-32 w-32 rounded-full overflow-hidden mr-4 shrink-0 bg-muted">
+                      <UserIcon className="size-10 mt-px text-muted-foreground" />
                     </div>
                   )}
 
@@ -189,7 +187,7 @@ export function MonumentDetailClientComponent({
             {source && (
               <div className="relative bg-background rounded-lg shadow p-6 mb-6 leading-6.5">
                 <h2 className="text-xl font-semibold mb-3 flex items-center">
-                  <Book className="mr-2 mt-0.25 text-primary size-5" />
+                  <Book className="mr-2 mt-px text-primary size-5" />
                   出典
                 </h2>
                 <p className="text-primary">
@@ -210,7 +208,7 @@ export function MonumentDetailClientComponent({
                 {source.url && (
                   <div className="flex items-center justify-end">
                     <a
-                      className="mt-2 text-muted-foreground underline text-sm mt-6 flex items-center hover:text-primary underline-offset-2"
+                      className="text-muted-foreground underline text-sm mt-6 flex items-center hover:text-primary underline-offset-2"
                       href={source.url}
                       rel="noopener noreferrer"
                       target="_blank"
@@ -226,7 +224,7 @@ export function MonumentDetailClientComponent({
             {location && (
               <div className="relative bg-background rounded-lg shadow p-6 mb-6 leading-6.5">
                 <h3 className="text-lg font-semibold mb-3 flex items-center">
-                  <MapIcon className="mr-2 mt-0.25 text-primary size-5" />
+                  <MapIcon className="mr-2 mt-px text-primary size-5" />
                   所在地
                 </h3>
                 <p className="mb-2 font-medium">{location.place_name}</p>

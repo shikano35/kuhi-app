@@ -45,14 +45,14 @@ export function Toast({
         role="alert"
       >
         {type === 'success' ? (
-          <CheckCircle className="h-5 w-5 flex-shrink-0" />
+          <CheckCircle className="h-5 w-5 shrink-0" />
         ) : (
-          <AlertCircle className="h-5 w-5 flex-shrink-0" />
+          <AlertCircle className="h-5 w-5 shrink-0" />
         )}
         <p className="flex-1 text-sm font-medium">{message}</p>
         <button
           aria-label="通知を閉じる"
-          className="flex-shrink-0 p-1 rounded-full hover:bg-black/10 transition-colors"
+          className="shrink-0 p-1 rounded-full hover:bg-black/10 transition-colors"
           onClick={onClose}
         >
           <X className="h-4 w-4" />

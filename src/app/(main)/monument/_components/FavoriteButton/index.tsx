@@ -42,14 +42,14 @@ export function FavoriteButton({ monumentId }: FavoriteButtonProps) {
   return (
     <div className="bg-background rounded-lg shadow p-4">
       <h3 className="text-lg font-semibold mb-3 flex items-center">
-        <Heart className="mr-2 mt-0.25 text-primary size-5" />
+        <Heart className="mr-2 mt-px text-primary size-5" />
         お気に入り
       </h3>
 
       {isFavorited ? (
         <div className="space-y-3">
           <div className="flex items-center text-red-500">
-            <Heart className="mr-2 mt-0.25  size-4 fill-current" />
+            <Heart className="mr-2 mt-px  size-4 fill-current" />
             <span className="text-sm">お気に入り登録済み</span>
           </div>
           <Button
@@ -60,12 +60,12 @@ export function FavoriteButton({ monumentId }: FavoriteButtonProps) {
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 mt-0.25 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 mt-px h-4 w-4 animate-spin" />
                 解除中...
               </>
             ) : (
               <>
-                <Heart className="mr-2 mt-0.25  h-4 w-4" />
+                <Heart className="mr-2 mt-px  h-4 w-4" />
                 お気に入りから削除
               </>
             )}
@@ -84,12 +84,12 @@ export function FavoriteButton({ monumentId }: FavoriteButtonProps) {
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 mt-0.25  h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 mt-px  h-4 w-4 animate-spin" />
                 追加中...
               </>
             ) : (
               <>
-                <Heart className="mr-2 mt-0.25  h-4 w-4" />
+                <Heart className="mr-2 mt-px  h-4 w-4" />
                 お気に入りに追加
               </>
             )}
