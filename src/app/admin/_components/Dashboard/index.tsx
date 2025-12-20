@@ -52,7 +52,6 @@ export function AdminDashboard() {
     updateStatusMutation.mutate({ id, status });
   };
 
-  // フィルタリングされた投稿データ
   const pendingContributions =
     contributionsData?.filter((c) => c.status === 'pending') || [];
   const approvedContributions =

@@ -8,7 +8,6 @@ type PoetMonumentsProps = {
 };
 
 export function PoetMonuments({ monuments, poetName }: PoetMonumentsProps) {
-  // IDで重複を除去
   const uniqueMonuments = useMemo(() => {
     const seen = new Set<number>();
     return monuments.filter((monument) => {

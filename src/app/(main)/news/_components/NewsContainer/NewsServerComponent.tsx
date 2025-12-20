@@ -1,7 +1,6 @@
 import { NewsClientComponent } from './NewsClientComponent';
 import { News } from '@/types/definitions/haiku';
 
-// モックデータ
 const mockNews: News[] = [
   {
     id: 1,

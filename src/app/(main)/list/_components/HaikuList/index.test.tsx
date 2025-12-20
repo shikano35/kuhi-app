@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, vi, beforeEach, afterEach } from 'vitest';
 import { SessionProvider } from 'next-auth/react';
 
-// Mock the hooks
 vi.mock('@/hooks/useKuhiApi', () => ({
   useInfiniteMonuments: vi.fn(() => ({
     data: { pages: [] },
