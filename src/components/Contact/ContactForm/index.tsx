@@ -261,20 +261,28 @@ export function ContactForm() {
       </div>
 
       <div className="space-y-2">
-        <Turnstile
-          onError={handleTurnstileError}
-          onExpire={handleTurnstileExpire}
-          onSuccess={handleTurnstileSuccess}
-          options={{
-            theme: 'auto',
-            language: 'ja',
-          }}
-          ref={turnstileRef}
-          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
-        />
-        {errors.turnstileToken && (
+        {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ? (
+          <>
+            <Turnstile
+              onError={handleTurnstileError}
+              onExpire={handleTurnstileExpire}
+              onSuccess={handleTurnstileSuccess}
+              options={{
+                theme: 'auto',
+                language: 'ja',
+              }}
+              ref={turnstileRef}
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+            />
+            {errors.turnstileToken && (
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {errors.turnstileToken.message}
+              </p>
+            )}
+          </>
+        ) : (
           <p className="text-sm text-red-600 dark:text-red-400">
-            {errors.turnstileToken.message}
+            セキュリティ保護機能（Turnstile）が正しく構成されていないため、現在フォームを送信できません。管理者は NEXT_PUBLIC_TURNSTILE_SITE_KEY を設定してください。
           </p>
         )}
       </div>
