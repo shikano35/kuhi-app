@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/cn';
 
 type MenuDropdownProps = {
   isVisible: boolean;
@@ -11,12 +12,12 @@ type MenuDropdownProps = {
 export function MenuDropdown({ isVisible }: MenuDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  if (!isVisible) return null;
-
   return (
     <div
-      className="block md:hidden fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 transition-opacity duration-300 ease-in-out"
-      style={{ opacity: isVisible ? 1 : 0 }}
+      className={cn(
+        'block md:hidden fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 transition-opacity duration-300 ease-in-out',
+        isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      )}
     >
       <div className="bg-background border border-border rounded-t-lg shadow-lg">
         <button

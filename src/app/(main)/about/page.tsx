@@ -1,8 +1,8 @@
-import Image from 'next/image';
 import { Metadata } from 'next';
 import { baseMetadata } from '@/lib/metadata';
 import Link from 'next/link';
 import { PrivacyLinkButton } from '@/app/(main)/privacy/_components/PrivacyLinkButton';
+import { SkeletonImage } from '@/components/shared/SkeletonImage';
 
 export const metadata: Metadata = {
   ...baseMetadata,
@@ -22,14 +22,12 @@ export default function AboutPage() {
           <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             句碑とは
           </h2>
-          <div className="mb-6 relative h-64 w-full">
-            <Image
-              alt="句碑の例"
-              className="object-cover rounded-lg shadow-md"
-              fill
-              src="/images/kuhi-example.webp"
-            />
-          </div>
+          <SkeletonImage
+            alt="句碑の例"
+            className="object-cover rounded-lg shadow-md"
+            containerClassName="mb-6 h-64 w-full"
+            src="/images/kuhi-example.webp"
+          />
           <p className="mb-4 text-lg">
             <ruby>
               句碑<rt>くひ</rt>
@@ -153,14 +151,12 @@ export default function AboutPage() {
           <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             「くひめぐり」とは
           </h2>
-          <div className="mb-6 relative h-64 w-full">
-            <Image
-              alt="くひめぐりアプリのイメージ"
-              className="object-cover rounded-lg shadow-md"
-              fill
-              src="/images/kuhi-app.webp"
-            />
-          </div>
+          <SkeletonImage
+            alt="くひめぐりのイメージ画像"
+            className="object-cover rounded-lg shadow-md"
+            containerClassName="mb-6 h-80 w-full"
+            src="/images/kuhi-app.webp"
+          />
           <p className="mb-4 text-lg">
             「くひめぐり」は、日本全国に点在する句碑を簡単に検索し、めぐることができるWebアプリケーションです。
             俳句文化の保存と普及を目的に、句碑の位置情報や解説、関連する俳人の情報などを提供しています。
@@ -180,7 +176,7 @@ export default function AboutPage() {
               <h3 className="font-shippori-mincho text-xl font-medium mb-3">
                 句碑を探す
               </h3>
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+              <ul className="list-disc list-inside space-y-2 text-primary">
                 <li>
                   地図から探す - 地図上のマーカーをクリックして句碑情報を閲覧
                 </li>
@@ -192,7 +188,7 @@ export default function AboutPage() {
               <h3 className="font-shippori-mincho text-xl font-medium mb-3">
                 アカウント機能（準備中）
               </h3>
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+              <ul className="list-disc list-inside space-y-2 text-primary">
                 <li>お気に入り登録 - 気になる句碑をブックマーク</li>
                 <li>訪問記録 - 訪れた句碑を記録して思い出を残す</li>
                 <li>句碑情報の投稿 - 新しい句碑情報の追加や修正の提案</li>
@@ -220,7 +216,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section>
+        <section className="mb-12">
           <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             お問い合わせ
           </h2>

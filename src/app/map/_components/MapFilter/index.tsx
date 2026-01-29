@@ -15,25 +15,18 @@ import { CardHeader } from '@/components/ui/card';
 import { useFilterStore } from '@/store/useFilterStore';
 import { useUserFavorites, useUserVisits } from '@/lib/api-hooks';
 import { useSession } from 'next-auth/react';
+import {
+  PREFECTURES,
+  REGIONS as REGION_LIST,
+  sortPoetNames,
+} from '@/lib/japan';
 
 type MapFilterProps = {
   monuments: HaikuMonument[];
   onFilterChange: (filteredMonuments: HaikuMonument[]) => void;
 };
 
-const REGIONS = [
-  'すべて',
-  '北海道',
-  '東北',
-  '関東甲信',
-  '東海',
-  '北陸',
-  '近畿',
-  '中国',
-  '四国',
-  '九州',
-  '沖縄',
-];
+const REGIONS = ['すべて', ...REGION_LIST];
 
 export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
   const { data: session } = useSession();
@@ -57,35 +50,26 @@ export function MapFilter({ monuments, onFilterChange }: MapFilterProps) {
   const { data: userFavorites } = useUserFavorites();
   const { data: userVisits } = useUserVisits();
 
-  const prefectures = useMemo(
-    () => [
-      'すべて',
-      ...Array.from(
-        new Set(
-          monuments
-            .filter((monument) => monument.locations[0]?.prefecture)
-            .map((monument) => monument.locations[0].prefecture)
-            .sort()
-        )
-      ),
-    ],
-    [monuments]
-  );
+  const prefectures = useMemo(() => {
+    const dataPrefs = new Set(
+      monuments
+        .filter((monument) => monument.locations[0]?.prefecture)
+        .map((monument) => monument.locations[0].prefecture)
+    );
+    const orderedPrefs = PREFECTURES.filter((pref) => dataPrefs.has(pref));
+    return ['すべて', ...orderedPrefs];
+  }, [monuments]);
 
-  const poets = useMemo(
-    () => [
-      'すべて',
-      ...Array.from(
-        new Set(
-          monuments
-            .filter((monument) => monument.poets[0]?.name)
-            .map((monument) => monument.poets[0].name)
-            .sort()
-        )
-      ),
-    ],
-    [monuments]
-  );
+  const poets = useMemo(() => {
+    const uniquePoets = Array.from(
+      new Set(
+        monuments
+          .filter((monument) => monument.poets[0]?.name)
+          .map((monument) => monument.poets[0].name)
+      )
+    );
+    return ['すべて', ...sortPoetNames(uniquePoets)];
+  }, [monuments]);
 
   const filteredMonuments = useMemo(() => {
     if (monuments.length === 0) return [];

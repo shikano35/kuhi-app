@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import { HaikuMonument } from '@/types/definitions/haiku';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -32,8 +32,8 @@ export default function LeafletMap({
   return (
     <MapContainer
       center={center}
+      className="h-full w-full"
       scrollWheelZoom={true}
-      style={{ height: '100%', width: '100%' }}
       zoom={zoom}
       zoomControl={false}
     >
@@ -54,22 +54,7 @@ export default function LeafletMap({
             }}
             key={monument.id}
             position={[location.latitude, location.longitude]}
-          >
-            <Popup>
-              <div className="min-w-48">
-                <h3 className="font-semibold text-sm mb-2">
-                  {monument.inscription}
-                </h3>
-                <p className="text-xs text-muted-foreground mb-1">
-                  {monument.poets[0]?.name}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {location.prefecture} {location.municipality}{' '}
-                  {location.place_name}
-                </p>
-              </div>
-            </Popup>
-          </Marker>
+          />
         );
       })}
     </MapContainer>
