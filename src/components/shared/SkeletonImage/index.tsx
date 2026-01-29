@@ -27,6 +27,7 @@ export function SkeletonImage({
         alt={alt}
         className={cn(isLoaded ? 'opacity-100' : 'opacity-0', className)}
         fill
+        onError={() => setIsLoaded(true)}
         onLoad={() => setIsLoaded(true)}
         src={src}
       />

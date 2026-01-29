@@ -7,6 +7,7 @@ import { User } from 'lucide-react';
 type PoetCardPoet = {
   id: number;
   name: string;
+  name_kana?: string | null;
   biography: string | null;
   image_url: string | null;
 };
@@ -35,6 +36,11 @@ export function PoetCard({ poet }: PoetCardProps) {
         </div>
         <div className="p-4">
           <h3 className="text-xl font-semibold mb-1">{poet.name}</h3>
+          {poet.name_kana && (
+            <p className="text-muted-foreground text-xs mb-2">
+              {poet.name_kana}
+            </p>
+          )}
           {poet.biography && (
             <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
               {poet.biography}

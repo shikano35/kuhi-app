@@ -15,7 +15,7 @@ export function MenuDropdown({ isVisible }: MenuDropdownProps) {
   return (
     <div
       className={cn(
-        'block md:hidden fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 transition-opacity duration-300 ease-in-out pointer-events-auto',
+        'block md:hidden fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50 transition-opacity duration-300 ease-in-out',
         isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
     >
