@@ -57,7 +57,7 @@ export function ClientHistoryChart({ historyData }: ClientHistoryChartProps) {
 
   if (!isClient) {
     return (
-      <div className="w-full" style={{ height: '400px' }}>
+      <div className="w-full h-[400px]">
         <div className="flex justify-end mb-4">
           <div className="inline-flex rounded-md shadow-sm">
             <div className="px-4 py-2 text-sm font-medium border bg-gray-100 rounded-l-md">
@@ -102,7 +102,7 @@ export function ClientHistoryChart({ historyData }: ClientHistoryChartProps) {
         </div>
       </div>
 
-      <div className="w-full" style={{ height: '400px', minHeight: '400px' }}>
+      <div className="w-full h-[400px] min-h-[400px]">
         <ResponsiveContainer height={400} width="100%">
           <AreaChart
             data={historyData}

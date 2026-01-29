@@ -70,11 +70,10 @@ export function PoetListClientComponent({
                         <div className="relative h-24 w-24 rounded-full overflow-hidden">
                           <Image
                             alt={poet.name}
-                            className="rounded-full"
+                            className="rounded-full object-cover"
                             fill
                             sizes="96px"
                             src={poet.image_url}
-                            style={{ objectFit: 'cover' }}
                           />
                         </div>
                       ) : (
