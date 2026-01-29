@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import Image from 'next/image';
 import { Hina_Mincho } from 'next/font/google';
 import { cn } from '@/lib/cn';
@@ -9,13 +12,19 @@ const hinaMincho = Hina_Mincho({
 });
 
 export function HeroSection() {
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
   return (
     <div className="relative w-full min-h-screen flex items-center justify-center">
       <div className="absolute inset-0 z-0">
         <Image
           alt="句碑"
-          className="object-cover"
+          className={cn(
+            'object-cover transition-opacity duration-700 ease-in-out',
+            isImageLoaded ? 'opacity-100' : 'opacity-10'
+          )}
           fill
+          onLoad={() => setIsImageLoaded(true)}
           priority
           src="/images/hero-bg.jpg"
         />
