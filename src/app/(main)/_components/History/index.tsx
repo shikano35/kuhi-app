@@ -163,7 +163,7 @@ export function HistorySection() {
                     whileHover={{ scale: 1.02 }}
                   >
                     <Image
-                      alt={`${event.title}の時代を表現した歴史的イメージ`}
+                      alt={`${event.title}の時代を表現したイメージ画像`}
                       className="object-cover transition-all duration-500 group-hover:scale-110"
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -178,7 +178,7 @@ export function HistorySection() {
                 <div className="bg-card border border-border rounded-2xl p-6 shadow-lg">
                   <div className="relative h-48 w-full rounded-xl overflow-hidden mb-6">
                     <Image
-                      alt={`${event.title}の時代を表現した歴史的イメージ`}
+                      alt={`${event.title}の時代を表現したイメージ画像`}
                       className="object-cover"
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

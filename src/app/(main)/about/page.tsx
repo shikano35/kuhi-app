@@ -153,9 +153,9 @@ export default function AboutPage() {
           <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             「くひめぐり」とは
           </h2>
-          <div className="mb-6 relative h-64 w-full">
+          <div className="mb-6 relative h-80 w-full">
             <Image
-              alt="くひめぐりアプリのイメージ"
+              alt="くひめぐりのイメージ画像"
               className="object-cover rounded-lg shadow-md"
               fill
               src="/images/kuhi-app.webp"

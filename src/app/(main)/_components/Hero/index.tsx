@@ -13,7 +13,7 @@ export function HeroSection() {
     <div className="relative w-full min-h-screen flex items-center justify-center">
       <div className="absolute inset-0 z-0">
         <Image
-          alt="句碑の背景"
+          alt="句碑"
           className="object-cover"
           fill
           priority
