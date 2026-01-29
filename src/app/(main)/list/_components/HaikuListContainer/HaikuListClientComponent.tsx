@@ -53,7 +53,7 @@ export function HaikuListClientComponent({
     region: regionFilter === 'すべて' ? undefined : regionFilter,
     prefecture: prefectureFilter === 'すべて' ? undefined : prefectureFilter,
     poet_id: poetIdFilter || undefined,
-    limit: 30,
+    limit: 60,
   });
 
   const loadMoreRef = useIntersectionObserver(
@@ -104,9 +104,20 @@ export function HaikuListClientComponent({
       </div>
 
       {isLoading ? (
-        <div className="text-center py-12">
-          <div className="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-muted-foreground">読み込み中...</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <div
+              className="border rounded-lg overflow-hidden animate-pulse"
+              key={index}
+            >
+              <div className="h-48 bg-muted" />
+              <div className="p-4 space-y-2">
+                <div className="h-4 bg-muted rounded w-3/4" />
+                <div className="h-3 bg-muted rounded w-1/2" />
+                <div className="h-3 bg-muted rounded w-2/3" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : monuments.length === 0 ? (
         <div className="text-center py-12">
@@ -123,9 +134,12 @@ export function HaikuListClientComponent({
           </div>
 
           {hasNextPage && (
-            <div className="text-center py-8" ref={loadMoreRef}>
+            <div className="py-8" ref={loadMoreRef}>
               {isFetchingNextPage ? (
-                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+                <div className="flex flex-col items-center gap-6">
+                  <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+                  <p className="text-sm text-muted-foreground">読み込み中...</p>
+                </div>
               ) : (
                 <div className="h-8" />
               )}
