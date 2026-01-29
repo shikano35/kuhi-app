@@ -1,24 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { FilterIcon } from 'lucide-react';
 import { useFilterStore } from '@/store/useFilterStore';
 import { Poet, Location } from '@/types/definitions/haiku';
+import {
+  PREFECTURES,
+  REGIONS as REGION_LIST,
+  sortPoetNames,
+} from '@/lib/japan';
 
-const REGIONS = [
-  '北海道',
-  '東北',
-  '関東甲信',
-  '東海',
-  '北陸',
-  '近畿',
-  '中国',
-  '四国',
-  '九州',
-  '沖縄',
-  'すべて',
-];
+const REGIONS = ['すべて', ...REGION_LIST];
 
 type ListFilterProps = {
   poets?: Poet[];
@@ -51,25 +44,22 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
     setIsHydrated(true);
   }, []);
 
-  const prefectures = [
-    'すべて',
-    ...Array.from(
-      new Set(
-        locations
-          .map((location) => location.prefecture)
-          .filter((prefecture): prefecture is string => !!prefecture)
-          .sort()
-      )
-    ),
-  ];
+  const prefectures = useMemo(() => {
+    const dataPrefs = new Set(
+      locations
+        .map((location) => location.prefecture)
+        .filter((prefecture): prefecture is string => !!prefecture)
+    );
+    const orderedPrefs = PREFECTURES.filter((pref) => dataPrefs.has(pref));
+    return ['すべて', ...orderedPrefs];
+  }, [locations]);
 
-  const poetNames = [
-    'すべて',
-    ...poets
+  const poetNames = useMemo(() => {
+    const names = poets
       .map((poet) => poet.name)
-      .filter((name): name is string => !!name)
-      .sort(),
-  ];
+      .filter((name): name is string => !!name);
+    return ['すべて', ...sortPoetNames(names)];
+  }, [poets]);
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) {
