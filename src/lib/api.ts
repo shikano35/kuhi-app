@@ -53,6 +53,8 @@ export class KuhiApiError extends Error {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const isBuildPhase = () => process.env.NEXT_PHASE === 'phase-production-build';
+
 async function apiFetch(
   url: string,
   options: RequestInit = {},
@@ -71,7 +73,11 @@ async function apiFetch(
         next: { revalidate: CACHE_TTL.MEDIUM },
       });
 
-      const isRetryable = response.status >= 500 || response.status === 429;
+      const isRetryable =
+        response.status >= 500 ||
+        response.status === 429 ||
+        response.status === 403 ||
+        response.status === 408;
       if (isRetryable && attempt < retries) {
         await sleep(2 ** attempt * 500);
         continue;
@@ -99,29 +105,42 @@ async function fetchAllPages<T>(
   const all: T[] = [];
 
   for (let page = 0; page < MAX_PAGES; page++) {
-    const queryString = buildQueryString({
-      ...params,
-      limit: API_MAX_LIMIT,
-      offset: page * API_MAX_LIMIT,
-    });
-    const response = await apiFetch(`${API_BASE_URL}${path}?${queryString}`);
+    const offset = page * API_MAX_LIMIT;
 
-    if (!response.ok) {
-      throw new KuhiApiError(
-        `Failed to fetch ${path} at offset ${page * API_MAX_LIMIT}`,
-        response.status
-      );
-    }
+    try {
+      const queryString = buildQueryString({
+        ...params,
+        limit: API_MAX_LIMIT,
+        offset,
+      });
+      const response = await apiFetch(`${API_BASE_URL}${path}?${queryString}`);
 
-    const items = await response.json();
-    if (!Array.isArray(items) || items.length === 0) {
-      break;
-    }
+      if (!response.ok) {
+        throw new KuhiApiError(
+          `Failed to fetch ${path} at offset ${offset}`,
+          response.status
+        );
+      }
 
-    all.push(...items);
+      const items = await response.json();
+      if (!Array.isArray(items) || items.length === 0) {
+        break;
+      }
 
-    if (items.length < API_MAX_LIMIT) {
-      break;
+      all.push(...items);
+
+      if (items.length < API_MAX_LIMIT) {
+        break;
+      }
+    } catch (error) {
+      if (isBuildPhase()) {
+        console.error(
+          `[kuhi-api] ${path} failed at offset ${offset} during build; continuing with ${all.length} items`,
+          error
+        );
+        return all;
+      }
+      throw error;
     }
   }
 
@@ -130,14 +149,23 @@ async function fetchAllPages<T>(
 
 async function fetchList<T>(path: string, queryString = ''): Promise<T[]> {
   const url = `${API_BASE_URL}${path}${queryString ? `?${queryString}` : ''}`;
-  const response = await apiFetch(url);
 
-  if (!response.ok) {
-    throw new KuhiApiError(`Failed to fetch ${path}`, response.status);
+  try {
+    const response = await apiFetch(url);
+
+    if (!response.ok) {
+      throw new KuhiApiError(`Failed to fetch ${path}`, response.status);
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    if (isBuildPhase()) {
+      console.error(`[kuhi-api] ${path} failed during build`, error);
+      return [];
+    }
+    throw error;
   }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
 }
 
 function buildQueryString(params: Record<string, unknown>): string {

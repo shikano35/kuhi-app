@@ -22,6 +22,8 @@ const CACHE_REVALIDATE = 7200;
 const API_MAX_LIMIT = 100;
 const MAX_PAGES = 100;
 
+const isBuildPhase = () => process.env.NEXT_PHASE === 'phase-production-build';
+
 class KuhiApiError extends Error {
   constructor(
     message: string,
@@ -102,20 +104,33 @@ export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
   const allMonuments: MonumentWithRelations[] = [];
 
   for (let page = 0; page < MAX_PAGES; page++) {
-    const monuments = await getMonuments({
-      limit: API_MAX_LIMIT,
-      offset: page * API_MAX_LIMIT,
-      expand: 'locations,inscriptions.poems,poets',
-    });
+    const offset = page * API_MAX_LIMIT;
 
-    if (monuments.length === 0) {
-      break;
-    }
+    try {
+      const monuments = await getMonuments({
+        limit: API_MAX_LIMIT,
+        offset,
+        expand: 'locations,inscriptions.poems,poets',
+      });
 
-    allMonuments.push(...monuments);
+      if (monuments.length === 0) {
+        break;
+      }
 
-    if (monuments.length < API_MAX_LIMIT) {
-      break;
+      allMonuments.push(...monuments);
+
+      if (monuments.length < API_MAX_LIMIT) {
+        break;
+      }
+    } catch (error) {
+      if (isBuildPhase()) {
+        console.error(
+          `[kuhi-api] /monuments failed at offset ${offset} during build; continuing with ${allMonuments.length} items`,
+          error
+        );
+        return allMonuments;
+      }
+      throw error;
     }
   }
 
@@ -214,22 +229,31 @@ export async function getPoetById(id: number): Promise<Poet> {
 
 export async function getAllPoets(): Promise<Poet[]> {
   const allPoets: Poet[] = [];
-  let offset = 0;
-  const limit = 50;
-  let hasMore = true;
 
-  while (hasMore) {
-    const poets = await getPoets({ limit, offset });
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const offset = page * API_MAX_LIMIT;
 
-    if (poets.length === 0) {
-      hasMore = false;
-    } else {
-      allPoets.push(...poets);
-      offset += limit;
+    try {
+      const poets = await getPoets({ limit: API_MAX_LIMIT, offset });
 
-      if (poets.length < limit) {
-        hasMore = false;
+      if (poets.length === 0) {
+        break;
       }
+
+      allPoets.push(...poets);
+
+      if (poets.length < API_MAX_LIMIT) {
+        break;
+      }
+    } catch (error) {
+      if (isBuildPhase()) {
+        console.error(
+          `[kuhi-api] /poets failed at offset ${offset} during build; continuing with ${allPoets.length} items`,
+          error
+        );
+        return allPoets;
+      }
+      throw error;
     }
   }
 
