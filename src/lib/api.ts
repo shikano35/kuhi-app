@@ -37,18 +37,107 @@ const CACHE_TTL = {
   LONG: 60 * 60 * 24, // 24時間
 } as const;
 
+const API_MAX_LIMIT = 100;
+
+const MAX_PAGES = 100;
+
+export class KuhiApiError extends Error {
+  constructor(
+    message: string,
+    readonly status?: number
+  ) {
+    super(message);
+    this.name = 'KuhiApiError';
+  }
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function apiFetch(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  retries = 3
 ): Promise<Response> {
-  return fetch(url, {
-    ...options,
-    headers: {
-      ...API_HEADERS,
-      ...options.headers,
-    },
-    next: { revalidate: CACHE_TTL.MEDIUM },
-  });
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          ...API_HEADERS,
+          ...options.headers,
+        },
+        next: { revalidate: CACHE_TTL.MEDIUM },
+      });
+
+      const isRetryable = response.status >= 500 || response.status === 429;
+      if (isRetryable && attempt < retries) {
+        await sleep(2 ** attempt * 500);
+        continue;
+      }
+
+      return response;
+    } catch (error) {
+      lastError = error;
+      if (attempt < retries) {
+        await sleep(2 ** attempt * 500);
+        continue;
+      }
+    }
+  }
+
+  throw new KuhiApiError(
+    `API request failed after ${retries} attempts: ${url} (${String(lastError)})`
+  );
+}
+
+async function fetchAllPages<T>(
+  path: string,
+  params: Record<string, unknown> = {}
+): Promise<T[]> {
+  const all: T[] = [];
+
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const queryString = buildQueryString({
+      ...params,
+      limit: API_MAX_LIMIT,
+      offset: page * API_MAX_LIMIT,
+    });
+    const response = await apiFetch(`${API_BASE_URL}${path}?${queryString}`);
+
+    if (!response.ok) {
+      throw new KuhiApiError(
+        `Failed to fetch ${path} at offset ${page * API_MAX_LIMIT}`,
+        response.status
+      );
+    }
+
+    const items = await response.json();
+    if (!Array.isArray(items) || items.length === 0) {
+      break;
+    }
+
+    all.push(...items);
+
+    if (items.length < API_MAX_LIMIT) {
+      break;
+    }
+  }
+
+  return all;
+}
+
+async function fetchList<T>(path: string, queryString = ''): Promise<T[]> {
+  const url = `${API_BASE_URL}${path}${queryString ? `?${queryString}` : ''}`;
+  const response = await apiFetch(url);
+
+  if (!response.ok) {
+    throw new KuhiApiError(`Failed to fetch ${path}`, response.status);
+  }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
 }
 
 function buildQueryString(params: Record<string, unknown>): string {
@@ -71,50 +160,15 @@ export async function getMonuments(
   params: MonumentsQueryParams = {}
 ): Promise<MonumentWithRelations[]> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  const url = `${API_BASE_URL}/monuments${queryString ? `?${queryString}` : ''}`;
-
-  const response = await apiFetch(url);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
+  return fetchList<MonumentWithRelations>('/monuments', queryString);
 }
 
 export async function getAllMonuments(): Promise<HaikuMonument[]> {
-  try {
-    const allMonuments: MonumentWithRelations[] = [];
-    const batchSize = 6;
-    const limit = 100;
+  const monuments = await fetchAllPages<MonumentWithRelations>('/monuments', {
+    expand: 'locations,inscriptions.poems,poets',
+  });
 
-    const promises = Array.from({ length: batchSize }, (_, i) => {
-      const offset = i * limit;
-      const url = `${API_BASE_URL}/monuments?limit=${limit}&offset=${offset}&expand=locations,inscriptions.poems,poets`;
-
-      return apiFetch(url)
-        .then(async (response) => {
-          if (!response.ok) {
-            return [] as MonumentWithRelations[];
-          }
-          const monuments = await response.json();
-          return Array.isArray(monuments) ? monuments : [];
-        })
-        .catch(() => [] as MonumentWithRelations[]);
-    });
-
-    const results = await Promise.allSettled(promises);
-
-    results.forEach((result) => {
-      if (result.status === 'fulfilled') {
-        allMonuments.push(...result.value);
-      }
-    });
-    return allMonuments.map(mapMonumentToHaikuMonument);
-  } catch {
-    return [];
-  }
+  return monuments.map(mapMonumentToHaikuMonument);
 }
 
 export async function getMonumentById(
@@ -133,63 +187,18 @@ export async function getMonumentById(
 export async function getPoetMonuments(
   id: number
 ): Promise<MonumentWithRelations[]> {
-  const response = await apiFetch(`${API_BASE_URL}/poets/${id}/monuments`);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
+  return fetchList<MonumentWithRelations>(`/poets/${id}/monuments`);
 }
 
 export async function getPoets(
   params: PoetsQueryParams = {}
 ): Promise<ApiPoet[]> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  const url = `${API_BASE_URL}/poets${queryString ? `?${queryString}` : ''}`;
-
-  const response = await apiFetch(url);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
+  return fetchList<ApiPoet>('/poets', queryString);
 }
 
 export async function getAllPoetsFromApi(): Promise<ApiPoet[]> {
-  try {
-    const allPoets: ApiPoet[] = [];
-    let offset = 0;
-    const limit = 100;
-    let hasMore = true;
-
-    while (hasMore) {
-      const url = `${API_BASE_URL}/poets?limit=${limit}&offset=${offset}`;
-      const response = await apiFetch(url);
-
-      if (!response.ok) {
-        break;
-      }
-
-      const poets = await response.json();
-      if (!Array.isArray(poets) || poets.length === 0) {
-        hasMore = false;
-      } else {
-        allPoets.push(...poets);
-        offset += limit;
-        if (poets.length < limit) {
-          hasMore = false;
-        }
-      }
-    }
-
-    return allPoets;
-  } catch {
-    return [];
-  }
+  return fetchAllPages<ApiPoet>('/poets');
 }
 
 export async function getPoetById(id: number): Promise<ApiPoet | null> {
@@ -207,32 +216,39 @@ export async function getLocations(
   params: LocationsQueryParams = {}
 ): Promise<ApiLocation[]> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  const url = `${API_BASE_URL}/locations${queryString ? `?${queryString}` : ''}`;
-
-  const response = await apiFetch(url);
-
-  if (!response.ok) {
-    return [];
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
+  return fetchList<ApiLocation>('/locations', queryString);
 }
 
 export async function getSources(
   params: SourcesQueryParams = {}
 ): Promise<ApiSource[]> {
   const queryString = buildQueryString(params as Record<string, unknown>);
-  const url = `${API_BASE_URL}/sources${queryString ? `?${queryString}` : ''}`;
+  return fetchList<ApiSource>('/sources', queryString);
+}
 
-  const response = await apiFetch(url);
+async function searchMonuments(
+  search: string,
+  filters: Record<string, unknown>
+): Promise<MonumentWithRelations[]> {
+  const [byName, byInscription] = await Promise.all([
+    fetchAllPages<MonumentWithRelations>('/monuments', {
+      ...filters,
+      q: search,
+    }),
+    fetchAllPages<MonumentWithRelations>('/monuments', {
+      ...filters,
+      inscription_contains: search,
+    }),
+  ]);
 
-  if (!response.ok) {
-    return [];
+  const merged = new Map<number, MonumentWithRelations>();
+  for (const monument of [...byName, ...byInscription]) {
+    if (!merged.has(monument.id)) {
+      merged.set(monument.id, monument);
+    }
   }
 
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
+  return [...merged.values()];
 }
 
 type GetHaikuMonumentsOptions = {
@@ -251,19 +267,26 @@ export async function getAllHaikuMonuments(
   options?: GetHaikuMonumentsOptions
 ): Promise<HaikuMonument[]> {
   if (options && Object.keys(options).length > 0) {
-    const params = {
-      limit: options.limit || 20,
-      offset: options.offset || 0,
-      q: options.search,
+    const filters = {
       region: options.region,
       prefecture: options.prefecture,
       poet_id: options.poet_id,
-      inscription_contains: options.title_contains,
-      poet_name_contains: options.name_contains,
       ordering: options.ordering?.join(','),
     };
 
-    const monuments = await getMonuments(params);
+    if (options.search) {
+      const matched = await searchMonuments(options.search, filters);
+      const mapped = mapMonumentsToHaikuMonuments(matched);
+      const offset = options.offset || 0;
+      return mapped.slice(offset, offset + (options.limit || 20));
+    }
+
+    const monuments = await getMonuments({
+      ...filters,
+      limit: options.limit || 20,
+      offset: options.offset || 0,
+      inscription_contains: options.title_contains,
+    });
     return mapMonumentsToHaikuMonuments(monuments);
   }
 
@@ -278,26 +301,36 @@ export async function getHaikuMonumentsPage(
   hasMore: boolean;
 }> {
   const limit = options?.limit || 20;
-  const offset = (options.pageParam || 0) * limit;
+  const pageParam = options.pageParam || 0;
+  const offset = pageParam * limit;
 
-  const params = {
-    limit: limit + 1,
-    offset,
-    q: options?.search,
+  const filters = {
     region: options?.region,
     prefecture: options?.prefecture,
     poet_id: options?.poet_id,
-    inscription_contains: options?.title_contains,
-    poet_name_contains: options?.name_contains,
     ordering: options?.ordering?.join(','),
   };
 
-  const monuments = await getMonuments(params);
+  if (options?.search) {
+    const matched = await searchMonuments(options.search, filters);
+    const mapped = mapMonumentsToHaikuMonuments(matched);
+    const data = mapped.slice(offset, offset + limit);
+    const hasMore = mapped.length > offset + limit;
+
+    return { data, nextPage: hasMore ? pageParam + 1 : undefined, hasMore };
+  }
+
+  const monuments = await getMonuments({
+    ...filters,
+    limit: limit + 1,
+    offset,
+    inscription_contains: options?.title_contains,
+  });
   const mapped = mapMonumentsToHaikuMonuments(monuments);
 
   const hasMore = mapped.length > limit;
   const data = hasMore ? mapped.slice(0, limit) : mapped;
-  const nextPage = hasMore ? (options.pageParam || 0) + 1 : undefined;
+  const nextPage = hasMore ? pageParam + 1 : undefined;
 
   return { data, nextPage, hasMore };
 }
@@ -322,12 +355,8 @@ export async function getHaikuMonumentsByPoet(
 }
 
 export async function getAllPoets(): Promise<Poet[]> {
-  try {
-    const apiPoets = await getAllPoetsFromApi();
-    return apiPoets.map(mapNewPoetToPoet);
-  } catch {
-    return [];
-  }
+  const apiPoets = await getAllPoetsFromApi();
+  return apiPoets.map(mapNewPoetToPoet);
 }
 
 export async function getPoetByIdOld(id: number): Promise<Poet | null> {
