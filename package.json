@@ -110,7 +110,7 @@
     "eslint-plugin-testing-library": "^7.16.2",
     "eslint-plugin-unused-imports": "^4.4.1",
     "husky": "^9.1.7",
-    "jsdom": "^26.1.0",
+    "jsdom": "^30.0.1",
     "lint-staged": "^15.5.2",
     "msw": "^2.13.4",
     "msw-storybook-addon": "^2.0.7",
