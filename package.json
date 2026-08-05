@@ -61,7 +61,7 @@
     "recharts": "^2.15.4",
     "resend": "^6.12.2",
     "tailwind-merge": "^3.5.0",
-    "zod": "^3.25.76",
+    "zod": "^4.4.3",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
