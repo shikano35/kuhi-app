@@ -17,6 +17,7 @@ const config = [
       "**/.next/**",
       "node_modules/**",
       "storybook-static/**",
+      "next-env.d.ts",
     ],
   },
   

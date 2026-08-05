@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ListFilter } from './index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { describe, expect, vi, beforeEach } from 'vitest';
+import { describe, expect, vi, beforeAll, beforeEach } from 'vitest';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { SessionProvider } from 'next-auth/react';
@@ -102,8 +102,9 @@ vi.mock('next/navigation', () => ({
 describe('ListFilter', () => {
   let queryClient: QueryClient;
 
+  beforeAll(() => server.listen());
+
   beforeEach(() => {
-    server.listen();
     queryClient = createTestQueryClient();
     vi.clearAllMocks();
   });

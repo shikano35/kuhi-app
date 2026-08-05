@@ -16,3 +16,4 @@ drizzle/
 playwright-report/
 .vscode/
 .cursor/
+pnpm-lock.yaml
