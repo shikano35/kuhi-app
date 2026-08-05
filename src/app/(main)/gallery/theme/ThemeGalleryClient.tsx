@@ -101,7 +101,6 @@ export default function ThemeGalleryClient({
     isFetchingNextPage,
   });
 
-  // テーマ変更ハンドラー
   const handleThemeChange = (theme: ThemeType) => {
     if (theme === currentTheme) return;
 
@@ -110,7 +109,6 @@ export default function ThemeGalleryClient({
     setCurrentTheme(theme);
     setCurrentQuery(defaultQuery);
 
-    // URLを更新
     const params = new URLSearchParams(searchParams);
     params.set('theme', theme);
     params.set('query', defaultQuery);
@@ -118,26 +116,22 @@ export default function ThemeGalleryClient({
     router.push(`?${params.toString()}`);
   };
 
-  // クエリ変更ハンドラー
   const handleQueryChange = (query: string) => {
     if (query === currentQuery) return;
 
     setCurrentQuery(query);
 
-    // URLを更新
     const params = new URLSearchParams(searchParams);
     params.set('query', query);
     params.set('page', '1');
     router.push(`?${params.toString()}`);
   };
 
-  // カスタム検索ハンドラー
   const handleCustomSearch = () => {
     if (!filters.customQuery.trim()) return;
 
     setCurrentQuery(filters.customQuery.trim());
 
-    // URLを更新
     const params = new URLSearchParams(searchParams);
     params.set('query', filters.customQuery.trim());
     params.set('page', '1');

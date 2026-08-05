@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      next: { revalidate: 3600 }, // 1時間キャッシュに短縮
+      next: { revalidate: 3600 },
     });
 
     if (!response.ok) {

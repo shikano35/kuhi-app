@@ -1,7 +1,3 @@
-/**
- * API型変換ユーティリティ
- */
-
 import {
   MonumentWithRelations,
   Poet as ApiPoet,

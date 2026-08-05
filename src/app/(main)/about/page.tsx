@@ -1,19 +1,19 @@
-import Image from 'next/image';
 import { Metadata } from 'next';
 import { baseMetadata } from '@/lib/metadata';
 import Link from 'next/link';
-import { PrivacyLinkButton } from '@/components/Privacy/PrivacyLinkButton';
+import { PrivacyLinkButton } from '@/app/(main)/privacy/_components/PrivacyLinkButton';
+import { SkeletonImage } from '@/components/shared/SkeletonImage';
 
 export const metadata: Metadata = {
   ...baseMetadata,
-  title: 'このサイトについて | くひめぐり',
+  title: '句碑とは | くひめぐり',
   description:
     '句碑とは何か、句碑めぐりサイトの目的や使い方について解説しています。',
 };
 
 export default function AboutPage() {
   return (
-    <div className="font-sans-reading container mx-auto py-8 px-4">
+    <div className="font-serif-reading container mx-auto py-8 px-4">
       <h1 className="font-shippori-mincho text-4xl font-bold mb-8 text-center">
         句碑とは
       </h1>
@@ -22,14 +22,12 @@ export default function AboutPage() {
           <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             句碑とは
           </h2>
-          <div className="mb-6 relative h-64 w-full">
-            <Image
-              alt="句碑の例"
-              className="object-cover rounded-lg shadow-md"
-              fill
-              src="/images/kuhi-example.webp"
-            />
-          </div>
+          <SkeletonImage
+            alt="句碑の例"
+            className="object-cover rounded-lg shadow-md"
+            containerClassName="mb-6 h-64 w-full"
+            src="/images/kuhi-example.webp"
+          />
           <p className="mb-4 text-lg">
             <ruby>
               句碑<rt>くひ</rt>
@@ -153,14 +151,12 @@ export default function AboutPage() {
           <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             「くひめぐり」とは
           </h2>
-          <div className="mb-6 relative h-64 w-full">
-            <Image
-              alt="くひめぐりアプリのイメージ"
-              className="object-cover rounded-lg shadow-md"
-              fill
-              src="/images/kuhi-app.webp"
-            />
-          </div>
+          <SkeletonImage
+            alt="くひめぐりのイメージ画像"
+            className="object-cover rounded-lg shadow-md"
+            containerClassName="mb-6 h-80 w-full"
+            src="/images/kuhi-app.webp"
+          />
           <p className="mb-4 text-lg">
             「くひめぐり」は、日本全国に点在する句碑を簡単に検索し、めぐることができるWebアプリケーションです。
             俳句文化の保存と普及を目的に、句碑の位置情報や解説、関連する俳人の情報などを提供しています。
@@ -180,7 +176,7 @@ export default function AboutPage() {
               <h3 className="font-shippori-mincho text-xl font-medium mb-3">
                 句碑を探す
               </h3>
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+              <ul className="list-disc list-inside space-y-2 text-primary">
                 <li>
                   地図から探す - 地図上のマーカーをクリックして句碑情報を閲覧
                 </li>
@@ -192,7 +188,7 @@ export default function AboutPage() {
               <h3 className="font-shippori-mincho text-xl font-medium mb-3">
                 アカウント機能（準備中）
               </h3>
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+              <ul className="list-disc list-inside space-y-2 text-primary">
                 <li>お気に入り登録 - 気になる句碑をブックマーク</li>
                 <li>訪問記録 - 訪れた句碑を記録して思い出を残す</li>
                 <li>句碑情報の投稿 - 新しい句碑情報の追加や修正の提案</li>
@@ -210,17 +206,17 @@ export default function AboutPage() {
             詳細については各リンク先をご確認ください。
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mt-6">
-            <Link
+            {/* <Link
               className="inline-flex items-center justify-center px-6 py-3 border border-primary rounded-md font-medium text-primary hover:bg-primary hover:text-white transition-colors"
               href="/"
             >
               利用規約を見る
-            </Link>
+            </Link> */}
             <PrivacyLinkButton />
           </div>
         </section>
 
-        <section>
+        <section className="mb-12">
           <h2 className="font-shippori-mincho text-2xl font-semibold mb-4 border-l-4 border-primary pl-3">
             お問い合わせ
           </h2>
@@ -229,7 +225,7 @@ export default function AboutPage() {
           </p>
           <Link
             className="inline-flex items-center justify-center px-6 py-3 bg-primary rounded-md font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-            href="/"
+            href="/contact"
           >
             お問い合わせフォームへ
           </Link>

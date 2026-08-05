@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { getMonumentById } from '@/lib/kuhi-api';
-import { MonumentDetailContainer } from '@/components/Monument/MonumentDetailContainer';
+import { MonumentDetailContainer } from '@/app/(main)/monument/_components/MonumentDetailContainer';
 
 export const dynamic = 'force-dynamic';
 

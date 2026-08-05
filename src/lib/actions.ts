@@ -51,7 +51,7 @@ export async function submitContribution(formData: FormData) {
     }
 
     if (photo && photo.size > 10 * 1024 * 1024) {
-      return { error: '画像は10MBを超えることはできません。' };
+      return { error: '画像は10MBを超えることはできません' };
     }
 
     // 投稿数のカウント

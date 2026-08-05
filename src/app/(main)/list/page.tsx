@@ -1,4 +1,4 @@
-import { HaikuListContainer } from '@/components/List/HaikuListContainer';
+import { HaikuListContainer } from './_components/HaikuListContainer';
 import { Metadata } from 'next';
 import { baseMetadata } from '@/lib/metadata';
 

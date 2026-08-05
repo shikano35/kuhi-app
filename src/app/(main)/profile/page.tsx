@@ -2,13 +2,13 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { baseMetadata } from '@/lib/metadata';
 import { auth } from '@/lib/auth';
-import { ProfileContainer } from '@/components/Profile/ProfileContainer';
+import { ProfileContainer } from './_components/ProfileContainer';
 
 export const metadata: Metadata = {
   ...baseMetadata,
   title: 'プロフィール | くひめぐり',
   description:
-    'あなたのプロフィールページです。お気に入り句碑や訪問履歴を確認できます。',
+    'プロフィールページです。お気に入り句碑や訪問履歴を確認できます。',
 };
 
 export default async function ProfilePage() {
