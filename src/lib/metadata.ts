@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const baseMetadata: Metadata = {
   title: 'くひめぐり｜日本全国の句碑データベース',
   description:
-    '日本全国の句碑をデータベース化し、一覧・詳細・地図表示で紹介するサイト。',
+    '日本全国の句碑をデータベース化し、一覧・詳細・地図表示で紹介するサイト',
   keywords: [
     'くひめぐり',
     '句碑',
@@ -23,7 +23,7 @@ export const baseMetadata: Metadata = {
     siteName: 'くひめぐり',
     title: 'くひめぐり｜日本全国の句碑データベース',
     description:
-      '日本全国の句碑をデータベース化し、一覧・詳細・地図表示で紹介するサイト。',
+      '日本全国の句碑をデータベース化し、一覧・詳細・地図表示で紹介するサイト',
     images: [
       {
         url: 'https://kuhi.jp/og-image.png',
@@ -38,7 +38,7 @@ export const baseMetadata: Metadata = {
     card: 'summary_large_image',
     title: 'くひめぐり｜日本全国の句碑データベース',
     description:
-      '日本全国の句碑をデータベース化し、一覧・詳細・地図表示で紹介するサイト。',
+      '日本全国の句碑をデータベース化し、一覧・詳細・地図表示で紹介するサイト',
     images: ['https://kuhi.jp/og-image.png'],
   },
 

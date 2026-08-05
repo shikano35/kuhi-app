@@ -40,7 +40,6 @@ export function HeaderDropdown({ trigger, items }: HeaderDropdownProps) {
 
       {isOpen && (
         <>
-          {/* より大きな透明ブリッジエリア */}
           <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-72 h-4 bg-transparent z-40" />
           <div className="absolute top-full left-1/2 transform -translate-x-1/2 pt-4 z-50">
             <div className="w-64 bg-background border border-border rounded-lg shadow-lg py-2 animate-in fade-in-0 slide-in-from-top-2 duration-200">
