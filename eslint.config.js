@@ -27,7 +27,6 @@ const config = [
 
   ...compat.extends("next"),
   ...compat.extends("next/core-web-vitals"),
-  ...compat.extends("next/typescript"),
 
   eslint.configs.recommended,
   ...tseslint.configs.strict,
