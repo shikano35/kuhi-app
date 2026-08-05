@@ -20,6 +20,9 @@ const API_HEADERS: HeadersInit = {
 
 const CACHE_REVALIDATE = 7200;
 const API_MAX_LIMIT = 100;
+const MAX_PAGES = 100;
+
+const isBuildPhase = () => process.env.NEXT_PHASE === 'phase-production-build';
 
 class KuhiApiError extends Error {
   constructor(
@@ -98,82 +101,40 @@ export async function getAllMonuments(): Promise<MonumentWithRelations[]> {
 }
 
 export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
-  try {
-    const allMonuments: MonumentWithRelations[] = [];
-    let offset = 0;
-    let hasMore = true;
+  const allMonuments: MonumentWithRelations[] = [];
 
-    const firstBatch = await getMonuments({
-      limit: API_MAX_LIMIT,
-      offset: 0,
-      expand: 'locations,inscriptions.poems,poets',
-    });
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const offset = page * API_MAX_LIMIT;
 
-    if (firstBatch.length === 0) {
-      return [];
-    }
-
-    allMonuments.push(...firstBatch);
-    offset = API_MAX_LIMIT;
-
-    if (firstBatch.length < API_MAX_LIMIT) {
-      return allMonuments;
-    }
-
-    while (hasMore) {
-      const batchPromises: Promise<MonumentWithRelations[]>[] = [];
-      const batchCount = 10;
-
-      for (let i = 0; i < batchCount; i++) {
-        const currentOffset = offset + i * API_MAX_LIMIT;
-        batchPromises.push(
-          getMonuments({
-            limit: API_MAX_LIMIT,
-            offset: currentOffset,
-            expand: 'locations,inscriptions.poems,poets',
-          }).catch(() => [] as MonumentWithRelations[])
-        );
-      }
-
-      const results = await Promise.allSettled(batchPromises);
-      let totalInBatch = 0;
-      let lastBatchSize = 0;
-
-      results.forEach((result) => {
-        if (result.status === 'fulfilled' && result.value.length > 0) {
-          allMonuments.push(...result.value);
-          totalInBatch += result.value.length;
-          lastBatchSize = result.value.length;
-        }
-      });
-
-      offset += batchCount * API_MAX_LIMIT;
-
-      if (totalInBatch === 0 || lastBatchSize < API_MAX_LIMIT) {
-        hasMore = false;
-      }
-
-      if (allMonuments.length >= 3000) {
-        hasMore = false;
-      }
-    }
-
-    return allMonuments;
-  } catch {
     try {
       const monuments = await getMonuments({
         limit: API_MAX_LIMIT,
+        offset,
         expand: 'locations,inscriptions.poems,poets',
       });
-      return monuments.filter(
-        (m) =>
-          m.locations?.length > 0 &&
-          m.locations.some((loc) => loc.latitude && loc.longitude)
-      );
-    } catch {
-      return [];
+
+      if (monuments.length === 0) {
+        break;
+      }
+
+      allMonuments.push(...monuments);
+
+      if (monuments.length < API_MAX_LIMIT) {
+        break;
+      }
+    } catch (error) {
+      if (isBuildPhase()) {
+        console.error(
+          `[kuhi-api] /monuments failed at offset ${offset} during build; continuing with ${allMonuments.length} items`,
+          error
+        );
+        return allMonuments;
+      }
+      throw error;
     }
   }
+
+  return allMonuments;
 }
 
 export async function getAllMonumentsFromInscriptions(): Promise<
@@ -268,22 +229,31 @@ export async function getPoetById(id: number): Promise<Poet> {
 
 export async function getAllPoets(): Promise<Poet[]> {
   const allPoets: Poet[] = [];
-  let offset = 0;
-  const limit = 50;
-  let hasMore = true;
 
-  while (hasMore) {
-    const poets = await getPoets({ limit, offset });
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const offset = page * API_MAX_LIMIT;
 
-    if (poets.length === 0) {
-      hasMore = false;
-    } else {
-      allPoets.push(...poets);
-      offset += limit;
+    try {
+      const poets = await getPoets({ limit: API_MAX_LIMIT, offset });
 
-      if (poets.length < limit) {
-        hasMore = false;
+      if (poets.length === 0) {
+        break;
       }
+
+      allPoets.push(...poets);
+
+      if (poets.length < API_MAX_LIMIT) {
+        break;
+      }
+    } catch (error) {
+      if (isBuildPhase()) {
+        console.error(
+          `[kuhi-api] /poets failed at offset ${offset} during build; continuing with ${allPoets.length} items`,
+          error
+        );
+        return allPoets;
+      }
+      throw error;
     }
   }
 

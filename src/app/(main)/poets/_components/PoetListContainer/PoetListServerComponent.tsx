@@ -16,13 +16,8 @@ function mapApiPoetToPoet(poet: ApiPoet): Poet {
 }
 
 export default async function PoetListServerComponent() {
-  try {
-    const apiPoets = await getAllPoets();
-    const poets = apiPoets.map(mapApiPoetToPoet);
+  const apiPoets = await getAllPoets();
+  const poets = apiPoets.map(mapApiPoetToPoet);
 
-    return <PoetListClientComponent poets={poets} />;
-  } catch (error) {
-    console.error('Failed to fetch poets:', error);
-    return <PoetListClientComponent poets={[]} />;
-  }
+  return <PoetListClientComponent poets={poets} />;
 }
