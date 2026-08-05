@@ -105,11 +105,15 @@ export async function POST(request: NextRequest) {
     }
 
     const body: AddVisitRequest = await request.json();
-    const { monumentId, visitedAt, notes, rating, visitPhotoUrl } = body;
+    const { visitedAt, notes, rating, visitPhotoUrl } = body;
+    const monumentId =
+      typeof body.monumentId === 'number'
+        ? body.monumentId
+        : Number(body.monumentId);
 
-    if (!monumentId) {
+    if (!Number.isSafeInteger(monumentId) || monumentId <= 0) {
       return NextResponse.json(
-        { error: 'Monument ID is required' },
+        { error: 'Valid monument ID is required' },
         { status: 400 }
       );
     }

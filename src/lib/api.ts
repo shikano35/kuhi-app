@@ -174,7 +174,13 @@ export async function getAllMonuments(): Promise<HaikuMonument[]> {
 export async function getMonumentById(
   id: number
 ): Promise<MonumentWithRelations | null> {
-  const response = await apiFetch(`${API_BASE_URL}/monuments/${id}`);
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    throw new KuhiApiError('Invalid monument id');
+  }
+
+  const response = await apiFetch(
+    `${API_BASE_URL}/monuments/${encodeURIComponent(String(id))}`
+  );
 
   if (!response.ok) {
     return null;
