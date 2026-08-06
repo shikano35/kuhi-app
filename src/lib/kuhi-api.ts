@@ -9,6 +9,7 @@ import {
   LocationsQueryParams,
   SourcesQueryParams,
 } from '@/types/definitions/api';
+import { PREFECTURES, REGIONS } from '@/lib/japan';
 
 const KUHI_API_BASE_URL = 'https://api.kuhi.jp';
 
@@ -94,6 +95,93 @@ export async function getMonumentById(
 ): Promise<MonumentWithRelations> {
   const url = `${KUHI_API_BASE_URL}/monuments/${id}`;
   return fetcher<MonumentWithRelations>(url);
+}
+
+async function fetchAllMonuments(
+  params: MonumentsQueryParams
+): Promise<MonumentWithRelations[]> {
+  const all: MonumentWithRelations[] = [];
+
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const monuments = await getMonuments({
+      ...params,
+      limit: API_MAX_LIMIT,
+      offset: page * API_MAX_LIMIT,
+    });
+
+    if (monuments.length === 0) {
+      break;
+    }
+
+    all.push(...monuments);
+
+    if (monuments.length < API_MAX_LIMIT) {
+      break;
+    }
+  }
+
+  return all;
+}
+
+function placeQueriesFor(search: string): MonumentsQueryParams[] {
+  const queries: MonumentsQueryParams[] = [];
+
+  const prefecture = PREFECTURES.find(
+    (name) => name === search || name.startsWith(search)
+  );
+  if (prefecture) {
+    queries.push({ prefecture });
+  }
+
+  const region = REGIONS.find(
+    (name) => name === search || name.startsWith(search)
+  );
+  if (region) {
+    queries.push({ region });
+  }
+
+  return queries;
+}
+
+export async function searchMonuments(
+  search: string,
+  filters: MonumentsQueryParams = {}
+): Promise<MonumentWithRelations[]> {
+  const variants: MonumentsQueryParams[] = [
+    { q: search },
+    { inscription_contains: search },
+    ...placeQueriesFor(search).filter(
+      (place) =>
+        (!place.prefecture || !filters.prefecture) &&
+        (!place.region || !filters.region)
+    ),
+  ];
+
+  const results = await Promise.all(
+    variants.map((variant) => fetchAllMonuments({ ...filters, ...variant }))
+  );
+
+  const merged = new Map<number, MonumentWithRelations>();
+  for (const monument of results.flat()) {
+    if (!merged.has(monument.id)) {
+      merged.set(monument.id, monument);
+    }
+  }
+
+  return [...merged.values()];
+}
+
+export async function getMonumentsPage(
+  params: MonumentsQueryParams = {}
+): Promise<MonumentWithRelations[]> {
+  const { q, limit = 20, offset = 0, ...filters } = params;
+
+  if (!q) {
+    return getMonuments({ ...filters, limit, offset });
+  }
+
+  const matched = await searchMonuments(q, filters);
+  return matched.slice(offset, offset + limit);
 }
 
 export async function getAllMonuments(): Promise<MonumentWithRelations[]> {
