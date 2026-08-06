@@ -93,18 +93,19 @@ describe('API関数のテスト', () => {
       expect(Array.isArray(firstMonument.locations)).toBe(true);
     });
 
-    test('APIエラー時には空配列を返すこと', async () => {
+    test('APIエラー時はリトライしたうえで例外を投げること', async () => {
+      let attempts = 0;
       server.use(
-        http.get(
-          `${API_BASE_URL}/monuments`,
-          () => new HttpResponse(null, { status: 500 })
-        )
+        http.get(`${API_BASE_URL}/monuments`, () => {
+          attempts += 1;
+          return new HttpResponse(null, { status: 500 });
+        })
       );
 
-      const result = await getAllHaikuMonuments();
-
-      expect(Array.isArray(result)).toBe(true);
-      expect(result).toEqual([]);
+      await expect(getAllHaikuMonuments()).rejects.toThrow(
+        /Failed to fetch \/monuments/
+      );
+      expect(attempts).toBeGreaterThan(1);
     });
   });
 
@@ -165,18 +166,15 @@ describe('API関数のテスト', () => {
       });
     });
 
-    test('APIエラー時には空配列を返すこと', async () => {
+    test('APIエラー時は空配列ではなく例外を投げること', async () => {
       server.use(
         http.get(
           `${API_BASE_URL}/poets`,
-          () => new HttpResponse(null, { status: 500 })
+          () => new HttpResponse(null, { status: 404 })
         )
       );
 
-      const result = await getAllPoets();
-
-      expect(Array.isArray(result)).toBe(true);
-      expect(result).toEqual([]);
+      await expect(getAllPoets()).rejects.toThrow(/Failed to fetch \/poets/);
     });
   });
 
@@ -195,18 +193,17 @@ describe('API関数のテスト', () => {
       });
     });
 
-    test('APIエラー時には空配列を返すこと', async () => {
+    test('APIエラー時は空配列ではなく例外を投げること', async () => {
       server.use(
         http.get(
           `${API_BASE_URL}/locations`,
-          () => new HttpResponse(null, { status: 500 })
+          () => new HttpResponse(null, { status: 404 })
         )
       );
 
-      const result = await getAllLocations();
-
-      expect(Array.isArray(result)).toBe(true);
-      expect(result).toEqual([]);
+      await expect(getAllLocations()).rejects.toThrow(
+        /Failed to fetch \/locations/
+      );
     });
   });
 });

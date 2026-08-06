@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { FilterIcon } from 'lucide-react';
+import { FilterIcon, Loader2Icon } from 'lucide-react';
 import { useFilterStore } from '@/store/useFilterStore';
 import { Poet, Location } from '@/types/definitions/haiku';
 import {
@@ -36,6 +36,7 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
   } = useFilterStore();
 
   const [filterVisible, setFilterVisible] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (useFilterStore.persist?.rehydrate) {
@@ -82,12 +83,19 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
     }
 
     const queryString = params.toString();
-    router.push(`/list${queryString ? `?${queryString}` : ''}`);
+    startTransition(() => {
+      router.push(`/list${queryString ? `?${queryString}` : ''}`);
+    });
+
+    setFilterVisible(false);
   };
 
   const handleReset = () => {
     resetListFilters();
-    router.push('/list');
+    startTransition(() => {
+      router.push('/list');
+    });
+    setFilterVisible(false);
   };
 
   const handlePoetChange = (poetName: string) => {
@@ -111,17 +119,22 @@ export function ListFilter({ poets = [], locations = [] }: ListFilterProps) {
           <input
             className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:border-primary"
             onChange={(e) => setListSearchText(e.target.value)}
-            placeholder="俳句、俳人、場所などで検索..."
+            placeholder="俳句・俳人・句碑名で検索..."
             type="text"
             value={displaySearchText}
           />
         </div>
         <div className="flex gap-2">
           <button
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+            aria-busy={isPending}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors flex items-center disabled:opacity-70"
+            disabled={isPending}
             type="submit"
           >
-            検索
+            {isPending && (
+              <Loader2Icon aria-hidden className="h-4 w-4 mr-1 animate-spin" />
+            )}
+            {isPending ? '検索中' : '検索'}
           </button>
           <button
             className="px-4 py-2 bg-gray-100 text-primary rounded-md hover:bg-gray-300 transition-colors flex items-center"

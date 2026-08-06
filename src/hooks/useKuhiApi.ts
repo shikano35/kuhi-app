@@ -1,6 +1,7 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import {
   getMonuments,
+  getMonumentsPage,
   getMonumentById,
   getPoets,
   getPoetById,
@@ -12,7 +13,6 @@ import {
   MonumentWithRelations,
   MonumentsQueryParams,
   Location,
-  Inscription,
   PoetsQueryParams,
   LocationsQueryParams,
   SourcesQueryParams,
@@ -31,81 +31,14 @@ export function useInfiniteMonuments(params: MonumentsQueryParams = {}) {
     queryKey: ['monuments', 'infinite', params],
     queryFn: async ({ pageParam = 0 }) => {
       const offset = pageParam as number;
+      const limit = params.limit || 20;
 
-      try {
-        const monuments = await getMonuments({
-          ...params,
-          offset,
-          limit: params.limit || 20,
-        });
+      const monuments = await getMonumentsPage({ ...params, offset, limit });
 
-        return {
-          data: monuments,
-          nextOffset:
-            monuments.length === (params.limit || 20)
-              ? offset + (params.limit || 20)
-              : undefined,
-        };
-      } catch {
-        try {
-          const inscriptionsUrl = `https://api.kuhi.jp/inscriptions?limit=${params.limit || 20}&offset=${offset}`;
-          const response = await fetch(inscriptionsUrl);
-
-          if (!response.ok) {
-            throw new Error(`Inscriptions API failed: ${response.status}`);
-          }
-
-          const inscriptionsData = (await response.json()) as {
-            inscriptions?: Inscription[];
-          };
-
-          const monuments =
-            inscriptionsData.inscriptions?.map((inscription) => ({
-              id: inscription.monument_id || 0,
-              canonical_name: `句碑 ${inscription.monument_id}`,
-              canonical_uri: `https://api.kuhi.jp/monuments/${inscription.monument_id}`,
-              monument_type: '句碑',
-              monument_type_uri: null,
-              material: null,
-              material_uri: null,
-              is_reliable: false,
-              verification_status: 'unverified' as const,
-              verified_at: null,
-              verified_by: null,
-              reliability_note: null,
-              created_at: inscription.created_at || new Date().toISOString(),
-              updated_at: inscription.updated_at || new Date().toISOString(),
-              inscriptions: [inscription],
-              events: [],
-              media: [],
-              locations: [],
-              poets: [],
-              sources: inscription.source ? [inscription.source] : [],
-              original_established_date: null,
-              hu_time_normalized: null,
-              interval_start: null,
-              interval_end: null,
-              uncertainty_note: null,
-            })) || [];
-
-          const uniqueMonuments = Array.from(
-            new Map(monuments.map((m) => [m.id, m])).values()
-          );
-
-          return {
-            data: uniqueMonuments,
-            nextOffset:
-              uniqueMonuments.length === (params.limit || 20)
-                ? offset + (params.limit || 20)
-                : undefined,
-          };
-        } catch {
-          return {
-            data: [],
-            nextOffset: undefined,
-          };
-        }
-      }
+      return {
+        data: monuments,
+        nextOffset: monuments.length === limit ? offset + limit : undefined,
+      };
     },
     getNextPageParam: (lastPage) => lastPage.nextOffset,
     initialPageParam: 0,

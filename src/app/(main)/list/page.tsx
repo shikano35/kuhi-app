@@ -2,6 +2,8 @@ import { HaikuListContainer } from './_components/HaikuListContainer';
 import { Metadata } from 'next';
 import { baseMetadata } from '@/lib/metadata';
 
+export const maxDuration = 60;
+
 export const metadata: Metadata = {
   ...baseMetadata,
   title: '句碑リスト | くひめぐり',

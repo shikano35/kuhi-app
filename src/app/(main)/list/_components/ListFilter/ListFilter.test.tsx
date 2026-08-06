@@ -125,7 +125,7 @@ describe('ListFilter', () => {
     );
 
     const searchInput =
-      screen.getByPlaceholderText('俳句、俳人、場所などで検索...');
+      screen.getByPlaceholderText('俳句・俳人・句碑名で検索...');
     expect(searchInput).toBeInTheDocument();
 
     const filterButton = screen.getByRole('button', { name: /絞り込み/ });
@@ -161,7 +161,7 @@ describe('ListFilter', () => {
     );
 
     const searchInput =
-      screen.getByPlaceholderText('俳句、俳人、場所などで検索...');
+      screen.getByPlaceholderText('俳句・俳人・句碑名で検索...');
     expect(searchInput).toHaveValue('芭蕉');
 
     const form = screen.getByRole('form');
