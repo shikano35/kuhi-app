@@ -11,7 +11,7 @@ import {
 } from '@/types/definitions/api';
 import { PREFECTURES, REGIONS } from '@/lib/japan';
 
-const KUHI_API_BASE_URL = 'https://api.kuhi.jp';
+const KUHI_API_BASE_URL = process.env.KUHI_API_URL || 'https://api.kuhi.jp';
 
 const API_HEADERS: HeadersInit = {
   'Content-Type': 'application/json',

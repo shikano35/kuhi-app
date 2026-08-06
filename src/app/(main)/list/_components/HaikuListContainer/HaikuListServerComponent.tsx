@@ -13,14 +13,14 @@ const getCachedLocations = unstable_cache(
   { revalidate: 60 * 60 * 2, tags: ['locations'] }
 );
 
-async function loadFilterOptions<T>(
+async function loadOrEmpty<T>(
   load: () => Promise<T[]>,
   label: string
 ): Promise<T[]> {
   try {
     return await load();
   } catch (error) {
-    console.error(`[list] failed to load ${label} for filters`, error);
+    console.error(`[list] failed to load ${label} on the server`, error);
     return [];
   }
 }
@@ -38,19 +38,27 @@ export async function HaikuListServerComponent({
   searchParams,
 }: HaikuListServerComponentProps) {
   const [monuments, poets, locations] = await Promise.all([
-    getMonumentsPage({
-      limit: 30,
-      q: searchParams?.q,
-      region:
-        searchParams?.region === 'すべて' ? undefined : searchParams?.region,
-      prefecture:
-        searchParams?.prefecture === 'すべて'
-          ? undefined
-          : searchParams?.prefecture,
-      poet_id: searchParams?.poet_id ? Number(searchParams.poet_id) : undefined,
-    }),
-    loadFilterOptions(getCachedPoets, 'poets'),
-    loadFilterOptions(getCachedLocations, 'locations'),
+    loadOrEmpty(
+      () =>
+        getMonumentsPage({
+          limit: 30,
+          q: searchParams?.q,
+          region:
+            searchParams?.region === 'すべて'
+              ? undefined
+              : searchParams?.region,
+          prefecture:
+            searchParams?.prefecture === 'すべて'
+              ? undefined
+              : searchParams?.prefecture,
+          poet_id: searchParams?.poet_id
+            ? Number(searchParams.poet_id)
+            : undefined,
+        }),
+      'monuments'
+    ),
+    loadOrEmpty(getCachedPoets, 'poets'),
+    loadOrEmpty(getCachedLocations, 'locations'),
   ]);
 
   return (
