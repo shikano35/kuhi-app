@@ -13,6 +13,18 @@ const getCachedLocations = unstable_cache(
   { revalidate: 60 * 60 * 2, tags: ['locations'] }
 );
 
+async function loadFilterOptions<T>(
+  load: () => Promise<T[]>,
+  label: string
+): Promise<T[]> {
+  try {
+    return await load();
+  } catch (error) {
+    console.error(`[list] failed to load ${label} for filters`, error);
+    return [];
+  }
+}
+
 type HaikuListServerComponentProps = {
   searchParams?: {
     q?: string;
@@ -37,8 +49,8 @@ export async function HaikuListServerComponent({
           : searchParams?.prefecture,
       poet_id: searchParams?.poet_id ? Number(searchParams.poet_id) : undefined,
     }),
-    getCachedPoets(),
-    getCachedLocations(),
+    loadFilterOptions(getCachedPoets, 'poets'),
+    loadFilterOptions(getCachedLocations, 'locations'),
   ]);
 
   return (
