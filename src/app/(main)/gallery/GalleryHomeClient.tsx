@@ -79,9 +79,19 @@ export function GalleryHomeClient() {
           </h2>
 
           {loading && (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin" />
-              <span className="ml-2">読み込み中...</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-4">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  className="border rounded-lg overflow-hidden animate-pulse"
+                  key={index}
+                >
+                  <div className="h-40 bg-muted" />
+                  <div className="p-4 space-y-2">
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                    <div className="h-3 bg-muted rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 

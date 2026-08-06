@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { type JapanSearchItem } from '@/lib/japansearch';
+import { type JapanSearchItem } from '@/lib/japansearch-types';
 import { BackButton } from '@/components/BackButton';
 import { AlertCircle, Loader2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';

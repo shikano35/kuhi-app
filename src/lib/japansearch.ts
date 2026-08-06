@@ -394,9 +394,3 @@ export const searchRelatedImages = cache(
     }
   }
 );
-
-export type {
-  JapanSearchItem,
-  JapanSearchResponse,
-  SearchParams,
-} from './japansearch-types';
