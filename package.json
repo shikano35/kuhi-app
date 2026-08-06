@@ -69,7 +69,7 @@
     "@chromatic-com/storybook": "^3.2.7",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.5",
-    "@next/bundle-analyzer": "15.4.0-canary.51",
+    "@next/bundle-analyzer": "15.5.22",
     "@playwright/test": "^1.59.1",
     "@storybook/addon-a11y": "^8.6.18",
     "@storybook/addon-actions": "^8.6.18",
