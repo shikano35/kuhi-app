@@ -9,7 +9,7 @@ export function HaikuListSkeleton() {
         </div>
       </div>
 
-      <div className="h-4 bg-muted rounded w-32" />
+      <div className="h-4 bg-muted rounded w-32 mt-8" />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {Array.from({ length: 12 }).map((_, index) => (
