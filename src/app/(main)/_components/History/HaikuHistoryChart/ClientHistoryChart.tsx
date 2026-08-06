@@ -57,18 +57,14 @@ export function ClientHistoryChart({ historyData }: ClientHistoryChartProps) {
 
   if (!isClient) {
     return (
-      <div className="w-full h-[400px]">
+      <div className="w-full animate-pulse">
         <div className="flex justify-end mb-4">
-          <div className="inline-flex rounded-md shadow-sm">
-            <div className="px-4 py-2 text-sm font-medium border bg-gray-100 rounded-l-md">
-              句碑数
-            </div>
-            <div className="px-4 py-2 text-sm font-medium border bg-gray-100 rounded-r-md">
-              俳人数
-            </div>
+          <div className="inline-flex gap-px">
+            <div className="h-9.5 w-20 bg-muted rounded-l-md" />
+            <div className="h-9.5 w-20 bg-muted rounded-r-md" />
           </div>
         </div>
-        <div className="w-full h-[360px] bg-muted/30 animate-pulse rounded-md" />
+        <div className="w-full h-[400px] bg-muted/30 rounded-md" />
       </div>
     );
   }

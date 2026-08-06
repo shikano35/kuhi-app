@@ -13,6 +13,12 @@ const getCachedLocations = unstable_cache(
   { revalidate: 60 * 60 * 2, tags: ['locations'] }
 );
 
+const getCachedInitialMonuments = unstable_cache(
+  () => getMonumentsPage({ limit: 30 }),
+  ['list-initial-monuments'],
+  { revalidate: 60 * 60 * 2, tags: ['haiku-monuments'] }
+);
+
 async function loadOrEmpty<T>(
   load: () => Promise<T[]>,
   label: string
@@ -37,24 +43,29 @@ type HaikuListServerComponentProps = {
 export async function HaikuListServerComponent({
   searchParams,
 }: HaikuListServerComponentProps) {
+  const region =
+    searchParams?.region === 'すべて' ? undefined : searchParams?.region;
+  const prefecture =
+    searchParams?.prefecture === 'すべて'
+      ? undefined
+      : searchParams?.prefecture;
+  const poetId = searchParams?.poet_id
+    ? Number(searchParams.poet_id)
+    : undefined;
+  const hasFilters = Boolean(searchParams?.q || region || prefecture || poetId);
+
   const [monuments, poets, locations] = await Promise.all([
     loadOrEmpty(
       () =>
-        getMonumentsPage({
-          limit: 30,
-          q: searchParams?.q,
-          region:
-            searchParams?.region === 'すべて'
-              ? undefined
-              : searchParams?.region,
-          prefecture:
-            searchParams?.prefecture === 'すべて'
-              ? undefined
-              : searchParams?.prefecture,
-          poet_id: searchParams?.poet_id
-            ? Number(searchParams.poet_id)
-            : undefined,
-        }),
+        hasFilters
+          ? getMonumentsPage({
+              limit: 30,
+              q: searchParams?.q,
+              region,
+              prefecture,
+              poet_id: poetId,
+            })
+          : getCachedInitialMonuments(),
       'monuments'
     ),
     loadOrEmpty(getCachedPoets, 'poets'),

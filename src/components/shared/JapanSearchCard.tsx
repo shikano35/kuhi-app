@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ExternalLink, TextSearch } from 'lucide-react';
-import { JapanSearchItem } from '@/lib/japansearch';
+import { JapanSearchItem } from '@/lib/japansearch-types';
 import { cn } from '@/lib/cn';
 import { Badge } from '@/components/ui/badge';
 

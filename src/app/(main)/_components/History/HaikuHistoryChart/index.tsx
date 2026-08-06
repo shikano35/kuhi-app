@@ -33,9 +33,16 @@ export function HaikuHistoryChart() {
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-4xl mx-auto p-8 text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
-        <p className="text-muted-foreground">データを読み込み中...</p>
+      <div className="w-full max-w-4xl mx-auto">
+        <div className="w-full animate-pulse">
+          <div className="flex justify-end mb-4">
+            <div className="inline-flex gap-px">
+              <div className="h-9.5 w-20 bg-muted rounded-l-md" />
+              <div className="h-9.5 w-20 bg-muted rounded-r-md" />
+            </div>
+          </div>
+          <div className="w-full h-[400px] bg-muted/30 rounded-md" />
+        </div>
       </div>
     );
   }
