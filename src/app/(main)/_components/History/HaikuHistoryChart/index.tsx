@@ -33,9 +33,9 @@ export function HaikuHistoryChart() {
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-4xl mx-auto p-8 text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
-        <p className="text-muted-foreground">データを読み込み中...</p>
+      <div className="w-full max-w-4xl mx-auto p-8">
+        <div className="h-6 w-48 bg-muted rounded animate-pulse mb-6" />
+        <div className="h-64 bg-muted rounded animate-pulse" />
       </div>
     );
   }

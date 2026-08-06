@@ -69,9 +69,13 @@ export function RelatedMaterialsGalleryClient({
   if (isLoading && !hasResults) {
     return (
       <div className={`bg-background rounded-lg p-8 ${className}`}>
-        <div className="flex items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin mr-2" />
-          <span className="text-muted-foreground">関連資料を検索中...</span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div className="animate-pulse" key={index}>
+              <div className="h-28 bg-muted rounded" />
+              <div className="h-3 bg-muted rounded w-2/3 mt-2" />
+            </div>
+          ))}
         </div>
       </div>
     );
