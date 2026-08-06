@@ -33,9 +33,20 @@ export function HaikuHistoryChart() {
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-4xl mx-auto p-8">
-        <div className="h-6 w-48 bg-muted rounded animate-pulse mb-6" />
-        <div className="h-64 bg-muted rounded animate-pulse" />
+      <div className="w-full max-w-4xl mx-auto">
+        <div className="w-full h-[400px]">
+          <div className="flex justify-end mb-4">
+            <div className="inline-flex rounded-md shadow-sm">
+              <div className="px-4 py-2 text-sm font-medium border bg-muted rounded-l-md">
+                句碑数
+              </div>
+              <div className="px-4 py-2 text-sm font-medium border bg-muted rounded-r-md">
+                俳人数
+              </div>
+            </div>
+          </div>
+          <div className="w-full h-[360px] bg-muted/30 animate-pulse rounded-md" />
+        </div>
       </div>
     );
   }
