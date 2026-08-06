@@ -1,6 +1,17 @@
-import { getMonuments, getAllPoets, getAllLocations } from '@/lib/kuhi-api';
+import { unstable_cache } from 'next/cache';
+import { getMonumentsPage, getAllPoets, getAllLocations } from '@/lib/kuhi-api';
 import { HaikuListClientComponent } from './HaikuListClientComponent';
-import { MonumentWithRelations, Poet } from '@/types/definitions/api';
+
+const getCachedPoets = unstable_cache(getAllPoets, ['list-filter-poets'], {
+  revalidate: 60 * 60 * 2,
+  tags: ['poets'],
+});
+
+const getCachedLocations = unstable_cache(
+  getAllLocations,
+  ['list-filter-locations'],
+  { revalidate: 60 * 60 * 2, tags: ['locations'] }
+);
 
 type HaikuListServerComponentProps = {
   searchParams?: {
@@ -14,60 +25,28 @@ type HaikuListServerComponentProps = {
 export async function HaikuListServerComponent({
   searchParams,
 }: HaikuListServerComponentProps) {
-  try {
-    const [monuments, poets, locations] = await Promise.all([
-      getMonuments({
-        limit: 30,
-        q: searchParams?.q,
-        region:
-          searchParams?.region === 'すべて' ? undefined : searchParams?.region,
-        prefecture:
-          searchParams?.prefecture === 'すべて'
-            ? undefined
-            : searchParams?.prefecture,
-      }),
-      getAllPoets(),
-      getAllLocations(),
-    ]);
+  const [monuments, poets, locations] = await Promise.all([
+    getMonumentsPage({
+      limit: 30,
+      q: searchParams?.q,
+      region:
+        searchParams?.region === 'すべて' ? undefined : searchParams?.region,
+      prefecture:
+        searchParams?.prefecture === 'すべて'
+          ? undefined
+          : searchParams?.prefecture,
+      poet_id: searchParams?.poet_id ? Number(searchParams.poet_id) : undefined,
+    }),
+    getCachedPoets(),
+    getCachedLocations(),
+  ]);
 
-    const filteredMonuments = searchParams?.poet_id
-      ? monuments.filter((m: MonumentWithRelations) =>
-          m.poets.some((p: Poet) => p.id === Number(searchParams.poet_id))
-        )
-      : monuments;
-
-    return (
-      <HaikuListClientComponent
-        _initialSearchParams={searchParams}
-        initialMonuments={filteredMonuments}
-        locations={locations}
-        poets={poets}
-      />
-    );
-  } catch {
-    try {
-      const [poets, locations] = await Promise.all([
-        getAllPoets(),
-        getAllLocations(),
-      ]);
-
-      return (
-        <HaikuListClientComponent
-          _initialSearchParams={searchParams}
-          initialMonuments={[]}
-          locations={locations}
-          poets={poets}
-        />
-      );
-    } catch {
-      return (
-        <HaikuListClientComponent
-          _initialSearchParams={searchParams}
-          initialMonuments={[]}
-          locations={[]}
-          poets={[]}
-        />
-      );
-    }
-  }
+  return (
+    <HaikuListClientComponent
+      _initialSearchParams={searchParams}
+      initialMonuments={monuments}
+      locations={locations}
+      poets={poets}
+    />
+  );
 }
