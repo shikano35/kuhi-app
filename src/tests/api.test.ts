@@ -126,6 +126,18 @@ describe('API関数のテスト', () => {
       const result = await getHaikuMonumentById(999);
       expect(result).toBeNull();
     });
+
+    test('APIエラー時はnullではなく例外を投げること', async () => {
+      server.use(
+        http.get(`${API_BASE_URL}/monuments/:id`, () => {
+          return new HttpResponse(null, { status: 500 });
+        })
+      );
+
+      await expect(getHaikuMonumentById(1)).rejects.toThrow(
+        /Failed to fetch monument 1/
+      );
+    });
   });
 
   describe('getHaikuMonumentsByPoet', () => {

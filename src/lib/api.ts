@@ -210,8 +210,12 @@ export async function getMonumentById(
     `${API_BASE_URL}/monuments/${encodeURIComponent(String(id))}`
   );
 
-  if (!response.ok) {
+  if (response.status === 404) {
     return null;
+  }
+
+  if (!response.ok) {
+    throw new KuhiApiError(`Failed to fetch monument ${id}`, response.status);
   }
 
   const data = await response.json();
@@ -238,8 +242,12 @@ export async function getAllPoetsFromApi(): Promise<ApiPoet[]> {
 export async function getPoetById(id: number): Promise<ApiPoet | null> {
   const response = await apiFetch(`${API_BASE_URL}/poets/${id}`);
 
-  if (!response.ok) {
+  if (response.status === 404) {
     return null;
+  }
+
+  if (!response.ok) {
+    throw new KuhiApiError(`Failed to fetch poet ${id}`, response.status);
   }
 
   const data = await response.json();
