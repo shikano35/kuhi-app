@@ -9,15 +9,15 @@ type MonumentDetailServerComponentProps = {
 export async function MonumentDetailServerComponent({
   monumentId,
 }: MonumentDetailServerComponentProps) {
-  try {
-    const monument = await getHaikuMonumentById(monumentId);
-
-    if (!monument) {
-      notFound();
-    }
-
-    return <MonumentDetailClientComponent monument={monument} />;
-  } catch {
+  if (!Number.isSafeInteger(monumentId) || monumentId <= 0) {
     notFound();
   }
+
+  const monument = await getHaikuMonumentById(monumentId);
+
+  if (!monument) {
+    notFound();
+  }
+
+  return <MonumentDetailClientComponent monument={monument} />;
 }

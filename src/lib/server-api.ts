@@ -24,6 +24,24 @@ import {
   Source,
 } from '@/types/definitions/haiku';
 
+class ResourceNotFoundError extends Error {
+  constructor(resource: string) {
+    super(`${resource} not found`);
+    this.name = 'ResourceNotFoundError';
+  }
+}
+
+async function unwrapNotFound<T>(fn: () => Promise<T>): Promise<T | null> {
+  try {
+    return await fn();
+  } catch (error) {
+    if (error instanceof ResourceNotFoundError) {
+      return null;
+    }
+    throw error;
+  }
+}
+
 export const getAllHaikuMonuments = unstable_cache(
   async (params?: {
     limit?: number;
@@ -52,9 +70,15 @@ export const getAllPoets = unstable_cache(
   }
 );
 
-export const getPoetById = unstable_cache(
-  async (id: number): Promise<Poet | null> => {
-    return _getPoetById(id);
+const getCachedPoetById = unstable_cache(
+  async (id: number): Promise<Poet> => {
+    const poet = await _getPoetById(id);
+
+    if (!poet) {
+      throw new ResourceNotFoundError(`poet ${id}`);
+    }
+
+    return poet;
   },
   ['poet-by-id'],
   {
@@ -62,6 +86,10 @@ export const getPoetById = unstable_cache(
     tags: ['poets'],
   }
 );
+
+export async function getPoetById(id: number): Promise<Poet | null> {
+  return unwrapNotFound(() => getCachedPoetById(id));
+}
 
 export const getAllLocations = unstable_cache(
   async (): Promise<Location[]> => {
@@ -89,8 +117,14 @@ export async function getHaikuMonumentById(
   id: number
 ): Promise<HaikuMonument | null> {
   const cachedFn = unstable_cache(
-    async (monumentId: number): Promise<HaikuMonument | null> => {
-      return _getHaikuMonumentById(monumentId);
+    async (monumentId: number): Promise<HaikuMonument> => {
+      const monument = await _getHaikuMonumentById(monumentId);
+
+      if (!monument) {
+        throw new ResourceNotFoundError(`monument ${monumentId}`);
+      }
+
+      return monument;
     },
     [`haiku-monument-${id}`],
     {
@@ -98,7 +132,7 @@ export async function getHaikuMonumentById(
       tags: ['haiku-monument', `monument-${id}`],
     }
   );
-  return cachedFn(id);
+  return unwrapNotFound(() => cachedFn(id));
 }
 
 export async function getHaikuMonumentsByPoet(
