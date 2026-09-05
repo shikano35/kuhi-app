@@ -26,12 +26,15 @@ export function useMonuments(params: MonumentsQueryParams = {}) {
   });
 }
 
-export function useInfiniteMonuments(params: MonumentsQueryParams = {}) {
+export function useInfiniteMonuments(
+  params: MonumentsQueryParams = {},
+  initialMonuments?: MonumentWithRelations[]
+) {
+  const limit = params.limit || 20;
   return useInfiniteQuery({
     queryKey: ['monuments', 'infinite', params],
     queryFn: async ({ pageParam = 0 }) => {
-      const offset = pageParam as number;
-      const limit = params.limit || 20;
+      const offset = pageParam;
 
       const monuments = await getMonumentsPage({ ...params, offset, limit });
 
@@ -42,6 +45,19 @@ export function useInfiniteMonuments(params: MonumentsQueryParams = {}) {
     },
     getNextPageParam: (lastPage) => lastPage.nextOffset,
     initialPageParam: 0,
+    initialData:
+      initialMonuments === undefined
+        ? undefined
+        : {
+            pages: [
+              {
+                data: initialMonuments,
+                nextOffset:
+                  initialMonuments.length === limit ? limit : undefined,
+              },
+            ],
+            pageParams: [0],
+          },
     staleTime: 5 * 60 * 1000,
   });
 }

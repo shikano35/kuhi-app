@@ -13,8 +13,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { formatEstablishedDate } from '@/lib/utils';
-import { FavoriteButton } from '../FavoriteButton';
-import { VisitButton } from '../VisitButton';
 import { BackButton } from '@/components/BackButton';
 import { HaikuMonument } from '@/types/definitions/haiku';
 
@@ -51,14 +49,6 @@ export function MonumentDetailClientComponent({
                   <p className="text-muted-foreground">写真がありません</p>
                 </div>
               )}
-            </div>
-
-            <div className="mb-4">
-              <FavoriteButton monumentId={monument.id} />
-            </div>
-
-            <div className="mb-4">
-              <VisitButton monumentId={monument.id} />
             </div>
 
             {monument.established_date && (

@@ -1,5 +1,7 @@
 import { unstable_cache } from 'next/cache';
-import { getMonumentsPage, getAllPoets, getAllLocations } from '@/lib/kuhi-api';
+import { getAllPoets, getAllLocations } from '@/lib/kuhi-api';
+import { getListMonumentsPage } from '@/lib/server-monument-search';
+import { MONUMENT_PAGE_SIZE } from '@/lib/monument-search';
 import { HaikuListClientComponent } from './HaikuListClientComponent';
 
 const getCachedPoets = unstable_cache(getAllPoets, ['list-filter-poets'], {
@@ -14,8 +16,8 @@ const getCachedLocations = unstable_cache(
 );
 
 const getCachedInitialMonuments = unstable_cache(
-  () => getMonumentsPage({ limit: 30 }),
-  ['list-initial-monuments'],
+  () => getListMonumentsPage({ limit: MONUMENT_PAGE_SIZE }),
+  ['list-initial-monuments-60'],
   { revalidate: 60 * 60 * 2, tags: ['haiku-monuments'] }
 );
 
@@ -55,27 +57,27 @@ export async function HaikuListServerComponent({
   const hasFilters = Boolean(searchParams?.q || region || prefecture || poetId);
 
   const [monuments, poets, locations] = await Promise.all([
-    loadOrEmpty(
-      () =>
-        hasFilters
-          ? getMonumentsPage({
-              limit: 30,
-              q: searchParams?.q,
-              region,
-              prefecture,
-              poet_id: poetId,
-            })
-          : getCachedInitialMonuments(),
-      'monuments'
-    ),
+    (hasFilters
+      ? getListMonumentsPage({
+          limit: MONUMENT_PAGE_SIZE,
+          q: searchParams?.q,
+          region,
+          prefecture,
+          poet_id: poetId,
+        })
+      : getCachedInitialMonuments()
+    ).catch((error: unknown) => {
+      console.error('[list] failed to load monuments on the server', error);
+      return undefined;
+    }),
     loadOrEmpty(getCachedPoets, 'poets'),
     loadOrEmpty(getCachedLocations, 'locations'),
   ]);
 
   return (
     <HaikuListClientComponent
-      _initialSearchParams={searchParams}
       initialMonuments={monuments}
+      initialSearchParams={searchParams}
       locations={locations}
       poets={poets}
     />

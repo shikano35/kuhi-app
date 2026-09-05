@@ -59,7 +59,6 @@ export function HomeHeader() {
         </nav>
 
         <div className="flex items-center space-x-4">
-          {/* <AuthButton isFlag={true} /> */}
           <MobileMenu variant="home" />
         </div>
       </div>
@@ -110,7 +109,6 @@ export function MapHeader() {
         </div>
 
         <div className="flex items-center space-x-4">
-          {/* <AuthButton /> */}
           <MobileMenu />
         </div>
       </div>
@@ -161,7 +159,6 @@ export function Header() {
         </div>
 
         <div className="flex items-center space-x-4">
-          {/* <AuthButton /> */}
           <MobileMenu />
         </div>
       </div>

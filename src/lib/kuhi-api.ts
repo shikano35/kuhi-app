@@ -180,6 +180,13 @@ export async function getMonumentsPage(
     return getMonuments({ ...filters, limit, offset });
   }
 
+  if (typeof window !== 'undefined') {
+    const queryString = buildQueryString({ ...filters, q, limit, offset });
+    return fetcher<MonumentWithRelations[]>(
+      `/api/kuhi/monuments/search?${queryString}`
+    );
+  }
+
   const matched = await searchMonuments(q, filters);
   return matched.slice(offset, offset + limit);
 }

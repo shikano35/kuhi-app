@@ -48,7 +48,6 @@ export default function ContributePage() {
           </a>
         </div>
       </div>
-      {/* <ContributeForm /> */}
     </div>
   );
 }

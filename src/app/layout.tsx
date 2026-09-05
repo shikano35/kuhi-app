@@ -4,7 +4,6 @@ import '../styles/globals.css';
 import { Layout } from '@/layouts';
 import { baseMetadata } from '@/lib/metadata';
 import { TanstackProvider } from '@/components/Providers/TanstackProvider';
-import AuthProvider from '@/components/Providers/AuthProvider';
 
 const GA_MEASUREMENT_ID = 'G-VSLEN6LFQ7';
 
@@ -51,9 +50,7 @@ export default function RootLayout({
         className={`${shipporiMincho.variable} ${geistMono.variable} ${notoSerifJP.variable} antialiased`}
       >
         <TanstackProvider>
-          <AuthProvider>
-            <Layout>{children}</Layout>
-          </AuthProvider>
+          <Layout>{children}</Layout>
         </TanstackProvider>
       </body>
     </html>

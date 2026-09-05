@@ -16,28 +16,6 @@ vi.mock('next/image', () => ({
   },
 }));
 
-// api-hooksのモック
-vi.mock('@/lib/api-hooks', () => ({
-  useUserFavorites: () => ({ data: { favorites: [] }, isLoading: false }),
-  useAddFavorite: () => ({ mutateAsync: vi.fn(), isPending: false }),
-  useRemoveFavorite: () => ({ mutateAsync: vi.fn(), isPending: false }),
-  useHaikuList: () => ({
-    data: { pages: [{ monuments: [], nextPage: null, totalCount: 0 }] },
-    fetchNextPage: vi.fn(),
-    hasNextPage: false,
-    isFetchingNextPage: false,
-    isLoading: false,
-    isError: false,
-    error: null,
-  }),
-  usePoetsList: () => ({ data: [] }),
-  useLocationsList: () => ({ data: [] }),
-  useHaikuDetail: () => ({ data: null, isLoading: false }),
-  useUserVisits: () => ({ data: { visits: [] }, isLoading: false }),
-  useAddVisit: () => ({ mutateAsync: vi.fn(), isPending: false }),
-  useRemoveVisit: () => ({ mutateAsync: vi.fn(), isPending: false }),
-}));
-
 // This is an important step to apply the right configuration when testing your stories.
 // More info at: https://storybook.js.org/docs/api/portable-stories/portable-stories-vitest#setprojectannotations
 const project = setProjectAnnotations([

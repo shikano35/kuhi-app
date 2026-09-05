@@ -1,57 +1,20 @@
 'use client';
 
-import { useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MonumentWithRelations } from '@/types/definitions/api';
-import { MapPinIcon, UserIcon, Heart, Loader2 } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import {
-  useUserFavorites,
-  useAddFavorite,
-  useRemoveFavorite,
-} from '@/lib/api-hooks';
+import { MapPinIcon, UserIcon } from 'lucide-react';
 
 type HaikuCardProps = {
   monument: MonumentWithRelations;
-  showFavoriteButton?: boolean;
 };
 
-export function HaikuCard({
-  monument,
-  showFavoriteButton = true,
-}: HaikuCardProps) {
-  const { data: session } = useSession();
-  const { data: favoritesData } = useUserFavorites();
-  const addFavoriteMutation = useAddFavorite();
-  const removeFavoriteMutation = useRemoveFavorite();
-
+export function HaikuCard({ monument }: HaikuCardProps) {
   const { id, inscriptions, poets, locations, media } = monument;
   const poet = poets?.[0];
   const location = locations?.[0];
   const inscription = inscriptions?.[0]?.original_text || '';
   const photo_url = media?.[0]?.url || null;
-
-  const isFavorited = useMemo(() => {
-    if (!favoritesData?.favorites || !session?.user) return false;
-    return favoritesData.favorites.some((fav) => fav.monument.id === id);
-  }, [favoritesData?.favorites, id, session?.user]);
-
-  const isLoading =
-    addFavoriteMutation.isPending || removeFavoriteMutation.isPending;
-
-  const handleFavoriteToggle = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!session?.user || isLoading) return;
-
-    if (isFavorited) {
-      await removeFavoriteMutation.mutateAsync({ monumentId: id });
-    } else {
-      await addFavoriteMutation.mutateAsync({ monumentId: id });
-    }
-  };
 
   return (
     <Link href={`/monument/${id}`}>
@@ -60,29 +23,6 @@ export function HaikuCard({
         data-testid="haiku-card"
       >
         <div className="relative h-48 bg-muted">
-          {showFavoriteButton && session?.user && (
-            <button
-              aria-label={
-                isFavorited ? 'お気に入りから削除' : 'お気に入りに追加'
-              }
-              className={`absolute top-2 right-2 z-10 p-2 rounded-full ${
-                isFavorited
-                  ? 'text-red-500 hover:text-red-600 transition-colors'
-                  : 'text-primary/60 hover:text-primary transition-colors'
-              }`}
-              disabled={isLoading}
-              onClick={handleFavoriteToggle}
-              type="button"
-            >
-              {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Heart
-                  className={`h-5 w-5 ${isFavorited ? 'fill-red-500 hover:fill-red-600 transition-colors' : ''}`}
-                />
-              )}
-            </button>
-          )}
           {photo_url ? (
             <Image
               alt={inscription}
