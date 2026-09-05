@@ -2,7 +2,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { HaikuList } from './index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, vi, beforeEach, afterEach } from 'vitest';
-import { SessionProvider } from 'next-auth/react';
 
 vi.mock('@/hooks/useKuhiApi', () => ({
   useInfiniteMonuments: vi.fn(() => ({
@@ -23,12 +22,6 @@ vi.mock('@/hooks/useInfiniteScroll', () => ({
   useInfiniteScroll: vi.fn(() => ({
     loadMoreRef: vi.fn(),
   })),
-}));
-
-vi.mock('@/lib/api-hooks', () => ({
-  useUserFavorites: () => ({ data: { favorites: [] }, isLoading: false }),
-  useAddFavorite: () => ({ mutateAsync: vi.fn(), isPending: false }),
-  useRemoveFavorite: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 
 vi.mock('@/store/useFilterStore', () => ({
@@ -103,11 +96,9 @@ describe('HaikuList', () => {
 
   test('コンポーネントが正しくレンダリングされること', async () => {
     render(
-      <SessionProvider session={null}>
-        <QueryClientProvider client={queryClient}>
-          <HaikuList />
-        </QueryClientProvider>
-      </SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <HaikuList />
+      </QueryClientProvider>
     );
 
     await waitFor(() => {

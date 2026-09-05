@@ -9,8 +9,6 @@ export interface FilterState {
   mapSelectedPoet: string;
   mapSearchText: string;
   mapFilteredMonuments: HaikuMonument[];
-  mapShowFavoritesOnly: boolean;
-  mapShowVisitedOnly: boolean;
 
   // リストフィルター用状態
   listSearchText: string;
@@ -25,8 +23,6 @@ export interface FilterState {
   setMapSelectedPoet: (poet: string) => void;
   setMapSearchText: (text: string) => void;
   setMapFilteredMonuments: (monuments: HaikuMonument[]) => void;
-  setMapShowFavoritesOnly: (show: boolean) => void;
-  setMapShowVisitedOnly: (show: boolean) => void;
   resetMapFilters: () => void;
 
   // リスト関連アクション
@@ -46,8 +42,6 @@ export const useFilterStore = create<FilterState>()(
       mapSelectedPrefecture: 'すべて',
       mapSelectedPoet: 'すべて',
       mapFilteredMonuments: [],
-      mapShowFavoritesOnly: false,
-      mapShowVisitedOnly: false,
 
       // リストフィルター用初期状態
       listSearchText: '',
@@ -65,16 +59,12 @@ export const useFilterStore = create<FilterState>()(
       setMapSearchText: (text) => set({ mapSearchText: text }),
       setMapFilteredMonuments: (monuments) =>
         set({ mapFilteredMonuments: monuments }),
-      setMapShowFavoritesOnly: (show) => set({ mapShowFavoritesOnly: show }),
-      setMapShowVisitedOnly: (show) => set({ mapShowVisitedOnly: show }),
       resetMapFilters: () =>
         set({
           mapSelectedRegion: 'すべて',
           mapSelectedPrefecture: 'すべて',
           mapSelectedPoet: 'すべて',
           mapSearchText: '',
-          mapShowFavoritesOnly: false,
-          mapShowVisitedOnly: false,
         }),
 
       // リスト関連アクション

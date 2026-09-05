@@ -36,11 +36,7 @@ export function PickupClientComponent({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {monuments.map((monument) => (
-              <HaikuCard
-                key={monument.id}
-                monument={monument}
-                showFavoriteButton={false}
-              />
+              <HaikuCard key={monument.id} monument={monument} />
             ))}
           </div>
 

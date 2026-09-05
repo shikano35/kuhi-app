@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, vi, beforeAll, beforeEach } from 'vitest';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
-import { SessionProvider } from 'next-auth/react';
 
 interface MockMonument {
   id: number;
@@ -117,11 +116,9 @@ describe('ListFilter', () => {
 
   test('検索フォームが正しく表示されること', () => {
     render(
-      <SessionProvider session={null}>
-        <QueryClientProvider client={queryClient}>
-          <ListFilter />
-        </QueryClientProvider>
-      </SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <ListFilter />
+      </QueryClientProvider>
     );
 
     const searchInput =
@@ -134,11 +131,9 @@ describe('ListFilter', () => {
 
   test('絞り込みボタンをクリックするとフィルターオプションが表示されること', async () => {
     render(
-      <SessionProvider session={null}>
-        <QueryClientProvider client={queryClient}>
-          <ListFilter />
-        </QueryClientProvider>
-      </SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <ListFilter />
+      </QueryClientProvider>
     );
 
     expect(screen.queryByLabelText('地域')).not.toBeInTheDocument();
@@ -153,11 +148,9 @@ describe('ListFilter', () => {
 
   test('検索フォームに入力して送信できること', () => {
     render(
-      <SessionProvider session={null}>
-        <QueryClientProvider client={queryClient}>
-          <ListFilter />
-        </QueryClientProvider>
-      </SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <ListFilter />
+      </QueryClientProvider>
     );
 
     const searchInput =
@@ -173,11 +166,9 @@ describe('ListFilter', () => {
 
   test('リセットボタンをクリックするとフォームがクリアされること', async () => {
     render(
-      <SessionProvider session={null}>
-        <QueryClientProvider client={queryClient}>
-          <ListFilter />
-        </QueryClientProvider>
-      </SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        <ListFilter />
+      </QueryClientProvider>
     );
 
     fireEvent.click(screen.getByRole('button', { name: /絞り込み/ }));

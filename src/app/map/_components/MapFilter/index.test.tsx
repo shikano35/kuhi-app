@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { SessionProvider } from 'next-auth/react';
 import { MapFilter } from './index';
 import { vi } from 'vitest';
 import { HaikuMonument } from '@/types/definitions/haiku';
@@ -98,10 +97,6 @@ vi.mock('@/store/useFilterStore', () => ({
 }));
 
 // API hooks のモック
-vi.mock('@/lib/api-hooks', () => ({
-  useUserFavorites: () => ({ data: [] }),
-  useUserVisits: () => ({ data: [] }),
-}));
 
 describe('MapFilter', () => {
   const mockOnFilterChange = vi.fn();
@@ -120,11 +115,9 @@ describe('MapFilter', () => {
 
   const renderWithProviders = (component: React.ReactNode) => {
     return render(
-      <SessionProvider session={null}>
-        <QueryClientProvider client={queryClient}>
-          {component}
-        </QueryClientProvider>
-      </SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        {component}
+      </QueryClientProvider>
     );
   };
 

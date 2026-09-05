@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import { HaikuCard } from './index';
 import { describe, expect, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { SessionProvider } from 'next-auth/react';
 import { MonumentWithRelations } from '@/types/definitions/api';
 
 // 適切なMonumentWithRelations型のモックデータを作成
@@ -99,13 +98,6 @@ const mockHaikuMonuments: MonumentWithRelations[] = [
   },
 ];
 
-// api-hooksのモック
-vi.mock('@/lib/api-hooks', () => ({
-  useUserFavorites: () => ({ data: { favorites: [] }, isLoading: false }),
-  useAddFavorite: () => ({ mutateAsync: vi.fn(), isPending: false }),
-  useRemoveFavorite: () => ({ mutateAsync: vi.fn(), isPending: false }),
-}));
-
 vi.mock('next/image', () => ({
   default: ({ src, alt }: { src: string; alt: string }) => (
     <img alt={alt} data-testid="next-image" src={src} />
@@ -141,11 +133,9 @@ describe('HaikuCard', () => {
 
   const renderWithProvider = (component: React.ReactElement) => {
     return render(
-      <SessionProvider session={null}>
-        <QueryClientProvider client={queryClient}>
-          {component}
-        </QueryClientProvider>
-      </SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        {component}
+      </QueryClientProvider>
     );
   };
 

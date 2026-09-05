@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { SessionProvider } from 'next-auth/react';
 import { vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -72,11 +71,9 @@ describe('HaikuMap', () => {
 
   const renderWithProviders = (component: React.ReactNode) => {
     return render(
-      <SessionProvider session={null}>
-        <QueryClientProvider client={queryClient}>
-          {component}
-        </QueryClientProvider>
-      </SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        {component}
+      </QueryClientProvider>
     );
   };
 
