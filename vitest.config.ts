@@ -41,8 +41,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      include: ['src/**/*.{test,spec}.{ts,tsx}'],
-      exclude: ['node_modules/', 'dist/', '.storybook/**'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.{test,spec,stories}.{ts,tsx}', 'src/**/*.d.ts', 'src/tests/**'],
     },
 
     projects: enableStorybookTests
