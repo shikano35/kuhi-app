@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { MONUMENT_PAGE_SIZE } from '@/lib/monument-search';
+import { useSearchParams } from 'next/navigation';
 import { HaikuCard } from '@/components/shared/HaikuCard';
 import { ListFilter } from '../ListFilter';
 import { MenuDropdown } from '@/components/shared/MenuDropdown';
@@ -13,10 +14,10 @@ import {
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 interface HaikuListClientComponentProps {
-  initialMonuments: MonumentWithRelations[];
+  initialMonuments?: MonumentWithRelations[];
   poets: Poet[];
   locations: Location[];
-  _initialSearchParams?: {
+  initialSearchParams?: {
     q?: string;
     region?: string;
     prefecture?: string;
@@ -26,10 +27,10 @@ interface HaikuListClientComponentProps {
 
 export function HaikuListClientComponent({
   initialMonuments,
+  initialSearchParams,
   poets,
   locations,
 }: HaikuListClientComponentProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
@@ -40,6 +41,13 @@ export function HaikuListClientComponent({
     ? Number(searchParams.get('poet_id'))
     : null;
 
+  const matchesInitialSearch =
+    searchQuery === (initialSearchParams?.q || '') &&
+    regionFilter === (initialSearchParams?.region || 'すべて') &&
+    prefectureFilter === (initialSearchParams?.prefecture || 'すべて') &&
+    (poetIdFilter || undefined) ===
+      (Number(initialSearchParams?.poet_id) || undefined);
+
   const {
     data,
     fetchNextPage,
@@ -48,13 +56,17 @@ export function HaikuListClientComponent({
     isLoading,
     isError,
     error: _error,
-  } = useInfiniteMonuments({
-    q: searchQuery,
-    region: regionFilter === 'すべて' ? undefined : regionFilter,
-    prefecture: prefectureFilter === 'すべて' ? undefined : prefectureFilter,
-    poet_id: poetIdFilter || undefined,
-    limit: 60,
-  });
+    refetch,
+  } = useInfiniteMonuments(
+    {
+      q: searchQuery,
+      region: regionFilter === 'すべて' ? undefined : regionFilter,
+      prefecture: prefectureFilter === 'すべて' ? undefined : prefectureFilter,
+      poet_id: poetIdFilter || undefined,
+      limit: MONUMENT_PAGE_SIZE,
+    },
+    matchesInitialSearch ? initialMonuments : undefined
+  );
 
   const loadMoreRef = useIntersectionObserver(
     () => {
@@ -65,14 +77,7 @@ export function HaikuListClientComponent({
     { enabled: hasNextPage && !isFetchingNextPage }
   );
 
-  const infiniteData = useFlattenedInfiniteMonuments(data?.pages);
-
-  const monuments = useMemo(() => {
-    if (infiniteData.length > 0) {
-      return infiniteData;
-    }
-    return initialMonuments;
-  }, [infiniteData, initialMonuments]);
+  const monuments = useFlattenedInfiniteMonuments(data?.pages);
 
   if (isError) {
     return (
@@ -82,7 +87,9 @@ export function HaikuListClientComponent({
         </p>
         <button
           className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          onClick={() => router.refresh()}
+          onClick={() => {
+            void refetch();
+          }}
         >
           再試行
         </button>
