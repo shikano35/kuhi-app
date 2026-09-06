@@ -4,7 +4,7 @@ import { notoSerifJP } from '@/lib/fonts-reading';
 import { DatabaseStatsContainer } from './_components/DatabaseStatsContainer';
 import { DatabaseFaq } from './_components/DatabaseFaq';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   ...baseMetadata,
