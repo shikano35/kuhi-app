@@ -36,7 +36,8 @@ describe('一覧の初期データ', () => {
     await act(async () => {
       await result.current.fetchNextPage();
     });
-    expect(getMonumentsPage).toHaveBeenCalledExactlyOnceWith({
+    expect(getMonumentsPage).toHaveBeenCalledTimes(1);
+    expect(getMonumentsPage).toHaveBeenCalledWith({
       limit: 60,
       offset: 60,
     });
