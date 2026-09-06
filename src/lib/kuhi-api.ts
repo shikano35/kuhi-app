@@ -218,7 +218,7 @@ export async function getMapMonuments(): Promise<MonumentWithRelations[]> {
         break;
       }
     } catch (error) {
-      if (isBuildPhase()) {
+      if (isBuildPhase() && allMonuments.length > 0) {
         console.error(
           `[kuhi-api] /monuments failed at offset ${offset} during build; continuing with ${allMonuments.length} items`,
           error
@@ -341,7 +341,7 @@ export async function getAllPoets(): Promise<Poet[]> {
         break;
       }
     } catch (error) {
-      if (isBuildPhase()) {
+      if (isBuildPhase() && allPoets.length > 0) {
         console.error(
           `[kuhi-api] /poets failed at offset ${offset} during build; continuing with ${allPoets.length} items`,
           error
