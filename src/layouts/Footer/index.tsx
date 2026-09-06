@@ -1,14 +1,8 @@
 import { ExternalLinkIcon } from 'lucide-react';
 import Link from 'next/link';
-import { Hina_Mincho } from 'next/font/google';
+import { hinaMinchoLogo } from '@/lib/fonts';
 import { cn } from '@/lib/cn';
 import { menuLinks } from '@/layouts/Header';
-
-const hinaMincho = Hina_Mincho({
-  variable: '--font-hina-mincho',
-  weight: '400',
-  subsets: ['latin'],
-});
 
 const otherLinks = [
   { href: '/references', label: '関連文献・参考文献等' },
@@ -83,7 +77,7 @@ export function Footer() {
               <span
                 className={cn(
                   'text-4xl md:text-5xl font-bold',
-                  hinaMincho.className
+                  hinaMinchoLogo.className
                 )}
               >
                 くひめぐり

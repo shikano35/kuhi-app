@@ -1,29 +1,11 @@
-import { Shippori_Mincho, Geist_Mono, Noto_Serif_JP } from 'next/font/google';
 import Script from 'next/script';
 import '../styles/globals.css';
 import { Layout } from '@/layouts';
 import { baseMetadata } from '@/lib/metadata';
+import { shipporiMincho } from '@/lib/fonts';
 import { TanstackProvider } from '@/components/Providers/TanstackProvider';
 
 const GA_MEASUREMENT_ID = 'G-VSLEN6LFQ7';
-
-const shipporiMincho = Shippori_Mincho({
-  variable: '--font-shippori-mincho',
-  weight: '600',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
-const notoSerifJP = Noto_Serif_JP({
-  variable: '--font-noto-serif-jp',
-  weight: ['400', '500', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-});
 
 export const metadata = baseMetadata;
 
@@ -46,9 +28,7 @@ export default function RootLayout({
           gtag('config', '${GA_MEASUREMENT_ID}');
         `}
       </Script>
-      <body
-        className={`${shipporiMincho.variable} ${geistMono.variable} ${notoSerifJP.variable} antialiased`}
-      >
+      <body className={`${shipporiMincho.variable} antialiased`}>
         <TanstackProvider>
           <Layout>{children}</Layout>
         </TanstackProvider>

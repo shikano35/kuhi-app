@@ -3,6 +3,7 @@ import { baseMetadata } from '@/lib/metadata';
 import Link from 'next/link';
 import { PrivacyLinkButton } from '@/app/(main)/privacy/_components/PrivacyLinkButton';
 import { SkeletonImage } from '@/components/shared/SkeletonImage';
+import { notoSerifJP } from '@/lib/fonts-reading';
 
 export const metadata: Metadata = {
   ...baseMetadata,
@@ -13,7 +14,9 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="font-serif-reading container mx-auto py-8 px-4">
+    <div
+      className={`${notoSerifJP.variable} font-serif-reading container mx-auto py-8 px-4`}
+    >
       <h1 className="font-shippori-mincho text-4xl font-bold mb-8 text-center">
         句碑とは
       </h1>
