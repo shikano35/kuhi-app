@@ -1,8 +1,9 @@
 import { ExternalLink } from 'lucide-react';
+import { notoSerifJP } from '@/lib/fonts-reading';
 
 export function PrivacyPolicyContent() {
   return (
-    <div className="space-y-8 text-primary/80">
+    <div className={`${notoSerifJP.variable} space-y-8 text-primary/80`}>
       <p className="font-serif-reading text-sm leading-relaxed">
         以下は、くひめぐり（以下「当サイト」）における、利用者の個人情報およびアクセスデータの取り扱いについて定めるものです。
       </p>

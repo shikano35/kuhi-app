@@ -1,14 +1,8 @@
 import Link from 'next/link';
-import { Hina_Mincho } from 'next/font/google';
+import { hinaMinchoLogo } from '@/lib/fonts';
 import { cn } from '@/lib/cn';
 import { MobileMenu } from '@/components/shared/MobileMenu';
 import { HeaderDropdown } from '@/components/shared/HeaderDropdown';
-
-const hinaMincho = Hina_Mincho({
-  variable: '--font-hina-mincho',
-  weight: '400',
-  subsets: ['latin'],
-});
 
 export const menuLinks = [
   { href: '/', label: 'ホーム' },
@@ -72,7 +66,9 @@ export function MapHeader() {
       <div className="mx-auto flex items-center justify-between p-4">
         <div className="flex items-center">
           <Link className="flex items-center" href="/">
-            <span className={cn('text-2xl font-bold', hinaMincho.className)}>
+            <span
+              className={cn('text-2xl font-bold', hinaMinchoLogo.className)}
+            >
               くひめぐり
             </span>
           </Link>
@@ -122,7 +118,9 @@ export function Header() {
       <div className="mx-auto flex items-center justify-between p-4">
         <div className="flex items-center">
           <Link className="flex items-center" href="/">
-            <span className={cn('text-2xl font-bold', hinaMincho.className)}>
+            <span
+              className={cn('text-2xl font-bold', hinaMinchoLogo.className)}
+            >
               くひめぐり
             </span>
           </Link>

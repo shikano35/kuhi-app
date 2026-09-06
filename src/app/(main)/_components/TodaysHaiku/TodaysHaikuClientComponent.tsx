@@ -1,15 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Hina_Mincho } from 'next/font/google';
+import { hinaMinchoHaiku } from '@/lib/fonts-haiku';
 import { ArrowRight, MapPin } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { MonumentWithRelations } from '@/types/definitions/api';
-
-const hinaMincho = Hina_Mincho({
-  variable: '--font-hina-mincho',
-  weight: '400',
-  subsets: ['latin'],
-});
 
 interface TodaysHaikuClientComponentProps {
   monument: MonumentWithRelations;
@@ -57,7 +51,7 @@ export function TodaysHaikuClientComponent({
         <h2
           className={cn(
             'text-3xl md:text-4xl lg:text-5xl text-primary-foreground leading-relaxed mb-8',
-            hinaMincho.className
+            hinaMinchoHaiku.className
           )}
         >
           {haiku}

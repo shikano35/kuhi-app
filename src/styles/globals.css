@@ -8,8 +8,7 @@
   --color-foreground: var(--foreground);
   --font-shippori-mincho: var(--font-shippori-mincho);
   --font-noto-serif-jp: var(--font-noto-serif-jp);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
